@@ -1,0 +1,191 @@
+* {
+  box-sizing: border-box; /* Se adicionarmos qualquer preenchimento ou borda a um elemento, isso não afeta a largura dele*/
+}
+
+body {
+  background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+  width: 100%;
+  height: 100%;
+  font-family: 'Muli', sans-serif;
+  display: flex; /* Ele já está no body porque vai ficar mais fácil para centralizar tudo */
+  justify-content: center;
+  overflow-y: auto; /* Adiciona uma barra de rolagem vertical quando necessário */
+  padding: 20px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+  margin: 0 auto;
+  padding-top: 20px;
+}
+
+.form_container {
+  max-width: 800px;
+  margin: 20px auto; /* Centraliza o formulário e dá espaço acima */
+  padding: 20px; /* Adiciona espaço interno ao redor do formulário*/
+  background-color: #fff;
+  border-radius: 8px; /* aBordas arredondadas */
+  border: 2px solid #ccc; /* Adiciona uma borda cinza ao redor do formulário */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adiciona uma leve sombra para destacar */
+}
+
+input {
+  width: 100%;
+  padding: 20px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+  box-shadow: 1px 1px 1px #dbdada;
+}
+
+.date {
+  display: flex;
+  padding-top: 10px;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px; /* Adicione um espaçamento entre cada linha de data */
+}
+
+.buttonDate {
+  padding: 12px;
+  margin-top: -10px;
+  margin-left: 10px; /* Adicione um espaço entre o botão e os campos de data */
+  background-color: #007bff; /* Azul para ações principais */
+  color: white;
+  margin-left: 0;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+h2 {
+  text-align: center;
+  color: #fff;
+}
+
+button[type='submit'] {
+  background-color: #007bff; /* Azul para ações principais */
+  color: #fff;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 5px; /* Adiciona um espaço acima do botão */
+  cursor: pointer;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse; /* Retorna a tabela a um layout colapsado */
+  background-color: #ffffff;
+}
+
+.table th,
+.table td {
+  padding: 8px 10px; /* Um leve espaçamento entre as células */
+  border: 1px solid #ddd; /* Linha divisória para cada célula */
+  text-align: left;
+  color: #000; /* Define a cor do texto como preto */
+}
+
+.table th {
+  background-color: #f3f3f3; /* Fundo mais claro para o cabeçalho */
+  font-weight: bold;
+  color: #333;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #f9f9f9; /* Fundo levemente diferente nas linhas pares */
+}
+
+.table tbody tr:hover {
+  background-color: #e6f7ff; /* Fundo azul claro ao passar o mouse */
+}
+
+.tdButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Espaçamento entre os botões */
+}
+
+.tdButtons button {
+  padding: 8px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.tdButtons button:hover {
+  background-color: #0056b3;
+}
+
+.titles th {
+  text-align: center;
+}
+tbody td {
+  text-align: center;
+}
+
+.periodButton {
+  justify-content: space-between;
+  color: #fff;
+  border: none;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .form_container {
+    width: 80%;
+    padding: 15px;
+  }
+
+  .date {
+    flex-direction: column; /* Empilha os itens verticalmente */
+  }
+
+  table,
+  th,
+  td {
+    width: 70%;
+    font-size: 12px; /* Reduz o tamanho da fonte */
+    padding: 5px; /* Reduz o espaçamento */
+  }
+
+  .tdButtons {
+    flex-direction: row; /* Coloca os botões em linha */
+    flex-wrap: wrap; /* Permite que os botões quebrem para nova linha */
+  }
+
+  .tdButtons button {
+    flex: 1 1 45%;
+    margin: 5px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .form_container {
+    margin: 10px;
+  }
+
+  input {
+    padding: 10px;
+  }
+
+  .date input[type='date'],
+  .buttonDate {
+    width: 100%;
+  }
+
+  th,
+  td {
+    font-size: 10px;
+    padding: 4px;
+  }
+}

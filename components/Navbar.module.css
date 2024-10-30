@@ -1,0 +1,46 @@
+* {
+  font-family: 'Muli', sans-serif;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.content {
+  width: 100%;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+  margin-bottom: 50px;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px; /* Ajusta o espaçamento entre o logo e o título */
+  background-color: #ffffff;
+  padding: 20px;
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+}
+
+.container img {
+  width: 100px;
+  height: auto;
+}
+
+.container h1 {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Sombra sutil no texto */
+  font-size: 40px;
+  font-weight: bold;
+  margin: 0;
+  text-align: center;
+  flex-grow: 1; /* Garante que o texto ocupe o centro */
+}

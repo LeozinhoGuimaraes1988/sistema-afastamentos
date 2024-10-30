@@ -1,0 +1,86 @@
+.titles {
+  color: black;
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.days p {
+  color: black;
+  font-weight: bold;
+  margin-top: 0px;
+}
+
+.periodForm {
+  display: flex;
+
+  /* background-color: aqua; */
+}
+
+h1 {
+  color: black;
+  text-align: center;
+}
+
+.formContainer {
+  margin-bottom: 20px;
+}
+
+.inputField {
+  width: 100%;
+  /* background-color: aqua; */
+  margin-bottom: -20px;
+}
+
+input {
+  width: 100%;
+}
+
+.button {
+  background-color: red;
+  width: 100%;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.remove {
+  background-color: red;
+  width: 20%;
+  color: white;
+  padding: 5px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 30px;
+}
+
+.endButtons {
+  display: flex;
+  width: 100%;
+  gap: 20px;
+  justify-content: space-between;
+}
+
+.button:hover {
+  background-color: darkred;
+}
+
+.days {
+  display: flex;
+  justify-content: space-between;
+}
+
+.close,
+.changes {
+  background-color: red;
+  width: 20%;
+  color: white;
+  padding: 5px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}

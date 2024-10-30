@@ -1,0 +1,64 @@
+.container {
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: 40px 50px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.title {
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: 10px;
+  padding-bottom: 10px;
+  margin-top: -5px;
+  font-weight: bold;
+}
+
+h1 {
+  font-weight: normal;
+}
+
+.form {
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  height: 150px;
+  width: 400px;
+  padding-top: 10px;
+  padding-bottom: 20px;
+  font-weight: normal;
+}
+
+.name,
+.lot,
+.mat {
+  padding: 10px;
+  margin-top: 10px;
+  display: flex;
+  height: 20px;
+  align-items: center;
+  justify-content: right;
+  gap: 10px;
+  font-size: 10px;
+  margin-bottom: 10px;
+  font-family: 'Muli', sans-serif;
+}
+
+.lot {
+  margin-bottom: 10px;
+}
+
+input {
+  height: 25px;
+}
+
+button {
+  padding: 5px;
+
+  background-color: rgb(211, 220, 227);
+  font-family: 'Muli';
+  font-weight: bold;
+}
+
+button:hover {
+  background-color: rgb(169, 203, 229);
+}

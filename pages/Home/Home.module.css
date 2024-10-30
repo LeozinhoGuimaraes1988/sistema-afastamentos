@@ -1,0 +1,51 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: steelblue;
+  color: #fff;
+  font-family: 'Ubuntu', sans-serif;
+  display: flex; /* Ele já está no body porque vai ficar mais fácil para centralizar tudo*/
+  flex-direction: column;
+  align-items: center; /* Alinhou os itens ao centro*/
+  justify-content: center; /* Alinhou os itens no centro com height*/
+  overflow: hidden; /* Para não mostrar as barras de rolagem por padrão*/
+  /* height: 100vh; */
+  margin: 0;
+}
+.content {
+  display: flex;
+}
+
+.register {
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: 20px 40px;
+  border-radius: 5px;
+  margin-right: 20px;
+}
+.container {
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: 20px 40px;
+  border-radius: 5px;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+}
+
+li {
+  background-color: #a5c7e5;
+  list-style: none;
+}
+
+.buttonsName {
+  font-size: 24px;
+  font-family: 'Ubuntu', sans-serif;
+  color: rgb(37, 90, 133);
+  height: 50px;
+  margin-bottom: 3px;
+  cursor: pointer;
+  width: 100%;
+}
