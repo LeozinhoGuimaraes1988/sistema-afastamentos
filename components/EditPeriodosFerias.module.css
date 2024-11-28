@@ -5,6 +5,23 @@
   gap: 30px;
 }
 
+.personalDate {
+  display: flex;
+  gap: 10px;
+  background-color: #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+.modal {
+  z-index: 1050; /* Aumenta o z-index para garantir que o modal fique acima de outros elementos */
+}
+
+.modalOverlay {
+  z-index: 1040; /* Para garantir que a sobreposição também esteja acima da navbar */
+}
+
 .days p {
   color: black;
   font-weight: bold;
@@ -13,8 +30,7 @@
 
 .periodForm {
   display: flex;
-
-  /* background-color: aqua; */
+  flex-direction: column;
 }
 
 h1 {
@@ -26,10 +42,14 @@ h1 {
   margin-bottom: 20px;
 }
 
-.inputField {
+.inputFerias {
+  display: flex;
+  gap: 10px;
+}
+
+.inputFieldFerias {
   width: 100%;
-  /* background-color: aqua; */
-  margin-bottom: -20px;
+  gap: 30px;
 }
 
 input {

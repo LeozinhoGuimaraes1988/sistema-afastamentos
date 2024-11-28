@@ -1,46 +1,165 @@
+/* Reset básico */
 * {
   font-family: 'Muli', sans-serif;
   box-sizing: border-box;
 }
 
-body {
+body,
+html {
   margin: 0;
   padding: 0;
   width: 100%;
 }
 
-.content {
+/* Navbar Container */
+.navbarContainer {
   width: 100%;
-  padding: 0;
+
+  padding: 1em 0;
+}
+
+.navbarInner {
   display: flex;
-  justify-content: center;
   align-items: center;
-  background-color: #fff;
-  margin-bottom: 50px;
+  justify-content: space-between;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px; /* Ajusta o espaçamento entre o logo e o título */
-  background-color: #ffffff;
-  padding: 20px;
-  width: 100%;
-  height: auto;
-  border-radius: 5px;
+.logo {
+  width: 60px;
+  margin-right: auto; /* Alinha a logo à esquerda */
 }
 
-.container img {
-  width: 100px;
-  height: auto;
-}
-
-.container h1 {
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Sombra sutil no texto */
-  font-size: 40px;
-  font-weight: bold;
-  margin: 0;
+.title {
+  flex-grow: 1;
   text-align: center;
-  flex-grow: 1; /* Garante que o texto ocupe o centro */
+  font-size: 1.8em;
+  font-weight: bold;
+  color: black;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  margin-right: 20px; /* Adiciona um espaçamento antes dos links */
+}
+
+.buttons {
+  display: flex;
+  margin-left: 100px;
+}
+
+.linksList {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  list-style: none;
+
+  padding: 0.5em;
+  margin: 0;
+  border-radius: 0.3em;
+}
+
+.linksList li {
+  cursor: pointer;
+  margin-right: 1em;
+  background-color: red;
+  height: 45px;
+  width: 85px;
+  border-radius: 5px;
+  display: flex; /* Adiciona flex para alinhar o conteúdo */
+  align-items: center; /* Centraliza verticalmente */
+  justify-content: center; /* Centraliza horizontalmente */
+  font-size: 13px;
+  text-align: center;
+}
+
+.linksList li a {
+  color: black;
+  text-decoration: none;
+  font-weight: bold;
+  color: white;
+}
+
+.linksList button {
+  width: 70px;
+  border-radius: 6px;
+  border: none;
+  padding: 15px;
+
+  margin-left: 20px;
+  background-color: #0044ff;
+}
+
+.linksList button a {
+  color: white;
+  text-decoration: none;
+}
+
+.linksList button:hover {
+  background-color: #4e41af;
+}
+
+.linksList li:hover {
+  background-color: #b94242;
+}
+
+li {
+  background-color: #ff6500;
+  height: 55px;
+  justify-content: center;
+  border-radius: 5px;
+  align-items: center;
+  width: 90px;
+  padding: 8px;
+  font-size: 15px;
+  text-align: center;
+}
+
+/* Estilo do botão hambúrguer */
+.hamburgerMenu {
+  display: none; /* Escondido em telas grandes */
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  cursor: pointer;
+  color: black;
+}
+
+/* Menu Responsivo */
+.menuOpen {
+  display: flex;
+  flex-direction: column; /* Empilha os links em telas menores */
+}
+
+/* Media query para resoluções menores */
+@media (max-width: 768px) {
+  .logo,
+  .title {
+    display: none; /* Esconde a logo e o título */
+  }
+
+  .navbarInner {
+    padding: 10px 15px; /* Ajusta o padding geral do container em telas menores */
+  }
+
+  .buttons {
+    padding-top: 25px;
+    margin-left: 0;
+    justify-content: flex-start; /* Garante que os botões fiquem na margem */
+    width: 100%; /* Ocupa toda a largura disponível */
+  }
+
+  .linksList {
+    display: flex;
+    flex-wrap: wrap; /* Permite que os botões quebrem linha, se necessário */
+    justify-content: flex-start; /* Alinha os botões à esquerda */
+    margin: 0;
+    padding: 0;
+  }
+
+  .linksList li {
+    margin-right: 1em; /* Espaçamento entre os botões */
+    margin-bottom: 3px; /* Espaço na parte inferior */
+    margin-left: 0.5em; /* Margem à esquerda */
+    margin-top: 0px; /* Margem no topo */
+  }
 }

@@ -3,49 +3,73 @@
 }
 
 body {
-  background-color: steelblue;
+  background-color: #1a1a2e;
   color: #fff;
   font-family: 'Ubuntu', sans-serif;
-  display: flex; /* Ele já está no body porque vai ficar mais fácil para centralizar tudo*/
-  flex-direction: column;
-  align-items: center; /* Alinhou os itens ao centro*/
-  justify-content: center; /* Alinhou os itens no centro com height*/
-  overflow: hidden; /* Para não mostrar as barras de rolagem por padrão*/
-  /* height: 100vh; */
   margin: 0;
-}
-.content {
-  display: flex;
+  padding: 0;
+  overflow-x: hidden;
 }
 
-.register {
-  background-color: rgba(0, 0, 0, 0.4);
-  padding: 20px 40px;
-  border-radius: 5px;
-  margin-right: 20px;
+/* Navbar */
+.navbar {
+  position: fixed;
+  margin-top: -30px;
+  left: 0;
+  width: 100%;
+  height: 15%; /* Defina a altura da navbar */
+  background-color: #ffffff; /* Cor de fundo da navbar */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+/* Conteúdo principal */
+.content {
+  margin-top: 0; /* Remova a margem superior */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 80px); /* Ajusta a altura mínima do conteúdo */
+}
+
+/* Container principal */
 .container {
-  background-color: rgba(0, 0, 0, 0.4);
-  padding: 20px 40px;
-  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 30px 50px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+  width: 600px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 20px;
 }
 
 .buttons {
   display: flex;
   flex-direction: column;
-}
-
-li {
-  background-color: #a5c7e5;
-  list-style: none;
+  gap: 10px;
 }
 
 .buttonsName {
-  font-size: 24px;
-  font-family: 'Ubuntu', sans-serif;
-  color: rgb(37, 90, 133);
-  height: 50px;
-  margin-bottom: 3px;
-  cursor: pointer;
+  font-size: 20px;
   width: 100%;
+  color: #fff;
+  background-color: #4ecca3;
+  height: 50px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.buttonsName:hover {
+  background-color: #3da78b;
 }

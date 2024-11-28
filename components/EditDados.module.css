@@ -1,0 +1,78 @@
+h1 {
+  color: black;
+  text-align: center;
+}
+
+input {
+  margin-top: 10px; /* Aumentando o espaço para um visual mais limpo */
+  padding: 8px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+input:focus {
+  outline: none;
+  border-color: #4a90e2; /* Um azul suave que destaca o campo ativo */
+  box-shadow: 0px 0px 4px rgba(74, 144, 226, 0.5);
+}
+
+label {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 3px;
+  display: inline-block;
+}
+
+.periodForm {
+  padding: 20px;
+}
+
+.inputField {
+  width: 100%;
+  color: black;
+  margin-bottom: 10px;
+}
+
+.save,
+.close {
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.save,
+.close {
+  background-color: red; /* Cor vermelha mais suave */
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.save:hover,
+.close:hover {
+  background-color: #c0392b; /* Um vermelho mais escuro ao passar o mouse */
+}
+
+.save {
+  background-color: red; /* Cor padrão */
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.save:hover {
+  background-color: #c0392b; /* Vermelho mais escuro ao passar o mouse */
+}
+
+.saved {
+  background-color: #27ae60; /* Verde quando salvo */
+}

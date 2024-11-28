@@ -2,18 +2,38 @@
   box-sizing: border-box; /* Garante que o tamanho total inclua a borda */
 }
 
+.periodVacation {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 10px;
+  margin-bottom: 15px;
+}
+
 .titles {
+  margin-top: -8px;
+  background-color: #ccc;
+  border-radius: 5px;
+  padding: 5px;
   color: black;
   display: flex;
+  margin-bottom: -10px;
+  align-items: first baseline;
   justify-content: space-between;
   gap: 30px;
-  font-size: 20px;
+  font-size: 15px;
 }
 
 .days p {
   color: black;
   font-weight: bold;
   margin-top: 0px;
+}
+
+.datesInput {
+  justify-content: center;
+  display: flex;
+  gap: 10px;
 }
 
 .periodForm {
@@ -54,12 +74,31 @@ input {
 
 .button,
 .addButton,
-.eraseButton,
-.addLP {
+.eraseButton {
   background-color: red;
   width: 100%;
   color: white;
   padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.addLP {
+  display: flex;
+  justify-content: center;
+  margin-top: -15px;
+  margin-bottom: -15px;
+}
+
+.buttonaddLP {
+  margin-top: 18px;
+  background-color: red;
+  height: 8%;
+  width: 50%;
+  color: white;
+  padding: 7px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -144,4 +183,18 @@ input {
 
 .p {
   margin-bottom: -20px;
+}
+
+@media (max-width: 768px) {
+  .ReactModal__Content {
+    width: 90vw !important; /*/ Ajusta a largura para ocupar 90% da largura da tela em dispositivos menores */
+    padding: 15px; /* Reduz o padding para dispositivos menores */
+  }
+}
+
+@media (max-width: 480px) {
+  .ReactModal__Content {
+    width: 95vw !important; /* Ajusta a largura para 95% da tela em dispositivos muito pequenos */
+    padding: 10px; /*Padding ainda menor para telas muito pequenas */
+  }
 }

@@ -6,6 +6,8 @@ import { db } from '../firebase/config';
 // Hook
 // import { useUpdatePeriodo } from '../hooks/useUpdatePeriodo';
 
+import Abonos from '../pages/Abonos/Abonos';
+
 import { collection, getDoc, doc, addDoc, updateDoc } from 'firebase/firestore';
 
 const EditPeriodosAbonos = ({
@@ -188,16 +190,20 @@ const EditPeriodosAbonos = ({
   };
 
   const customStyles = {
-    overlay: {
-      backgroundColor: 'rgba(0,0,0,0.75)',
-    },
     content: {
-      top: '50%',
-      left: '50%',
+      top: '50%', // Centraliza o modal verticalmente
+      left: '50%', // Centraliza o modal horizontalmente
       right: 'auto',
       bottom: 'auto',
       marginRight: '-50%',
-      transform: 'translate(-50%, -50%)',
+      transform: 'translate(-50%, -50%)', // Centraliza o modal perfeitamente no centro
+      zIndex: 1050,
+      padding: '20px',
+      overflow: 'auto',
+    },
+    overlay: {
+      zIndex: 1040,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)', // Mantém o fundo fumê
     },
   };
 
@@ -211,113 +217,115 @@ const EditPeriodosAbonos = ({
         style={customStyles}
       >
         <h1>Inserir abonos</h1>
-        <div>
-          {servidorSelecionado ? (
-            <div>
-              <div className={styles.titles}>
-                {/* Informações do servidor selecionado */}
-                <p>
-                  Nome: <strong>{servidorSelecionado.nome}</strong>
+        <div className={styles.container}>
+          {' '}
+          {/* Novo contêiner */}
+          <div className={styles.feriasSection}>
+            {' '}
+            {/* Área laranja */}
+            {servidorSelecionado ? (
+              <div>
+                <div className={styles.titles}>
+                  <p>
+                    Nome: <strong>{servidorSelecionado.nome}</strong>
+                  </p>
+                  <p>
+                    Matrícula:<strong>{servidorSelecionado.matricula}</strong>
+                  </p>
+                  <p>
+                    Lotação: <strong>{servidorSelecionado.lotacao}</strong>
+                  </p>
+                </div>
+                <p className={styles.p}>
+                  Este servidor possui as seguintes férias marcadas:
                 </p>
-                <p>
-                  Matrícula:<strong>{servidorSelecionado.matricula}</strong>
-                </p>
-                <p>
-                  Lotação: <strong>{servidorSelecionado.lotacao}</strong>
-                </p>
+                <div className={styles.dates}>
+                  {currentPeriods.length > 0 ? (
+                    currentPeriods
+                      .filter((period) => period.dataInicio && period.dataFim)
+                      .map((period, index) => (
+                        <div
+                          key={`${period.tipo}-${index}`}
+                          className={styles.periodForm}
+                        >
+                          <div className={styles.inputAbonos}>
+                            <div className={styles.inputFieldAbonos}>
+                              <label>Data Início</label>
+                              <input
+                                type="date"
+                                value={period.dataInicio || ''}
+                                disabled
+                              />
+                            </div>
+                            <div className={styles.inputFieldAbonos}>
+                              <label>Data de Fim</label>
+                              <input
+                                type="date"
+                                value={period.dataFim || ''}
+                                disabled
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                  ) : (
+                    <p>
+                      Nenhum período registrado para {servidorSelecionado.nome}
+                    </p>
+                  )}
+                </div>
               </div>
-              {/* Mapeia os períodos de férias do servidor selecionado */}
-              <p className={styles.p}>
-                Este servidor possui as seguintes férias marcadas:
-              </p>
-              {currentPeriods.length > 0 ? (
-                currentPeriods
-                  .filter((period) => period.dataInicio && period.dataFim) // Filtra apenas períodos com ambas as datas preenchidas
-                  .map((period, index) => (
-                    <div
-                      key={`${period.tipo}-${index}`}
-                      className={styles.form}
+            ) : (
+              <p>Selecione um servidor para editar os períodos de férias.</p>
+            )}
+          </div>
+          <div className={styles.abonosSection}>
+            {' '}
+            {/* Área verde */}
+            <div className={styles.insertAbonos}>
+              {abonos.length > 0 ? (
+                abonos.map((abono, index) => (
+                  <div key={index} className={styles.abonos}>
+                    <p>
+                      {index + 1}º{' '}
+                      {abono.data
+                        ? new Date(abono.data + 'T23:59:59')
+                            .toLocaleDateString()
+                            .split('T')[0]
+                        : 'Data inválida'}
+                    </p>
+                    <button
+                      onClick={() => removeAbono(index)}
+                      className={styles.eraseButton}
                     >
-                      <form className={styles.periodForm}>
-                        <div className={styles.inputField}>
-                          <label>Data Início</label>
-                          <input
-                            type="date"
-                            value={period.dataInicio || ''}
-                            disabled
-                          />
-                        </div>
-                        <div className={styles.inputField}>
-                          <label>Data de Fim</label>
-                          <input
-                            type="date"
-                            value={period.dataFim || ''}
-                            disabled
-                          />
-                        </div>
-                      </form>
-                    </div>
-                  ))
+                      Excluir abono
+                    </button>
+                  </div>
+                ))
               ) : (
-                <p>Nenhum período registrado para {servidorSelecionado.nome}</p>
+                <p>Nenhum abono adicionado.</p>
               )}
             </div>
-          ) : (
-            <p>Selecione um servidor para editar os períodos de férias.</p>
-          )}
-
-          {/* Periodos de abonos já adicionados */}
-          <h2>Abonos marcados</h2>
-          {abonos.length > 0 ? (
-            abonos.map((abono, index) => (
-              <div key={index} className={styles.abonos}>
-                <p>
-                  {index + 1}
-                  {index === 0
-                    ? 'º' // Exibe "1º"
-                    : index === 1
-                    ? 'º' // Exibe "2º"
-                    : index === 2
-                    ? 'º' // Exibe "3º"
-                    : 'º'}{' '}
-                  {abono.data
-                    ? new Date(abono.data).toLocaleDateString()
-                    : 'Data inválida'}
-                </p>
-                <button
-                  onClick={() => removeAbono(index)}
-                  className={styles.eraseButton}
-                >
-                  Excluir abono
-                </button>
-              </div>
-            ))
-          ) : (
-            <p>Nenhum abono adicionado.</p>
-          )}
-        </div>
-
-        <div>
-          <div>
-            <label>Data do abono</label>
-            <p>Escolha a data do abono</p>
-            <input
-              type="date"
-              value={novoAbono.data}
-              onChange={handleAbonoChange}
-              disabled={abonos.length >= 5} // Desabilita o campo de data quando o limite de 5 abonos é atingido
-            />
-
-            <button
-              className={styles.addButton}
-              type="button"
-              onClick={handleAddAbono}
-              disabled={abonos.length >= 5} // Desabilita o botão quando já existem 5 abonos
-            >
-              Adicionar abono
-            </button>
+            <div>
+              <p>Escolha a data do abono</p>
+              <input
+                type="date"
+                value={novoAbono.data}
+                onChange={handleAbonoChange}
+                disabled={abonos.length >= 5}
+              />
+              <button
+                className={styles.addButton}
+                type="button"
+                onClick={handleAddAbono}
+                disabled={abonos.length >= 5}
+              >
+                Adicionar abono
+              </button>
+            </div>
           </div>
         </div>
+
         <div className={styles.endButtons}>
           <button onClick={handleCloseAbonos} className={styles.close}>
             Fechar

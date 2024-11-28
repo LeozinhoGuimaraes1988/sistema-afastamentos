@@ -2,18 +2,15 @@ import Modal from 'react-modal';
 import styles from './EditPeriodosLP.module.css';
 import { useState, useEffect } from 'react';
 import { db } from '../firebase/config';
-
 import { addLicencaPremio } from '../services/fireStore';
-
-import { getDoc, doc, updateDoc } from 'firebase/firestore';
+import { getDoc, doc, updateDoc, arrayUnion } from 'firebase/firestore';
 
 const EditPeriodosLP = ({
   currentPeriods,
   servidorSelecionado,
   showModalLicencasPremio,
-  handleCloseLicencaPremio,
+  handleCloseLicencasPremio,
 }) => {
-  // Definir o estado de LP localmente no componente
   const [lp, setLP] = useState([]);
   const [novalp, setNovaLP] = useState({
     dataInicio: '',
@@ -30,16 +27,40 @@ const EditPeriodosLP = ({
   const validarDiasLicencaPremio = (dataInicio, dataFim) => {
     const inicio = new Date(dataInicio);
     const fim = new Date(dataFim);
+    const diffTime = fim - inicio;
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1 === 30;
+  };
 
-    // Calcula a diferença em milissegundos e converte para dias
-    const diffDias = Math.ceil((fim - inicio) / (1000 * 60 * 60 * 24));
+  const verificarConflitos = (dataInicio, dataFim) => {
+    const inicioNovaLP = new Date(dataInicio);
+    const fimNovaLP = new Date(dataFim);
 
-    return diffDias === 30;
+    for (const periodo of currentPeriods) {
+      const inicioPeriodo = new Date(periodo.dataInicio);
+      const fimPeriodo = new Date(periodo.dataFim);
+
+      // Verifica se o período novo se sobrepõe a um período existente
+      if (
+        (inicioNovaLP <= fimPeriodo && inicioNovaLP >= inicioPeriodo) ||
+        (fimNovaLP <= fimPeriodo && fimNovaLP >= inicioPeriodo) ||
+        (inicioNovaLP <= inicioPeriodo && fimNovaLP >= fimPeriodo)
+      ) {
+        return true;
+      }
+    }
+    return false;
   };
 
   const handleAddLP = async () => {
     if (!validarDiasLicencaPremio(novalp.dataInicio, novalp.dataFim)) {
       alert('A licença-prêmio deve ter exatamente 30 dias.');
+      return;
+    }
+
+    if (verificarConflitos(novalp.dataInicio, novalp.dataFim)) {
+      alert(
+        'O período selecionado conflita com outra licença-prêmio, férias ou abono.'
+      );
       return;
     }
 
@@ -50,9 +71,8 @@ const EditPeriodosLP = ({
           dataFim: novalp.dataFim,
           tipo: 'licenca-premio',
         });
-        // Atualize a lista de licenças-prêmio localmente
         setLP((prev) => [...prev, novalp]);
-        setNovaLP({ dataInicio: '', dataFim: '' }); // Reseta os campos após adicionar
+        setNovaLP({ dataInicio: '', dataFim: '' });
         console.log('Licença-prêmio adicionada com sucesso');
       } catch (error) {
         console.error('Erro ao adicionar licença-prêmio:', error);
@@ -64,19 +84,7 @@ const EditPeriodosLP = ({
 
   const removeLP = async (index) => {
     try {
-      // Identifica a licença-prêmio a ser removida com base no índice
       const lpParaRemover = lp[index];
-
-      if (
-        !lpParaRemover ||
-        !lpParaRemover.dataInicio ||
-        !lpParaRemover.dataFim
-      ) {
-        console.error('Licença-prêmio não possui datas válidas para exclusão.');
-        return;
-      }
-
-      // Remove a licença-prêmio do estado local
       const novasLPs = lp.filter((_, lpIndex) => lpIndex !== index);
       setLP(novasLPs);
 
@@ -87,7 +95,6 @@ const EditPeriodosLP = ({
         const servidorData = servidorDoc.data();
         const periodosExistentes = servidorData.periodos || [];
 
-        // Filtra para remover a licença-prêmio específica do Firebase
         const novosPeriodos = periodosExistentes.filter(
           (periodo) =>
             !(
@@ -109,35 +116,33 @@ const EditPeriodosLP = ({
 
   const handleSaveChangesLP = async () => {
     try {
-      // Filtra as licenças-prêmio válidas (as que possuem `dataInicio` e `dataFim` definidos)
       const lpsValidas = lp.filter(
         (licencaPremio) => licencaPremio.dataInicio && licencaPremio.dataFim
       );
 
       const servidorRef = doc(db, 'servidores', servidorSelecionado.id);
 
-      // Usa arrayUnion para adicionar cada licença-prêmio ao array de períodos no Firestore
-      for (const licencaPremio of lpsValidas) {
-        await updateDoc(servidorRef, {
-          periodos: arrayUnion({
+      await updateDoc(servidorRef, {
+        periodos: arrayUnion(
+          ...lpsValidas.map((licencaPremio) => ({
             tipo: 'licenca-premio',
             dataInicio: licencaPremio.dataInicio,
             dataFim: licencaPremio.dataFim,
-          }),
-        });
-      }
+          }))
+        ),
+      });
 
       console.log(
         'Licenças-prêmio adicionadas diretamente no array de períodos!'
       );
-      alert('Licenças-prêmio salvas com sucesso!');
-      handleCloseLP(); // Fecha o modal após salvar
+      alert('Alterações salvas com sucesso!');
+      setLP([]);
+      // handleCloseLicencasPremio();
     } catch (error) {
       console.error('Erro ao salvar licenças-prêmio:', error);
     }
   };
 
-  // Chamando a função no momento de abertura do modal
   useEffect(() => {
     if (servidorSelecionado) {
       fetchLicencasPremio();
@@ -155,7 +160,6 @@ const EditPeriodosLP = ({
         return;
       }
 
-      // Extrair os períodos e filtrar apenas os que têm tipo 'licencasPremio'
       const servidorData = servidorDoc.data();
       const lpsConvertidas = (servidorData.periodos || [])
         .filter((periodo) => periodo.tipo === 'licenca-premio')
@@ -166,13 +170,14 @@ const EditPeriodosLP = ({
 
       setLP(lpsConvertidas);
     } catch (error) {
-      console.error('Erro ao buscar abonos:', error);
+      console.error('Erro ao buscar licenças-prêmio:', error);
     }
   };
 
   const customStyles = {
     overlay: {
       backgroundColor: 'rgba(0,0,0,0.75)',
+      zIndex: 1040, // Certifique-se de que esteja acima da navbar e outros elementos
     },
     content: {
       top: '50%',
@@ -181,6 +186,11 @@ const EditPeriodosLP = ({
       bottom: 'auto',
       marginRight: '-50%',
       transform: 'translate(-50%, -50%)',
+      width: '700px', // Largura padrão
+      maxWidth: '90vw', // Largura máxima para telas pequenas
+      maxHeight: '95vh', // Limite a altura máxima para evitar overflow
+      padding: '20px', // Um padding suave ao redor do conteúdo
+      overflow: 'auto', // Permite rolagem se o conteúdo exceder a altura
     },
   };
 
@@ -190,114 +200,122 @@ const EditPeriodosLP = ({
     <div className={styles.modal}>
       <Modal
         isOpen={showModalLicencasPremio}
-        onRequestClose={handleCloseLicencaPremio}
+        onRequestClose={handleCloseLicencasPremio}
+        shouldCloseOnOverlayClick={true}
         style={customStyles}
       >
-        <h1>Inserir Licenças-prêmio</h1>
-        <div>
-          {servidorSelecionado ? (
-            <div>
-              <div className={styles.titles}>
-                {/* Informações do servidor selecionado */}
-                <p>
-                  Nome: <strong>{servidorSelecionado.nome}</strong>
-                </p>
-                <p>
-                  Matrícula: <strong>{servidorSelecionado.matricula}</strong>
-                </p>
-                <p>
-                  Lotação: <strong>{servidorSelecionado.lotacao}</strong>
-                </p>
+        <div className={styles.content}>
+          <h1>Inserir Licenças-prêmio</h1>
+
+          <div>
+            {servidorSelecionado ? (
+              <div>
+                <div className={styles.titles}>
+                  <p>
+                    Nome: <strong>{servidorSelecionado.nome}</strong>
+                  </p>
+                  <p>
+                    Matrícula: <strong>{servidorSelecionado.matricula}</strong>
+                  </p>
+                  <p>
+                    Lotação: <strong>{servidorSelecionado.lotacao}</strong>
+                  </p>
+                </div>
+                <h2>Períodos de Férias e Abonos</h2>
+                <div className={styles.periodVacation}>
+                  {currentPeriods.length > 0 ? (
+                    <p>
+                      {' '}
+                      Férias -
+                      {currentPeriods
+                        .filter((period) => period.tipo === 'ferias') // Filtra para mostrar apenas os períodos de férias
+                        .map((period, index) => {
+                          const dataInicio = new Date(
+                            period.dataInicio
+                          ).toLocaleDateString();
+                          const dataFim = new Date(
+                            period.dataFim
+                          ).toLocaleDateString();
+                          return `${index + 1}º - ${dataInicio} a ${dataFim}`;
+                        })
+                        .join('       ')}{' '}
+                      {/* Espaçamento entre os períodos */}
+                    </p>
+                  ) : (
+                    <p>
+                      Nenhum período registrado para {servidorSelecionado.nome}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <p>Selecione um servidor para ver os detalhes.</p>
+            )}
+          </div>
+          <div>
+            <h2 className={styles.lpTitle}>Adicionar Licença-prêmio</h2>
+            <div className={styles.datesInput}>
+              <div className={styles.label}>
+                <label>Data de Início</label>
+                <input
+                  type="date"
+                  name="dataInicio"
+                  value={novalp.dataInicio}
+                  onChange={handleLPChange}
+                />
               </div>
 
-              <h2>Períodos de Férias e Abonos</h2>
               <div>
-                {currentPeriods.length > 0 ? (
-                  currentPeriods.map((period, index) => (
-                    <div key={index}>
-                      <p>
-                        <strong>
-                          {period.tipo === 'ferias'
-                            ? 'Férias'
-                            : period.tipo === 'abono'
-                            ? 'Abono'
-                            : 'Licença-Prêmio'}
-                          :
-                        </strong>
-                        {period.dataInicio
-                          ? ` ${new Date(
-                              period.dataInicio
-                            ).toLocaleDateString()}`
-                          : ''}{' '}
-                        {period.dataFim
-                          ? ` - ${new Date(
-                              period.dataFim
-                            ).toLocaleDateString()}`
-                          : ''}
-                      </p>
-                    </div>
-                  ))
-                ) : (
-                  <p>
-                    Nenhum período registrado para {servidorSelecionado.nome}
-                  </p>
-                )}
+                <label>Data de Fim</label>
+                <input
+                  type="date"
+                  name="dataFim"
+                  value={novalp.dataFim}
+                  onChange={handleLPChange}
+                />
               </div>
             </div>
-          ) : (
-            <p>Selecione um servidor para ver os detalhes.</p>
-          )}
-        </div>
-        <div>
-          <h2 className={styles.lpTitle}>Adicionar Licença-prêmio</h2>
-          <label>Data de Início</label>
-          <input
-            type="date"
-            name="dataInicio"
-            value={novalp.dataInicio}
-            onChange={handleLPChange}
-          />
-          <label>Data de Fim</label>
-          <input
-            type="date"
-            name="dataFim"
-            value={novalp.dataFim}
-            onChange={handleLPChange}
-          />
-          <button className={styles.addLP} onClick={handleAddLP}>
-            Adicionar Licença-prêmio
+          </div>
+          <div className={styles.addLP}>
+            <button className={styles.buttonaddLP} onClick={handleAddLP}>
+              Adicionar Licença-prêmio
+            </button>
+          </div>
+          <div>
+            <h2>Licenças-Prêmio</h2>
+            {lp.length > 0 ? (
+              lp.map((licencaPremio, index) => {
+                const dataInicio = new Date(licencaPremio.dataInicio);
+                const dataFim = new Date(licencaPremio.dataFim);
+                const diffDays =
+                  Math.ceil((dataFim - dataInicio) / (1000 * 60 * 60 * 24)) + 1;
+
+                return (
+                  <div key={index} className={styles.lp}>
+                    <p>
+                      Licença-prêmio de {dataInicio.toLocaleDateString()} a{' '}
+                      {dataFim.toLocaleDateString()} ({diffDays} dias)
+                    </p>
+                    <button
+                      onClick={() => removeLP(index)}
+                      className={styles.eraseButton}
+                    >
+                      Excluir
+                    </button>
+                  </div>
+                );
+              })
+            ) : (
+              <p>Nenhuma licença-prêmio adicionada.</p>
+            )}
+          </div>
+          <button className={styles.saveChanges} onClick={handleSaveChangesLP}>
+            Salvar Alterações
+          </button>
+          <button onClick={handleCloseLicencasPremio} className={styles.button}>
+            Fechar
           </button>
         </div>
-
-        <div>
-          <h2>Licenças-Prêmio</h2>
-          {lp.length > 0 ? (
-            lp.map((licencaPremio, index) => (
-              <div key={index} className={styles.lp}>
-                <p>
-                  Licença-prêmio de{' '}
-                  {new Date(licencaPremio.dataInicio).toLocaleDateString()} a{' '}
-                  {new Date(licencaPremio.dataFim).toLocaleDateString()}
-                </p>
-                <button
-                  onClick={() => removeLP(index)}
-                  className={styles.eraseButton}
-                >
-                  Excluir
-                </button>
-              </div>
-            ))
-          ) : (
-            <p>Nenhuma licença-prêmio adicionada.</p>
-          )}
-        </div>
-
-        <button className={styles.saveChanges} onClick={handleSaveChangesLP}>
-          Salvar Alterações
-        </button>
-        <button onClick={handleCloseLicencaPremio} className={styles.button}>
-          Fechar
-        </button>
       </Modal>
     </div>
   );

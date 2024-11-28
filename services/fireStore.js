@@ -146,14 +146,6 @@ export const addFerias = async (servidorId, feriasData) => {
   }
 };
 
-// função para validar a quantidade de dias de férias
-// const validarDiasFerias = (dias) => {
-//   const regrasValidas = [[30], [15, 15], [10, 20], [20, 10], [10, 10, 10]];
-//   return regrasValidas.some(
-//     (regra) => regra.reduce((acc, curr) => acc + curr, 0) === dias
-//   );
-// };
-
 // função para adicionar e validar período de férias
 export const addVerifyFerias = async (servidorId, feriasData) => {
   const { dias } = feriasData;
@@ -228,12 +220,44 @@ export const addLicencaPremio = async (servidorId, licencaPremioData) => {
 export const addLicencaMedica = async (servidorId, licencaMedicaData) => {
   try {
     const licencaMedicaCollection = collection(
-      doc(db, 'servidores', servidorId),
+      doc(db, 'servidores', servidorId), // A função doc localiza o documento do servidor dentro da coleção servidores no Firestore.
       'licencasMedicas'
+      // Após localizar o documento do servidor, a função collection aponta para a subcoleção licencasMedicas, onde as licenças médicas desse servidor serão armazenadas.
     );
-    await addDoc(licencaMedicaCollection, licencaMedicaData);
+    await addDoc(licencaMedicaCollection, licencaMedicaData); // Essa função cria um novo documento na subcoleção licencasMedicas
+    // 'licencaMedicaCollection: O caminho da subcoleção onde o documento será inserido.
+    // licencaMedicaData: Os dados da licença médica (um objeto) que serão salvos no documento
     console.log('Período de licença médica adicionado com sucesso');
   } catch (error) {
     console.error('Erro ao adicionar período de licença médica: ', error);
+  }
+};
+
+export const getLicencaMedicas = async () => {
+  try {
+    // Refere-se à coleção 'servidores' e suas subcoleções 'licencasMedicas'
+    const servidoresCollection = collection(db, 'servidores');
+    const servidoresSnapshot = await getDocs(servidoresCollection);
+
+    let licencas = [];
+
+    // Iterar sobre cada servidor para buscar as licenças médicas na subcoleção
+    for (const doc of servidoresSnapshot.docs) {
+      const licencasCollection = collection(doc.ref, 'licencasMedicas'); // Refere-se à subcoleção licencasMedicas dentro do documento do servidor.
+      const licencasSnapshot = await getDocs(licencasCollection); // Faz uma consulta para obter todos os documentos da subcoleção licencasMedicas do servidor atual.
+      // licencasSnapshot: Contém o resultado da consulta, ou seja, os documentos (licenças médicas) dessa subcoleção.
+      licencasSnapshot.forEach((licencaDoc) => {
+        // licencaDoc: Cada licença médica armazenada na subcoleção licencasMedicas.
+        licencas.push({
+          id: licencaDoc.id, // Adiciona o ID do documento da licença.
+          servidor: doc.id, // Adiciona o ID do servidor ao qual essa licença pertence.
+          ...licencaDoc.data(), // Insere todos os campos da licença médica como parte do objeto. licencaDoc.data() retorna os dados armazenados no documento da licença médica.
+        });
+      });
+    }
+    return licencas; // Retorna todas as licenças médicas encontradas
+  } catch (error) {
+    console.error('Erro ao buscar licenças médicas:', error);
+    throw error;
   }
 };

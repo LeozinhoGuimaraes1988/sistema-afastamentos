@@ -1,64 +1,129 @@
-.container {
-  background-color: rgba(0, 0, 0, 0.4);
-  padding: 40px 50px;
+.navbar {
+  position: fixed;
+  margin-top: -15px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 16%; /* Defina a altura da navbar */
+  background-color: #ffffff; /* Cor de fundo da navbar */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.licencasMedicas {
+  width: 100%;
+  margin-top: 130px;
+  font-size: 2.5rem;
+  font-weight: bold;
+  background-color: #ddd;
+}
+
+.content {
+  margin-top: 10px;
+  display: flex;
+  padding: 20px;
+  flex-direction: column;
+  background-color: white;
   border-radius: 5px;
+}
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.formGroup label {
+  padding: 10px;
+  margin-bottom: -8px;
+}
+.formGroup select {
+  width: 100%;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.formGroup input {
+  height: 30px;
+  border: 1px 1px black;
+}
+
+.submitButton {
+  width: 100%;
+  cursor: pointer;
+  border-radius: 5px;
+  border: none;
+  color: #fff;
+  height: 40px;
+  margin-top: 10px;
+  background-color: #007bff;
+}
+
+.tableContainer {
+  max-width: 800px;
+  width: 100%;
+}
+
+.titles th {
   text-align: center;
 }
 
-.title {
-  background-color: rgba(0, 0, 0, 0.4);
-  padding: 10px;
-  padding-bottom: 10px;
-  margin-top: -5px;
-  font-weight: bold;
-}
-
-h1 {
-  font-weight: normal;
-}
-
-.form {
-  background-color: rgba(0, 0, 0, 0.4);
-  display: flex;
-  flex-direction: column;
-  height: 150px;
-  width: 400px;
-  padding-top: 10px;
-  padding-bottom: 20px;
-  font-weight: normal;
-}
-
-.name,
-.lot,
-.mat {
-  padding: 10px;
-  margin-top: 10px;
-  display: flex;
-  height: 20px;
-  align-items: center;
-  justify-content: right;
-  gap: 10px;
-  font-size: 10px;
+.select {
+  border-radius: 5px;
   margin-bottom: 10px;
-  font-family: 'Muli', sans-serif;
+  padding: 10px;
 }
 
-.lot {
-  margin-bottom: 10px;
+.deleteButton {
+  justify-content: center;
+  display: flex;
 }
 
-input {
-  height: 25px;
+.table {
+  width: 100%;
+  border-collapse: collapse; /* Retorna a tabela a um layout colapsado */
+  background-color: #ffffff;
 }
 
-button {
-  padding: 5px;
+.table th,
+.table td {
+  text-align: center; /* Alinha o texto ao centro */
+}
 
-  background-color: rgb(211, 220, 227);
-  font-family: 'Muli';
+.table th,
+.table td {
+  padding: 8px 10px; /* Um leve espaçamento entre as células */
+  border: 1px solid #ddd; /* Linha divisória para cada célula */
+  text-align: left;
+  color: #000; /* Define a cor do texto como preto */
+}
+
+.table th {
+  background-color: #f3f3f3; /* Fundo mais claro para o cabeçalho */
   font-weight: bold;
+  color: #333;
 }
 
-button:hover {
-  background-color: rgb(169, 203, 229);
+.table tbody tr:nth-child(even) {
+  background-color: #f9f9f9; /* Fundo levemente diferente nas linhas pares */
+}
+
+.table tbody tr:hover {
+  background-color: #e6f7ff; /* Fundo azul claro ao passar o mouse */
+}
+
+.table td button {
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.table td button:hover {
+  background-color: #0056b3;
 }

@@ -1,5 +1,6 @@
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+// import { NavLink, useNavigate } from 'react-router-dom';
 
 import Navbar from '../../components/Navbar';
 
@@ -19,10 +20,12 @@ import { useAddPeriodo } from '../../hooks/useAddPeriodo';
 // Components
 import EditPeriodosFerias from '../../components/EditPeriodosFerias';
 import EditPeriodosAbonos from '../../components/EditPeriodosAbonos';
+import EditPeriodosLP from '../../components/EditPeriodosLP';
+import EditDados from '../../components/EditDados';
+import ScrollToTopButton from '../../components/ScrollButton';
 
 // CSS
 import styles from '../Ferias/Ferias.module.css';
-import EditPeriodosLP from '../../components/EditPeriodosLP';
 
 const Ferias = () => {
   // Estado para armazenar os dados do novo servidor
@@ -32,6 +35,9 @@ const Ferias = () => {
     lotacao: '',
     matricula: '',
   });
+
+  //const navigate = useNavigate();
+
   const { documents, loading, error } = useFetchFerias('feriasCollection');
   const { addPeriodo } = useAddPeriodo();
 
@@ -41,7 +47,7 @@ const Ferias = () => {
   // Estado para armazenar o ID do servidor em edição
   const [editingId, setEditingId] = useState(null);
 
-  const [periodoAtual, setPeriodoAtual] = useState(null);
+  // const [periodoAtual, setPeriodoAtual] = useState(null);
 
   // Estado para armazenar os períodos de férias dos servidores
   const [servidoresComFerias, setServidoresComFerias] = useState([]);
@@ -112,18 +118,12 @@ const Ferias = () => {
         })
       );
 
-      setServidoresComFerias(servidoresComFerias);
+      const servidoresOrdenados = servidoresComFerias.sort((a, b) =>
+        a.nome.localeCompare(b.nome)
+      ); // Ordena por nome
+      setServidoresComFerias(servidoresOrdenados);
     } catch (error) {
       console.error('Erro ao buscar dados dos servidores:', error);
-    }
-  };
-
-  // Função para armazenar o novo período no estado, sem sobrescrever os anteriores
-  const armazenarPeriodo = (periodo) => {
-    if (periodoAtual) {
-      setPeriodoAtual([...periodoAtual, periodo]);
-    } else {
-      setPeriodoAtual([periodo]);
     }
   };
 
@@ -146,7 +146,7 @@ const Ferias = () => {
     const inicio = new Date(dataInicio);
     const fim = new Date(dataFim);
     const diffTime = fim - inicio;
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
   };
 
   // Função para atualizar a data de início ou de fim de um período
@@ -194,6 +194,7 @@ const Ferias = () => {
   const [showModalFerias, setShowModalFerias] = useState(false);
   const [showModalAbonos, setShowModalAbonos] = useState(false);
   const [showModalLicencasPremio, setShowModalLicencasPremio] = useState(false);
+  const [showModalEdit, setShowModalEdit] = useState(false);
 
   // Armazena os períodos atuais do servidor
   const [currentPeriods, setCurrentPeriods] = useState([]);
@@ -360,8 +361,20 @@ const Ferias = () => {
   };
 
   // Função para fechar o modal de licenças-prêmio
-  const handleCloseLicencaPremio = () => {
+  const handleCloseLicencasPremio = () => {
     setShowModalLicencasPremio(false); // Fecha o modal
+  };
+
+  // Função para lidar com a edição de dados
+  const handleEditServidor = (servidor) => {
+    setServidorSelecionado(servidor); // Armazena o servidor a ser editado
+    setShowModalEdit(true);
+  };
+
+  // Função para fechar o modal de edição
+  const handleCloseEdicao = () => {
+    setShowModalEdit(false); // Fecha o modal
+    setServidorSelecionado(null); // Limpa o servidor selecionado
   };
 
   // Função para lidar com os abonos
@@ -370,10 +383,14 @@ const Ferias = () => {
     setServidorSelecionado(servidor);
     setShowModalAbonos(true);
   };
+
+  // Função de Voltar ao início da página
+
   return (
     <div>
-      <Navbar />
-      <div>{/* <Abonos /> */}</div>
+      <div className={styles.navbar}>
+        <Navbar />
+      </div>
       <div>
         {showModalFerias && (
           <EditPeriodosFerias
@@ -407,7 +424,7 @@ const Ferias = () => {
         {showModalLicencasPremio && (
           <EditPeriodosLP
             showModalLicencasPremio={showModalLicencasPremio}
-            handleCloseLicencaPremio={handleCloseLicencaPremio}
+            handleCloseLicencasPremio={handleCloseLicencasPremio}
             servidoresComFerias={servidoresComFerias}
             servidorSelecionado={servidorSelecionado}
             currentPeriods={currentPeriods}
@@ -417,42 +434,59 @@ const Ferias = () => {
           />
         )}
       </div>
+      <div>
+        {showModalEdit && (
+          <EditDados
+            isOpen={showModalEdit}
+            servidorSelecionado={servidorSelecionado}
+            handleClose={handleCloseEdicao}
+          />
+        )}
+      </div>
+      <div className={styles.mainContent}>
+        {editingId ? (
+          <EditForm /> // Exibe o formulário de edição
+        ) : (
+          <div className={styles.form_container}>
+            <h1>Cadastre o servidor abaixo:</h1>
+            <form onSubmit={handleEditSubmit}>
+              <div className={styles.form}>
+                <div className={styles.input}>
+                  <input
+                    type="text"
+                    name="nome"
+                    value={newServidor.nome}
+                    onChange={handleServidorInputChange}
+                    placeholder="Nome do servidor"
+                  />
+                  <input
+                    type="number"
+                    name="matricula"
+                    value={newServidor.matricula}
+                    onChange={handleServidorInputChange}
+                    placeholder="Matrícula"
+                  />
+                </div>
+                <div className={styles.input}>
+                  <input
+                    type="text"
+                    name="cargo"
+                    value={newServidor.cargo}
+                    onChange={handleServidorInputChange}
+                    placeholder="Cargo"
+                  />
+                  <input
+                    type="text"
+                    name="lotacao"
+                    value={newServidor.lotacao}
+                    onChange={handleServidorInputChange}
+                    placeholder="Lotação"
+                  />
+                </div>
+              </div>
+              <h2>Informe o período de férias</h2>
+              {/* Campos de Data e Botão de Adicionar */}
 
-      {editingId ? (
-        <EditForm /> // Exibe o formulário de edição
-      ) : (
-        <div className={styles.form_container}>
-          <form className={styles.form} onSubmit={handleEditSubmit}>
-            <input
-              type="text"
-              name="nome"
-              value={newServidor.nome}
-              onChange={handleServidorInputChange}
-              placeholder="Nome do servidor"
-            />
-            <input
-              type="number"
-              name="matricula"
-              value={newServidor.matricula}
-              onChange={handleServidorInputChange}
-              placeholder="Matrícula"
-            />
-            <input
-              type="text"
-              name="cargo"
-              value={newServidor.cargo}
-              onChange={handleServidorInputChange}
-              placeholder="Cargo"
-            />
-            <input
-              type="text"
-              name="lotacao"
-              value={newServidor.lotacao}
-              onChange={handleServidorInputChange}
-              placeholder="Lotação"
-            />
-            {/* Campos de Data e Botão de Adicionar */}
-            <div className={styles.periodButton}>
               {ferias.map((periodo, index) => (
                 <div className={styles.date} key={index}>
                   <DatePicker
@@ -486,23 +520,23 @@ const Ferias = () => {
                   )}
                 </div>
               ))}
-              {ferias.length < 3 && (
-                <button
-                  type="button"
-                  className={styles.buttonDate}
-                  onClick={handleAddPeriodo}
-                >
-                  Adicionar Período
-                </button>
-              )}
-            </div>
-            <button type="submit">Salvar Servidor</button>
-          </form>
-        </div>
-      )}
+              <div className={styles.periodButton}>
+                {ferias.length < 3 && (
+                  <div className={styles.addPeriodo}>
+                    <button type="button" onClick={handleAddPeriodo}>
+                      Adicionar Período
+                    </button>
+                  </div>
+                )}
+              </div>
+              <div className={styles.saveServidor}>
+                <button>Salvar Servidor</button>
+              </div>
+            </form>
+          </div>
+        )}
+      </div>
       <div>
-        <h2>Servidores</h2>
-
         <table className={styles.table}>
           <thead>
             <tr className={styles.titles}>
@@ -531,25 +565,30 @@ const Ferias = () => {
                     servidor.ferias
                       .filter((periodo) => periodo.tipo === 'ferias')
                       .map((periodo, index) => {
+                        // Manipula dataInicio
                         const dataInicio = periodo.dataInicio
-                          ? typeof periodo.dataInicio === 'string'
-                            ? new Date(periodo.dataInicio)
-                            : new Date(periodo.dataInicio.seconds * 1000)
+                          ? typeof periodo.dataInicio === 'string' // Se for string
+                            ? new Date(periodo.dataInicio + 'T00:00:00') // Força o horário inicial para evitar timezone
+                            : new Date(periodo.dataInicio.seconds * 1000) // Se vier do Firestore (timestamp)
                           : null;
+
+                        // Manipula dataFim
                         const dataFim = periodo.dataFim
-                          ? typeof periodo.dataFim === 'string'
-                            ? new Date(periodo.dataFim)
-                            : new Date(periodo.dataFim.seconds * 1000)
+                          ? typeof periodo.dataFim === 'string' // Se for string
+                            ? new Date(periodo.dataFim + 'T23:59:59') // Força o horário final para o dia correto
+                            : new Date(periodo.dataFim.seconds * 1000) // Se vier do Firestore (timestamp)
                           : null;
 
-                        const diffTime =
+                        // Adiciona 1 dia ao cálculo para incluir o último dia
+                        const diffDays =
                           dataInicio && dataFim
-                            ? Math.abs(dataFim - dataInicio)
+                            ? Math.floor(
+                                (dataFim.getTime() - dataInicio.getTime()) /
+                                  (1000 * 60 * 60 * 24)
+                              ) + 1 // Inclui o último dia
                             : null;
-                        const diffDays = diffTime
-                          ? Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-                          : null;
 
+                        // Exibição das datas
                         return (
                           <div key={index}>
                             <p>
@@ -559,7 +598,7 @@ const Ferias = () => {
                               a{' '}
                               {dataFim
                                 ? dataFim.toLocaleDateString()
-                                : 'Data de Fim inválida'}
+                                : 'Data de Fim inválida'}{' '}
                               {diffDays !== null
                                 ? ` (${diffDays} dias)`
                                 : ' (Dias não calculados)'}
@@ -605,18 +644,39 @@ const Ferias = () => {
                     servidor.ferias
                       .filter((periodo) => periodo.tipo === 'licenca-premio')
                       .map((periodo, index) => {
-                        const dataInicio = new Date(periodo.dataInicio);
-                        const dataFim = new Date(periodo.dataFim);
+                        const dataInicio = periodo.dataInicio
+                          ? typeof periodo.dataInicio === 'string'
+                            ? new Date(periodo.dataInicio)
+                            : new Date(periodo.dataInicio.seconds * 1000)
+                          : null;
+                        const dataFim = periodo.dataFim
+                          ? typeof periodo.dataFim === 'string'
+                            ? new Date(periodo.dataFim)
+                            : new Date(periodo.dataFim.seconds * 1000)
+                          : null;
 
-                        const diffTime = Math.abs(dataFim - dataInicio);
+                        // Calcula a diferença entre as datas
                         const diffDays =
-                          Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                          dataInicio && dataFim
+                            ? Math.floor(
+                                (dataFim - dataInicio) / (1000 * 60 * 60 * 24) +
+                                  1
+                              ) // Ajuste para incluir o último dia
+                            : null;
 
                         return (
                           <div key={index}>
                             <p>
-                              {dataInicio.toLocaleDateString()} a{' '}
-                              {dataFim.toLocaleDateString()} ({diffDays} dias)
+                              {dataInicio
+                                ? dataInicio.toLocaleDateString()
+                                : 'Data de Início inválida'}{' '}
+                              a{' '}
+                              {dataFim
+                                ? dataFim.toLocaleDateString()
+                                : 'Data de Fim inválida'}
+                              {diffDays !== null
+                                ? ` (${diffDays} dias)`
+                                : ' (Dias não calculados)'}
                             </p>
                           </div>
                         );
@@ -629,6 +689,9 @@ const Ferias = () => {
                 {/* Coluna para Ações */}
                 <td>
                   <div className={styles.tdButtons}>
+                    <button onClick={() => handleEditServidor(servidor)}>
+                      Editar Servidor
+                    </button>
                     <button onClick={() => handleDelete(servidor.id)}>
                       Excluir Servidor
                     </button>
@@ -663,6 +726,9 @@ const Ferias = () => {
             ))}
           </tbody>
         </table>
+      </div>
+      <div>
+        <ScrollToTopButton />
       </div>
     </div>
   );

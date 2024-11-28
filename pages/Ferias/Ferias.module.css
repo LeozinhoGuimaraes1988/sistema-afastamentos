@@ -13,12 +13,26 @@ body {
   padding: 20px;
 }
 
-form {
+.navbar {
+  position: fixed;
+  margin-top: -15px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 16%; /* Defina a altura da navbar */
+  background-color: #ffffff; /* Cor de fundo da navbar */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
   display: flex;
-  flex-direction: column;
-  max-width: 800px;
-  margin: 0 auto;
-  padding-top: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.form {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px; /* Espaçamento entre os grupos de inputs */
 }
 
 .form_container {
@@ -31,6 +45,11 @@ form {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adiciona uma leve sombra para destacar */
 }
 
+.mainContent {
+  /* Classe para o contêiner principal da página */
+  margin-top: 120px; /* Ajuste este valor de acordo com a altura da navbar */
+}
+
 input {
   width: 100%;
   padding: 20px;
@@ -41,17 +60,32 @@ input {
   box-shadow: 1px 1px 1px #dbdada;
 }
 
+.input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1 1 45%; /* Configura uma largura de 45% para cada grupo de input */
+  min-width: 200px; /* Define uma largura mínima para cada input */
+}
+
 .date {
   display: flex;
-  padding-top: 10px;
-  gap: 10px;
+  justify-content: center;
   align-items: center;
-  margin-bottom: 10px; /* Adicione um espaçamento entre cada linha de data */
+  flex-direction: row;
+  margin-bottom: 20px;
+  gap: 10px;
+  width: 100%;
+  text-align: center;
+}
+
+h2 {
+  font-weight: bold;
+  color: #353535;
 }
 
 .buttonDate {
-  padding: 12px;
-  margin-top: -10px;
+  padding: 5px;
   margin-left: 10px; /* Adicione um espaço entre o botão e os campos de data */
   background-color: #007bff; /* Azul para ações principais */
   color: white;
@@ -59,21 +93,48 @@ input {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  width: 20%;
 }
 
 h2 {
   text-align: center;
+  color: #111010;
+}
+
+.periodButton {
+  margin-top: -20px;
+  margin-bottom: 20px;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  gap: 30px;
   color: #fff;
 }
 
-button[type='submit'] {
-  background-color: #007bff; /* Azul para ações principais */
-  color: #fff;
-  border: none;
+.addPeriodo button,
+.buttonDate {
+  background-color: #007bff;
   padding: 10px;
+  border: none;
   border-radius: 5px;
-  margin-top: 5px; /* Adiciona um espaço acima do botão */
-  cursor: pointer;
+  color: #ffffff;
+  margin: 10px;
+}
+
+.saveServidor {
+  display: flex;
+  margin-top: -20px;
+  justify-content: flex-end; /* Alinha à direita */
+  width: 100%; /* Garante que ocupe toda a largura */
+}
+
+.saveServidor button {
+  background-color: #007bff;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  color: #ffffff;
+  margin: 10px;
 }
 
 .table {
@@ -111,7 +172,8 @@ button[type='submit'] {
 }
 
 .tdButtons button {
-  padding: 8px;
+  font-size: 13px;
+  padding: 6px;
   background-color: #007bff;
   color: #fff;
   border: none;
@@ -129,14 +191,6 @@ button[type='submit'] {
 }
 tbody td {
   text-align: center;
-}
-
-.periodButton {
-  justify-content: space-between;
-  color: #fff;
-  border: none;
-  padding: 5px;
-  border-radius: 5px;
 }
 
 /* Responsividade */

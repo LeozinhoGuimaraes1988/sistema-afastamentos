@@ -1,27 +1,76 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { PeriodsProvider } from './contexts/PeriodosContext'; // Supondo que você tenha um contexto de períodos
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute'; // Certifique-se de que a importação esteja correta
 
-//pages
+import Login from './pages/Login/Login';
 import Home from './pages/Home/Home';
 import Ferias from './pages/Ferias/Ferias';
 import Abonos from './pages/Abonos/Abonos';
 import LicencasPremio from './pages/LicencasPremio/LicencasPremio';
 import LicencasMedicas from './pages/LicencasMedicas/LicencasMedicas';
+import BuscarPeriodos from './components/BuscarPeriodos';
 
 function App() {
   return (
-    <div className="App">
+    <AuthProvider>
       <BrowserRouter>
-        <div className="container">
+        <PeriodsProvider>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/ferias" element={<Ferias />} />
-            <Route path="/abonos" element={<Abonos />} />
-            <Route path="/licencaspremio" element={<LicencasPremio />} />
-            <Route path="/licencasmedicas" element={<LicencasMedicas />} />
+            <Route path="/login" element={<Login />} />
+
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/ferias"
+              element={
+                <ProtectedRoute>
+                  <Ferias />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/abonos"
+              element={
+                <ProtectedRoute>
+                  <Abonos />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/licencaspremio"
+              element={
+                <ProtectedRoute>
+                  <LicencasPremio />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/licencasmedicas"
+              element={
+                <ProtectedRoute>
+                  <LicencasMedicas />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/buscarperiodos"
+              element={
+                <ProtectedRoute>
+                  <BuscarPeriodos />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
-        </div>
+        </PeriodsProvider>
       </BrowserRouter>
-    </div>
+    </AuthProvider>
   );
 }
 

@@ -13,6 +13,12 @@
   font-weight: bold;
 }
 
+.licencasMedicas {
+  font-size: 2.5rem;
+  font-weight: bold;
+  background-color: #ddd;
+}
+
 h1 {
   font-weight: normal;
 }

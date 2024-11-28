@@ -3,21 +3,46 @@
 }
 
 .titles {
+  margin-top: -8px;
+  background-color: #ccc;
+  border-radius: 5px;
+  padding: 5px;
   color: black;
   display: flex;
+  margin-bottom: -10px;
+  align-items: first baseline;
   justify-content: space-between;
   gap: 30px;
-  font-size: 20px;
+  font-size: 15px;
+}
+
+.container {
+  display: flex;
+  gap: 20px; /* Espaçamento entre as colunas */
+}
+
+.feriasSection {
+  flex: 1;
+
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.abonosSection {
+  flex: 1;
+
+  padding: 10px;
+  border-radius: 5px;
 }
 
 .days p {
   color: black;
   font-weight: bold;
-  margin-top: 0px;
 }
 
 .periodForm {
   display: flex;
+  margin-bottom: -30px;
 }
 
 h2 {
@@ -34,10 +59,19 @@ p {
   margin-bottom: 20px;
 }
 
-.inputField {
+.inputFieldAbonos {
   width: 100%;
-  /* background-color: aqua; */
-  margin-bottom: -20px;
+  margin-bottom: 5px;
+  margin-top: 10px;
+}
+.inputFieldAbonos input {
+  margin-bottom: 10px;
+}
+
+.inputAbonos {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .inputField p {
@@ -48,9 +82,23 @@ input {
   width: 100%;
 }
 
+.dates {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.insertAbonos {
+  margin-top: -8px;
+  background-color: aquamarine;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border-radius: 5px;
+}
+
 .button,
-.addButton,
-.eraseButton {
+.addButton {
   background-color: red;
   width: 100%;
   color: white;
@@ -74,9 +122,9 @@ input {
 
 .endButtons {
   display: flex;
-  width: 100%;
   gap: 20px;
   justify-content: space-between;
+  margin-top: 20px; /* Ajuste o espaçamento conforme necessário */
 }
 
 .button:hover {
@@ -101,30 +149,29 @@ input {
 
 .abonos {
   display: flex;
-  align-items: center; /* Centraliza verticalmente */
-  padding: 10px;
-
+  align-items: center;
+  margin-bottom: 5px;
+  justify-content: space-between;
+  padding: 5px 0;
   border-radius: 5px;
-  gap: 15px; /* Espaçamento entre a data e o botão */
-  box-sizing: border-box;
-  transition: border 0.3s ease, background-color 0.3s ease;
-  border: 2px solid transparent;
-  padding: 0;
+  background-color: #fcfcfc;
+  height: 30px;
 }
 
 .abonos p {
   margin: 0;
   margin-left: 10px;
-  flex-grow: 1; /* Faz com que o texto ocupe o máximo de espaço possível */
+  flex-grow: 1;
+  max-width: 70%; /* Define uma largura máxima para o texto do abono */
 }
 
 .eraseButton {
-  margin-top: 8px;
-  margin-right: 10px;
+  width: 30%; /* Reduz a largura do botão */
+  height: 30px;
   background-color: red;
-  width: 20%;
+
   color: white;
-  padding: 10px;
+  padding: 3px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -137,5 +184,5 @@ input {
 }
 
 .p {
-  margin-bottom: -10px;
+  margin-top: 20px;
 }
