@@ -3,13 +3,13 @@ import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+  apiKey: 'AIzaSyCnYLc1JzcqA6NYEvgBpQh0g-9N7mbyhcE',
+  authDomain: 'gestaoafastamentos.firebaseapp.com',
+  projectId: 'gestaoafastamentos',
+  storageBucket: 'gestaoafastamentos.appspot.com',
+  messagingSenderId: '659167029343',
+  appId: '1:659167029343:web:6cac0a85279d270edd13ea',
+  measurementId: 'G-XST36V402C',
 };
 
 // Inicializa o Firebase

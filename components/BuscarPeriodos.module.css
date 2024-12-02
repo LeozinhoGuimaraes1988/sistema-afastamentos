@@ -61,12 +61,16 @@
 }
 
 .clean {
-  width: 13%;
-  background-color: #007bff;
-  padding: 10px;
+  font-size: 16px;
+  margin-right: 10px;
+  background-color: #4a90e2;
   border: none;
+  color: white;
+  padding: 10px 20px;
   border-radius: 5px;
-  color: #ffffff;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
 }
 
 button:hover {
@@ -151,4 +155,20 @@ tbody td {
   .dropdown {
     width: 100%; /* Expande o dropdown para largura completa */
   }
+}
+
+.pdfButton {
+  margin-left: 10px;
+  background-color: #4caf50; /* Verde */
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.pdfButton:hover {
+  background-color: #45a049; /* Tom mais escuro de verde */
 }

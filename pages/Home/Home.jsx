@@ -3,7 +3,7 @@ import Navbar from '../../components/Navbar';
 import { NavLink, useNavigate } from 'react-router-dom';
 
 const Home = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   return (
     <div>
       <div className={styles.navbar}>
@@ -24,6 +24,9 @@ const Home = () => {
             </NavLink>
             <NavLink to="/licencasmedicas">
               <button className={styles.buttonsName}>Licenças Médicas</button>
+            </NavLink>
+            <NavLink to="/buscarperiodos">
+              <button className={styles.buttonsName}>Buscar Períodos</button>
             </NavLink>
           </div>
         </div>

@@ -1,13 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { getServidores } from '../services/fireStore';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
-
 import styles from '../components/BuscarPeriodos.module.css';
+
 import DropdownCheckbox from './DropdownCheckbox';
 import ScrollToTopButton from './ScrollButton';
-
 import Navbar from './Navbar';
+import GerarPDFButton from '../components/GerarPDFButton';
 
 const BuscarPeriodos = () => {
   const [servidores, setServidores] = useState([]);
@@ -41,24 +39,25 @@ const BuscarPeriodos = () => {
   }, []);
 
   // Função para gerar o PDF
-  // const gerarPDF = async () => {
-  //   const tabela = tabelaRef.current;
-  //   if (!tabela) return;
+  const gerarPDF = async () => {
+    const tabela = tabelaRef.current;
+    console.log('Tabela:', tabela); // Debug
+    if (!tabela) return;
 
-  //   const canvas = await html2canvas(tabela);
-  //   const imgData = canvas.toDataURL('image/png');
-  //   const pdf = new jsPDF({
-  //     orientation: 'landscape', // Ajuste a orientação, se necessário
-  //     unit: 'px',
-  //     format: 'a4',
-  //   });
+    const canvas = await html2canvas(tabela);
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF({
+      orientation: 'landscape', // Ajuste a orientação, se necessário
+      unit: 'px',
+      format: 'a4',
+    });
 
-  //   const imgWidth = pdf.internal.pageSize.getWidth();
-  //   const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    const imgWidth = pdf.internal.pageSize.getWidth();
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-  //   pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-  //   pdf.save('periodos_filtrados.pdf');
-  // };
+    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+    pdf.save('periodos_filtrados.pdf');
+  };
 
   const toggleCargo = (cargo) => {
     setFiltroCargos((prev) =>
@@ -191,6 +190,7 @@ const BuscarPeriodos = () => {
         </div>
         <div className={styles.content}>
           <h1>Buscar Períodos</h1>
+
           <div className={styles.options}>
             <DropdownCheckbox
               options={Array.from(
@@ -254,13 +254,20 @@ const BuscarPeriodos = () => {
             </div>
           </div>
           {/* Botão de Limpar Pesquisa */}
-          <button onClick={handleClearFilters} className={styles.clean}>
-            Limpar Pesquisa
-          </button>
+          <div className={styles.actions}>
+            <button onClick={handleClearFilters} className={styles.clean}>
+              Limpar Pesquisa
+            </button>
+            {/* Botão para gerar PDF */}
+            <GerarPDFButton
+              tabelaId="tabelaPeriodos"
+              fileName="periodos_filtrados.pdf"
+            />
+          </div>
         </div>
 
         {/* Tabela de Resultados */}
-        <table className={styles.table}>
+        <table className={styles.table} id="tabelaPeriodos">
           <thead>
             <tr className={styles.titles}>
               <th>Nome</th>
@@ -291,25 +298,26 @@ const BuscarPeriodos = () => {
                           .map((periodo, i) => {
                             const dataInicio = periodo.dataInicio
                               ? typeof periodo.dataInicio === 'string'
-                                ? new Date(periodo.dataInicio)
+                                ? new Date(periodo.dataInicio + 'T00:00:00')
                                 : new Date(periodo.dataInicio.seconds * 1000)
                               : null;
                             const dataFim = periodo.dataFim
                               ? typeof periodo.dataFim === 'string'
-                                ? new Date(periodo.dataFim)
+                                ? new Date(periodo.dataFim + 'T23:59:59')
                                 : new Date(periodo.dataFim.seconds * 1000)
                               : null;
 
                             const diffDays =
                               dataInicio && dataFim
                                 ? Math.floor(
-                                    (dataFim - dataInicio) /
+                                    (dataFim.getTime() - dataInicio.getTime()) /
                                       (1000 * 60 * 60 * 24)
-                                  )
+                                  ) + 1 // Inclui o último dia
                                 : null;
 
+                            // Exibição das datas
                             return (
-                              <div key={i}>
+                              <div key={index}>
                                 <p>
                                   {dataInicio
                                     ? dataInicio.toLocaleDateString()
@@ -317,7 +325,7 @@ const BuscarPeriodos = () => {
                                   a{' '}
                                   {dataFim
                                     ? dataFim.toLocaleDateString()
-                                    : 'Data de Fim inválida'}
+                                    : 'Data de Fim inválida'}{' '}
                                   {diffDays !== null
                                     ? ` (${diffDays} dias)`
                                     : ' (Dias não calculados)'}
@@ -340,7 +348,9 @@ const BuscarPeriodos = () => {
                               <p>
                                 {i + 1}º{' '}
                                 {periodo.data
-                                  ? new Date(periodo.data).toLocaleDateString()
+                                  ? new Date(
+                                      periodo.data + 'T00:00:00'
+                                    ).toLocaleDateString()
                                   : 'Data inválida'}
                               </p>
                             </div>

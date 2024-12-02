@@ -7,7 +7,7 @@ const ScrollToTopButton = () => {
   useEffect(() => {
     const handleScroll = () => {
       // Mostra o botão se o usuário rolar mais de 300px
-      setShowButton(window.scrollY > 300);
+      setShowButton(window.scrollY > 600);
     };
 
     window.addEventListener('scroll', handleScroll);

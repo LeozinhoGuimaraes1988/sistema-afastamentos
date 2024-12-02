@@ -6,6 +6,7 @@ import * as Yup from 'yup';
 import styles from '../Login/Login.module.css';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import Navbar from '../../components/Navbar';
 
 import {
   registerWithEmailAndPassword,
@@ -70,6 +71,9 @@ const Login = () => {
 
   return (
     <div className={styles.container}>
+      <div className={styles.navbar}>
+        <Navbar showButtons={false} />
+      </div>
       <form onSubmit={handleSubmit(onSubmit)} className={styles.content}>
         <h1>Sistema de Gerenciamento de Afastamentos</h1>
         <p>Acesse sua conta</p>

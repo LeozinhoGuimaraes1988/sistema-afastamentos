@@ -1,12 +1,13 @@
 import styles from '../LicencasMedicas/LicencasMedicas.module.css';
 import { getServidores, getLicencaMedicas } from '../../services/fireStore';
-import Navbar from '../../components/Navbar';
 import { useState, useEffect } from 'react';
-
 import { db } from '../../firebase/config';
 import { addLicencaMedica } from '../../services/fireStore';
 import { deleteDoc, doc } from 'firebase/firestore';
+
 import ScrollToTopButton from '../../components/ScrollButton';
+import Navbar from '../../components/Navbar';
+import GerarPDFButton from '../../components/GerarPDFButton';
 
 const LicencasMedicas = () => {
   const [servidores, setServidores] = useState([]);
@@ -290,8 +291,8 @@ const LicencasMedicas = () => {
             </option>
           ))}
         </select>
-
-        <table className={styles.table}>
+        <GerarPDFButton tabelaId="tabelaLicencasMedicasMes" fileName="lm.pdf" />
+        <table className={styles.table} id="tabelaLicencasMedicasMes">
           <thead>
             <tr className={styles.titles}>
               <th>Servidor</th>
@@ -299,7 +300,7 @@ const LicencasMedicas = () => {
               <th>Lotação</th>
               <th>Tipo de Atestado</th>
               <th>Dias</th>
-              <th>Ações</th>
+              <th className="hide-pdf">Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -331,8 +332,7 @@ const LicencasMedicas = () => {
                             ? Math.ceil(
                                 (new Date(licenca.dataFim) -
                                   new Date(licenca.dataInicio)) /
-                                  (1000 * 60 * 60 * 24) +
-                                  1
+                                  (1000 * 60 * 60 * 24)
                               )
                             : 'N/A'}{' '}
                           dias)
@@ -347,7 +347,7 @@ const LicencasMedicas = () => {
                       )}
                     </td>
 
-                    <td className={styles.deleteButton}>
+                    <td className="hide-pdf">
                       <button onClick={() => handleDelete(index)}>
                         Excluir
                       </button>
@@ -359,7 +359,11 @@ const LicencasMedicas = () => {
         </table>
 
         <h2>Visualizar Totais de Atestados no Ano</h2>
-        <table className={styles.table}>
+        <GerarPDFButton
+          tabelaId="tabelaLicencasMedicasTotal"
+          fileName="lm.pdf"
+        />
+        <table className={styles.table} id="tabelaLicencasMedicasTotal">
           <thead>
             <tr className={styles.titles}>
               <th>Servidor</th>

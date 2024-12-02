@@ -73,3 +73,35 @@ h1 {
 .buttonsName:hover {
   background-color: #3da78b;
 }
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+  .container {
+    width: 90%; /* Ajusta a largura para ocupar quase toda a tela */
+    padding: 20px; /* Reduz o padding */
+  }
+
+  h1 {
+    font-size: 20px; /* Reduz o tamanho do título */
+  }
+
+  .buttonsName {
+    font-size: 16px; /* Reduz o tamanho do texto dos botões */
+    height: 45px; /* Reduz a altura dos botões */
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 15px; /* Reduz ainda mais o padding */
+  }
+
+  h1 {
+    font-size: 18px; /* Ajusta o tamanho do título para telas menores */
+  }
+
+  .buttonsName {
+    font-size: 14px; /* Reduz o tamanho do texto dos botões */
+    height: 40px; /* Reduz a altura dos botões */
+  }
+}

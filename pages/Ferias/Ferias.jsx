@@ -23,6 +23,7 @@ import EditPeriodosAbonos from '../../components/EditPeriodosAbonos';
 import EditPeriodosLP from '../../components/EditPeriodosLP';
 import EditDados from '../../components/EditDados';
 import ScrollToTopButton from '../../components/ScrollButton';
+import GerarPDFButton from '../../components/GerarPDFButton';
 
 // CSS
 import styles from '../Ferias/Ferias.module.css';
@@ -443,6 +444,7 @@ const Ferias = () => {
           />
         )}
       </div>
+
       <div className={styles.mainContent}>
         {editingId ? (
           <EditForm /> // Exibe o formulário de edição
@@ -536,8 +538,10 @@ const Ferias = () => {
           </div>
         )}
       </div>
+      {/* Botão para gerar PDF */}
+      <GerarPDFButton tabelaId="tabelaFerias" fileName="ferias.pdf" />
       <div>
-        <table className={styles.table}>
+        <table className={styles.table} id="tabelaFerias">
           <thead>
             <tr className={styles.titles}>
               <th>Nome</th>
@@ -547,7 +551,7 @@ const Ferias = () => {
               <th>Férias</th>
               <th>Abonos</th>
               <th>Licenças-Prêmio</th>
-              <th>Ações</th>
+              <th className="hide-pdf">Ações</th>
             </tr>
           </thead>
 
@@ -628,7 +632,9 @@ const Ferias = () => {
                               ? 'º' // Exibe "3º"
                               : 'º'}{' '}
                             {periodo.data
-                              ? new Date(periodo.data).toLocaleDateString()
+                              ? new Date(
+                                  periodo.data + 'T00:00:00'
+                                ).toLocaleDateString()
                               : 'Data inválida'}
                           </p>
                         </div>
@@ -687,7 +693,7 @@ const Ferias = () => {
                 </td>
 
                 {/* Coluna para Ações */}
-                <td>
+                <td className="hide-pdf">
                   <div className={styles.tdButtons}>
                     <button onClick={() => handleEditServidor(servidor)}>
                       Editar Servidor

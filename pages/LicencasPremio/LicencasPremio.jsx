@@ -1,11 +1,12 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { PeriodsContext } from '../../contexts/PeriodosContext';
 import { getServidores } from '../../services/fireStore';
+
 import EditPeriodosLP from '../../components/EditPeriodosLP';
 import styles from '../Abonos/Abonos.module.css';
-
 import Navbar from '../../components/Navbar';
 import ScrollToTopButton from '../../components/ScrollButton';
+import GerarPDFButton from '../../components/GerarPDFButton';
 
 const LicencasPremio = () => {
   const { currentPeriods, setCurrentPeriods } = useContext(PeriodsContext);
@@ -115,8 +116,8 @@ const LicencasPremio = () => {
         <h1 className={styles.abonos}>Licenças-prêmio</h1>
         <div>
           <h2 className={styles.title}>Servidores</h2>
-
-          <table className={styles.table}>
+          <GerarPDFButton tabelaId="tabelaLP" fileName="lp.pdf" />
+          <table className={styles.table} id="tabelaLP">
             <thead>
               <tr className={styles.titles}>
                 <th>Nome</th>
@@ -124,7 +125,7 @@ const LicencasPremio = () => {
                 <th>Lotação</th>
                 <th>Matrícula</th>
                 <th>Licenças-prêmio</th>
-                <th>Ações</th>
+                <th className="hide-pdf">Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -184,7 +185,7 @@ const LicencasPremio = () => {
                     )}
                   </td>
 
-                  <td>
+                  <td className="hide-pdf">
                     <div className={styles.tdButtons}>
                       <button
                         onClick={() => handleInserirLicencasPremio(servidor)}

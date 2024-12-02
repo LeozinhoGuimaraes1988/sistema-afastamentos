@@ -1,10 +1,12 @@
 import { useContext, useState, useEffect } from 'react';
 import { PeriodsContext } from '../../contexts/PeriodosContext';
 import { getServidores } from '../../services/fireStore';
-import EditPeriodosAbonos from '../../components/EditPeriodosAbonos';
+
 import styles from '../Abonos/Abonos.module.css';
 
 import Navbar from '../../components/Navbar';
+import EditPeriodosAbonos from '../../components/EditPeriodosAbonos';
+import GerarPDFButton from '../../components/GerarPDFButton';
 
 const Abonos = () => {
   const { currentPeriods, setCurrentPeriods } = useContext(PeriodsContext);
@@ -14,9 +16,25 @@ const Abonos = () => {
 
   const handleInserirAbono = (servidor) => {
     setServidorSelecionado(servidor);
+
     const ferias = servidor.periodos
-      ? servidor.periodos.filter((p) => p.tipo === 'ferias')
+      ? servidor.periodos
+          .filter((p) => p.tipo === 'ferias')
+          .map((periodo) => ({
+            ...periodo,
+            dataInicio: periodo.dataInicio
+              ? new Date(periodo.dataInicio.seconds * 1000)
+                  .toISOString()
+                  .split('T')[0]
+              : '', // Define como string vazia se não existir
+            dataFim: periodo.dataFim
+              ? new Date(periodo.dataFim.seconds * 1000)
+                  .toISOString()
+                  .split('T')[0]
+              : '', // Define como string vazia se não existir
+          }))
       : [];
+
     setCurrentPeriods(ferias);
     setShowModalAbonos(true);
   };
@@ -69,8 +87,10 @@ const Abonos = () => {
         <h1 className={styles.abonos}>Abonos</h1>
         <div>
           <h2 className={styles.title}>Servidores</h2>
+          {/* Botão para gerar PDF */}
+          <GerarPDFButton tabelaId="tabelaAbonos" fileName="abonos.pdf" />
 
-          <table className={styles.table}>
+          <table className={styles.table} id="tabelaAbonos">
             <thead>
               <tr className={styles.titles}>
                 <th>Nome</th>

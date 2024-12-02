@@ -33,7 +33,7 @@ const EditPeriodosFerias = ({
     const inicio = new Date(dataInicio);
     const fim = new Date(dataFim);
     const diff = fim - inicio;
-    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+    return Math.ceil(diff / (1000 * 60 * 60 * 24)) + 1;
   };
 
   const handleAddPeriodo = () => {
@@ -129,8 +129,14 @@ const EditPeriodosFerias = ({
                   <div className={styles.days}>
                     <p>
                       Duração:{' '}
-                      {calcularDuracao(period.dataInicio, period.dataFim)} dias
+                      {calcularDuracao(period.dataInicio, period.dataFim) > 0
+                        ? `${calcularDuracao(
+                            period.dataInicio,
+                            period.dataFim
+                          )} dias`
+                        : ' - '}
                     </p>
+
                     <button
                       className={styles.remove}
                       type="button"

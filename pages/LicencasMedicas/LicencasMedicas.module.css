@@ -127,3 +127,7 @@
 .table td button:hover {
   background-color: #0056b3;
 }
+
+select {
+  margin-right: 10px;
+}
