@@ -120,7 +120,7 @@ const Ferias = () => {
       );
 
       const servidoresOrdenados = servidoresComFerias.sort((a, b) =>
-        a.nome.localeCompare(b.nome)
+        a.nome.trim().toLowerCase().localeCompare(b.nome.trim().toLowerCase())
       ); // Ordena por nome
       setServidoresComFerias(servidoresOrdenados);
     } catch (error) {
@@ -462,7 +462,7 @@ const Ferias = () => {
                     placeholder="Nome do servidor"
                   />
                   <input
-                    type="number"
+                    type="text"
                     name="matricula"
                     value={newServidor.matricula}
                     onChange={handleServidorInputChange}

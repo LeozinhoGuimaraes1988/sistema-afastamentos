@@ -27,8 +27,15 @@ const EditPeriodosLP = ({
   const validarDiasLicencaPremio = (dataInicio, dataFim) => {
     const inicio = new Date(dataInicio);
     const fim = new Date(dataFim);
-    const diffTime = fim - inicio;
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1 === 30;
+
+    // Define o horário para meio-dia para evitar problemas de timezone
+    inicio.setHours(12, 0, 0, 0);
+    fim.setHours(12, 0, 0, 0);
+
+    // Calcula a diferença em dias, adicionando 1 para incluir o dia inicial
+    const diffDays = Math.round((fim - inicio) / (1000 * 60 * 60 * 24)) + 1;
+
+    return diffDays === 30;
   };
 
   const verificarConflitos = (dataInicio, dataFim) => {
@@ -225,18 +232,37 @@ const EditPeriodosLP = ({
                 <div className={styles.periodVacation}>
                   {currentPeriods.length > 0 ? (
                     <p>
-                      {' '}
                       Férias -
                       {currentPeriods
                         .filter((period) => period.tipo === 'ferias') // Filtra para mostrar apenas os períodos de férias
                         .map((period, index) => {
-                          const dataInicio = new Date(
-                            period.dataInicio
-                          ).toLocaleDateString();
-                          const dataFim = new Date(
-                            period.dataFim
-                          ).toLocaleDateString();
-                          return `${index + 1}º - ${dataInicio} a ${dataFim}`;
+                          // Verificar e tratar dataInicio
+                          const dataInicio =
+                            typeof period.dataInicio === 'string'
+                              ? new Date(period.dataInicio + 'T00:00:00') // Adiciona hora para evitar timezone
+                              : period.dataInicio?.seconds
+                              ? new Date(period.dataInicio.seconds * 1000) // Caso venha do Firebase como timestamp
+                              : null;
+
+                          // Verificar e tratar dataFim
+                          const dataFim =
+                            typeof period.dataFim === 'string'
+                              ? new Date(period.dataFim + 'T23:59:59') // Adiciona hora para evitar timezone
+                              : period.dataFim?.seconds
+                              ? new Date(period.dataFim.seconds * 1000) // Caso venha do Firebase como timestamp
+                              : null;
+
+                          // Formata as datas para exibição ou exibe 'Data inválida'
+                          const dataInicioFormatada = dataInicio
+                            ? dataInicio.toLocaleDateString()
+                            : 'Data inválida';
+                          const dataFimFormatada = dataFim
+                            ? dataFim.toLocaleDateString()
+                            : 'Data inválida';
+
+                          return `${
+                            index + 1
+                          }º - ${dataInicioFormatada} a ${dataFimFormatada}`;
                         })
                         .join('       ')}{' '}
                       {/* Espaçamento entre os períodos */}
@@ -285,16 +311,31 @@ const EditPeriodosLP = ({
             <h2>Licenças-Prêmio</h2>
             {lp.length > 0 ? (
               lp.map((licencaPremio, index) => {
-                const dataInicio = new Date(licencaPremio.dataInicio);
-                const dataFim = new Date(licencaPremio.dataFim);
+                const dataInicio = new Date(
+                  licencaPremio.dataInicio + 'T00:00:00'
+                );
+                const dataFim = new Date(licencaPremio.dataFim + 'T23:59:59');
                 const diffDays =
-                  Math.ceil((dataFim - dataInicio) / (1000 * 60 * 60 * 24)) + 1;
+                  dataInicio && dataFim
+                    ? Math.floor(
+                        (dataFim - dataInicio) / (1000 * 60 * 60 * 24) + 1
+                      ) // Ajuste para incluir o último dia
+                    : null;
 
                 return (
                   <div key={index} className={styles.lp}>
                     <p>
-                      Licença-prêmio de {dataInicio.toLocaleDateString()} a{' '}
-                      {dataFim.toLocaleDateString()} ({diffDays} dias)
+                      Licença prêmio de{' '}
+                      {dataInicio
+                        ? dataInicio.toLocaleDateString()
+                        : 'Data de Início inválida'}{' '}
+                      a{' '}
+                      {dataFim
+                        ? dataFim.toLocaleDateString()
+                        : 'Data de Fim inválida'}
+                      {diffDays !== null
+                        ? ` (${diffDays} dias)`
+                        : ' (Dias não calculados)'}
                     </p>
                     <button
                       onClick={() => removeLP(index)}
