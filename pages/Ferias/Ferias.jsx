@@ -120,7 +120,7 @@ const Ferias = () => {
       );
 
       const servidoresOrdenados = servidoresComFerias.sort((a, b) =>
-        a.nome.localeCompare(b.nome)
+        a.nome.trim().toLowerCase().localeCompare(b.nome.trim().toLowerCase())
       ); // Ordena por nome
       setServidoresComFerias(servidoresOrdenados);
     } catch (error) {
@@ -231,6 +231,7 @@ const Ferias = () => {
       [10, 20],
       [20, 10],
       [15, 15],
+      [20, 20],
       [30],
     ];
 
@@ -243,7 +244,7 @@ const Ferias = () => {
 
     if (!combinacaoValida) {
       alert(
-        'Combinação de períodos inválida. As combinações válidas são: 10+10+10, 10+20, 20+10, 15+15 ou 30 dias.'
+        'Combinação de períodos inválida. As combinações válidas são: 10+10+10, 10+20, 20+10, 15+15, 20+20 ou 30 dias.'
       );
       return false;
     }
@@ -462,7 +463,7 @@ const Ferias = () => {
                     placeholder="Nome do servidor"
                   />
                   <input
-                    type="number"
+                    type="text"
                     name="matricula"
                     value={newServidor.matricula}
                     onChange={handleServidorInputChange}
@@ -652,12 +653,12 @@ const Ferias = () => {
                       .map((periodo, index) => {
                         const dataInicio = periodo.dataInicio
                           ? typeof periodo.dataInicio === 'string'
-                            ? new Date(periodo.dataInicio)
+                            ? new Date(periodo.dataInicio + 'T00:00:00')
                             : new Date(periodo.dataInicio.seconds * 1000)
                           : null;
                         const dataFim = periodo.dataFim
                           ? typeof periodo.dataFim === 'string'
-                            ? new Date(periodo.dataFim)
+                            ? new Date(periodo.dataFim + 'T23:59:59')
                             : new Date(periodo.dataFim.seconds * 1000)
                           : null;
 
