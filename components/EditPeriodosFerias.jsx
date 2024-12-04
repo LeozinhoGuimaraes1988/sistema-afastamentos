@@ -2,9 +2,6 @@ import Modal from 'react-modal';
 import styles from './EditPeriodosFerias.module.css';
 import { useEffect } from 'react';
 
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../firebase/config';
-
 // Hook
 import { useUpdatePeriodo } from '../hooks/useUpdatePeriodo';
 

@@ -231,6 +231,7 @@ const Ferias = () => {
       [10, 20],
       [20, 10],
       [15, 15],
+      [20, 20],
       [30],
     ];
 
@@ -243,7 +244,7 @@ const Ferias = () => {
 
     if (!combinacaoValida) {
       alert(
-        'Combinação de períodos inválida. As combinações válidas são: 10+10+10, 10+20, 20+10, 15+15 ou 30 dias.'
+        'Combinação de períodos inválida. As combinações válidas são: 10+10+10, 10+20, 20+10, 15+15, 20+20 ou 30 dias.'
       );
       return false;
     }
