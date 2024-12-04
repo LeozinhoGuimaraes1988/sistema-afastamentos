@@ -120,7 +120,7 @@ const Ferias = () => {
       );
 
       const servidoresOrdenados = servidoresComFerias.sort((a, b) =>
-        a.nome.localeCompare(b.nome)
+        a.nome.trim().toLowerCase().localeCompare(b.nome.trim().toLowerCase())
       ); // Ordena por nome
       setServidoresComFerias(servidoresOrdenados);
     } catch (error) {
@@ -231,6 +231,7 @@ const Ferias = () => {
       [10, 20],
       [20, 10],
       [15, 15],
+      [20, 20],
       [30],
     ];
 
@@ -243,7 +244,7 @@ const Ferias = () => {
 
     if (!combinacaoValida) {
       alert(
-        'Combinação de períodos inválida. As combinações válidas são: 10+10+10, 10+20, 20+10, 15+15 ou 30 dias.'
+        'Combinação de períodos inválida. As combinações válidas são: 10+10+10, 10+20, 20+10, 15+15, 20+20 ou 30 dias.'
       );
       return false;
     }
@@ -462,7 +463,7 @@ const Ferias = () => {
                     placeholder="Nome do servidor"
                   />
                   <input
-                    type="number"
+                    type="text"
                     name="matricula"
                     value={newServidor.matricula}
                     onChange={handleServidorInputChange}
