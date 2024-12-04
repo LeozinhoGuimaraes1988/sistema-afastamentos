@@ -653,12 +653,12 @@ const Ferias = () => {
                       .map((periodo, index) => {
                         const dataInicio = periodo.dataInicio
                           ? typeof periodo.dataInicio === 'string'
-                            ? new Date(periodo.dataInicio)
+                            ? new Date(periodo.dataInicio + 'T00:00:00')
                             : new Date(periodo.dataInicio.seconds * 1000)
                           : null;
                         const dataFim = periodo.dataFim
                           ? typeof periodo.dataFim === 'string'
-                            ? new Date(periodo.dataFim)
+                            ? new Date(periodo.dataFim + 'T23:59:59')
                             : new Date(periodo.dataFim.seconds * 1000)
                           : null;
 
