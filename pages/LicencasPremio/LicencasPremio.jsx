@@ -116,7 +116,7 @@ const LicencasPremio = () => {
         <h1 className={styles.abonos}>Licenças-prêmio</h1>
         <div>
           <h2 className={styles.title}>Servidores</h2>
-          <GerarPDFButton tabelaId="tabelaLP" fileName="lp.pdf" />
+
           <table className={styles.table} id="tabelaLP">
             <thead>
               <tr className={styles.titles}>

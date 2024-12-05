@@ -87,8 +87,6 @@ const Abonos = () => {
         <h1 className={styles.abonos}>Abonos</h1>
         <div>
           <h2 className={styles.title}>Servidores</h2>
-          {/* Botão para gerar PDF */}
-          <GerarPDFButton tabelaId="tabelaAbonos" fileName="abonos.pdf" />
 
           <table className={styles.table} id="tabelaAbonos">
             <thead>

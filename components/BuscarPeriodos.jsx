@@ -18,8 +18,7 @@ const BuscarPeriodos = () => {
   const [filtroDataFim, setFiltroDataFim] = useState('');
   const [filtroTipos, setFiltroTipos] = useState('');
 
-  const tabelaRef = useRef(null); // Crie uma referência para a tabela
-
+  const [tipoParaPDF, setTipoParaPDF] = useState('');
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -37,27 +36,6 @@ const BuscarPeriodos = () => {
     };
     fetchData();
   }, []);
-
-  // Função para gerar o PDF
-  const gerarPDF = async () => {
-    const tabela = tabelaRef.current;
-    console.log('Tabela:', tabela); // Debug
-    if (!tabela) return;
-
-    const canvas = await html2canvas(tabela);
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF({
-      orientation: 'landscape', // Ajuste a orientação, se necessário
-      unit: 'px',
-      format: 'a4',
-    });
-
-    const imgWidth = pdf.internal.pageSize.getWidth();
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-    pdf.save('periodos_filtrados.pdf');
-  };
 
   const toggleCargo = (cargo) => {
     setFiltroCargos((prev) =>
@@ -94,7 +72,8 @@ const BuscarPeriodos = () => {
 
     // Filtro por mês selecionado
     if (filtroMes) {
-      filtrados = filtrados.map((servidor) => {
+      filtrados = filtrados.filter((servidor) => {
+        // Filtrar os períodos que se encaixam no mês selecionado
         const periodosNoMes = servidor.periodos.filter((periodo) => {
           if (periodo.dataInicio) {
             const inicio = periodo.dataInicio.seconds
@@ -116,8 +95,8 @@ const BuscarPeriodos = () => {
 
           // Verifica abonos com uma única data
           if (periodo.tipo === 'abono' && periodo.data) {
-            const dataAbono = periodo.abono
-              ? new Date(periodo.data * 1000)
+            const dataAbono = periodo.data.seconds
+              ? new Date(periodo.data.seconds * 1000)
               : new Date(periodo.data);
             const abonosMes = dataAbono.getMonth() + 1;
             return abonosMes === parseInt(filtroMes, 10);
@@ -126,10 +105,8 @@ const BuscarPeriodos = () => {
           return false;
         });
 
-        return {
-          ...servidor,
-          periodos: periodosNoMes.length > 0 ? periodosNoMes : [],
-        };
+        // Retorna apenas os servidores com pelo menos um período no mês filtrado
+        return periodosNoMes.length > 0;
       });
     }
 
@@ -180,6 +157,7 @@ const BuscarPeriodos = () => {
     setFiltroTipos('');
     setFiltroMes('');
     setDadosFiltrados(servidores);
+    setTipoParaPDF('');
   };
 
   return (
@@ -201,6 +179,7 @@ const BuscarPeriodos = () => {
             />
 
             {/* Filtros */}
+
             <div className={styles.select}>
               <label>Nome:</label>
               <select
@@ -258,10 +237,9 @@ const BuscarPeriodos = () => {
             <button onClick={handleClearFilters} className={styles.clean}>
               Limpar Pesquisa
             </button>
-            {/* Botão para gerar PDF */}
             <GerarPDFButton
-              tabelaId="tabelaPeriodos"
-              fileName="periodos_filtrados.pdf"
+              dadosFiltrados={dadosFiltrados}
+              tipoParaPDF={tipoParaPDF} // Passa o tipo selecionado
             />
           </div>
         </div>
@@ -281,8 +259,8 @@ const BuscarPeriodos = () => {
           </thead>
           <tbody>
             {dadosFiltrados.length > 0 ? (
-              dadosFiltrados.map((servidor, index) => (
-                <tr key={index}>
+              dadosFiltrados.map((servidor) => (
+                <tr key={servidor.id}>
                   <td>{servidor.nome}</td>
                   <td>{servidor.cargo}</td>
                   <td>{servidor.lotacao}</td>
@@ -295,7 +273,7 @@ const BuscarPeriodos = () => {
                     ).length > 0
                       ? servidor.periodos
                           .filter((periodo) => periodo.tipo === 'ferias')
-                          .map((periodo, i) => {
+                          .map((periodo, index) => {
                             const dataInicio = periodo.dataInicio
                               ? typeof periodo.dataInicio === 'string'
                                 ? new Date(periodo.dataInicio + 'T00:00:00')
@@ -370,12 +348,12 @@ const BuscarPeriodos = () => {
                           .map((periodo, i) => {
                             const dataInicio = periodo.dataInicio
                               ? typeof periodo.dataInicio === 'string'
-                                ? new Date(periodo.dataInicio)
+                                ? new Date(periodo.dataInicio + 'T00:00:00')
                                 : new Date(periodo.dataInicio.seconds * 1000)
                               : null;
                             const dataFim = periodo.dataFim
                               ? typeof periodo.dataFim === 'string'
-                                ? new Date(periodo.dataFim)
+                                ? new Date(periodo.dataFim + 'T23:59:59')
                                 : new Date(periodo.dataFim.seconds * 1000)
                               : null;
 

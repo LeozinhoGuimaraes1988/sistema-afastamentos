@@ -1,69 +1,130 @@
 import React, { useRef } from 'react';
+import styles from '../components/GerarPDFButton.module.css';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
-import styles from './GerarPDFButton.module.css'; // Crie um arquivo CSS para estilizar o botão, se necessário.
+import 'jspdf-autotable';
 
-const GerarPDFButton = ({ tabelaId = 'tabela.pdf' }) => {
-  const tabelaRef = useRef(null);
-
-  const gerarPDF = async () => {
-    const tabela = document.getElementById(tabelaId);
-    if (!tabela) {
+const GerarPDFButton = ({ dadosFiltrados }) => {
+  const gerarPDF = () => {
+    if (!dadosFiltrados || dadosFiltrados.length === 0) {
+      alert('Não há dados para gerar o PDF.');
       return;
     }
 
-    const hiddenElements = tabela.querySelectorAll('.hide-pdf');
-    hiddenElements.forEach((el) => (el.style.display = 'none'));
-
-    const canvas = await html2canvas(tabela, {
-      scale: 2, // Aumentar a resolução
-    });
-
-    hiddenElements.forEach((el) => (el.style.display = ''));
-    const imgData = canvas.toDataURL('image/png');
-
     const pdf = new jsPDF({
-      orientation: 'landscape',
-      unit: 'px',
-      format: 'a4',
+      orientation: 'landscape', // Orientação horizontal
+      unit: 'mm',
+      format: 'a4', // Tamanho padrão A4
     });
 
-    const margin = 20; // Margem em pixels
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
+    // Adiciona título ao PDF
+    pdf.setFontSize(14);
+    pdf.text('Relatório de Afastamentos', 10, 10); // Texto no topo do PDF
 
-    const imgWidth = pageWidth - 2 * margin; // Ajustar a largura considerando as margens
-    const imgHeight = (canvas.height * imgWidth) / canvas.width; // Manter a proporção
+    // Define as colunas da tabela
+    const colunas = [
+      { header: 'Nome', dataKey: 'nome' },
+      { header: 'Cargo', dataKey: 'cargo' },
+      { header: 'Lotação', dataKey: 'lotacao' },
+      { header: 'Matrícula', dataKey: 'matricula' },
+      { header: 'Férias', dataKey: 'ferias' },
+      { header: 'Abonos', dataKey: 'abonos' },
+      { header: 'Licenças-Prêmio', dataKey: 'licencasPremio' },
+    ];
 
-    if (imgHeight > pageHeight - 2 * margin) {
-      // Caso a altura ultrapasse o limite da página
-      const scaledHeight = pageHeight - 2 * margin;
-      const scaledWidth = (canvas.width * scaledHeight) / canvas.height;
-      pdf.addImage(
-        imgData,
-        'PNG',
-        (pageWidth - scaledWidth) / 2, // Centralizar horizontalmente
-        margin,
-        scaledWidth,
-        scaledHeight
-      );
-    } else {
-      // Quando a imagem se ajusta à altura disponível
-      pdf.addImage(
-        imgData,
-        'PNG',
-        margin,
-        (pageHeight - imgHeight) / 2, // Centralizar verticalmente
-        imgWidth,
-        imgHeight
-      );
-    }
+    // Processa os dados para a tabela
+    const linhas = dadosFiltrados.map((servidor) => {
+      // Processa períodos de férias
+      const ferias = servidor.periodos
+        ? servidor.periodos
+            .filter((p) => p.tipo === 'ferias')
+            .map((periodo) => {
+              const dataInicio = periodo.dataInicio
+                ? typeof periodo.dataInicio === 'string'
+                  ? new Date(periodo.dataInicio + 'T00:00:00')
+                  : new Date(periodo.dataInicio.seconds * 1000)
+                : null;
 
-    pdf.save('tabela.pdf');
+              const dataFim = periodo.dataFim
+                ? typeof periodo.dataFim === 'string'
+                  ? new Date(periodo.dataFim + 'T23:59:59')
+                  : new Date(periodo.dataFim.seconds * 1000)
+                : null;
+
+              return `${
+                dataInicio?.toLocaleDateString() || 'Data inválida'
+              } a ${dataFim?.toLocaleDateString() || 'Data inválida'}`;
+            })
+            .join(', ')
+        : 'Sem períodos de férias registrados';
+
+      // Processa abonos
+      const abonos = servidor.periodos
+        ? servidor.periodos
+            .filter((p) => p.tipo === 'abono')
+            .map((p) => {
+              const dataAbono = p.data
+                ? typeof p.data === 'string'
+                  ? new Date(p.data + 'T00:00:00')
+                  : new Date(p.data.seconds * 1000)
+                : null;
+
+              return dataAbono?.toLocaleDateString() || 'Data inválida';
+            })
+            .join(', ')
+        : 'Sem abonos registrados';
+
+      // Processa licenças-prêmio
+      const licencasPremio = servidor.periodos
+        ? servidor.periodos
+            .filter((p) => p.tipo === 'licenca-premio')
+            .map((p) => {
+              const dataInicio = p.dataInicio
+                ? typeof p.dataInicio === 'string'
+                  ? new Date(p.dataInicio + 'T00:00:00')
+                  : new Date(p.dataInicio.seconds * 1000)
+                : null;
+
+              const dataFim = p.dataFim
+                ? typeof p.dataFim === 'string'
+                  ? new Date(p.dataFim + 'T23:59:59')
+                  : new Date(p.dataFim.seconds * 1000)
+                : null;
+
+              return `${
+                dataInicio?.toLocaleDateString() || 'Data inválida'
+              } a ${dataFim?.toLocaleDateString() || 'Data inválida'}`;
+            })
+            .join(', ')
+        : 'Sem licenças-prêmio registradas';
+
+      return {
+        nome: servidor.nome,
+        cargo: servidor.cargo,
+        lotacao: servidor.lotacao,
+        matricula: servidor.matricula,
+        ferias: ferias || 'Sem afastamento registrado',
+        abonos: abonos || 'Sem afastamento registrado',
+        licencasPremio: licencasPremio || 'Sem afastamento registrado',
+      };
+    });
+
+    // Adiciona a tabela ao PDF
+    pdf.autoTable({
+      head: [colunas.map((col) => col.header)], // Cabeçalhos
+      body: linhas.map((linha) =>
+        colunas.map((col) => linha[col.dataKey] || '')
+      ), // Dados
+      startY: 20, // Posição inicial da tabela
+      margin: { left: 10, right: 10 }, // Margens laterais
+      theme: 'grid', // Estilo de tabela
+    });
+
+    // Salva o arquivo PDF
+    pdf.save('relatorio_afastamentos.pdf');
   };
 
   return (
-    <button className={styles.gerarPdfButton} onClick={gerarPDF}>
+    <button onClick={gerarPDF} className={styles.gerarPdfButton}>
       Gerar PDF
     </button>
   );

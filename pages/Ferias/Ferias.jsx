@@ -23,7 +23,6 @@ import EditPeriodosAbonos from '../../components/EditPeriodosAbonos';
 import EditPeriodosLP from '../../components/EditPeriodosLP';
 import EditDados from '../../components/EditDados';
 import ScrollToTopButton from '../../components/ScrollButton';
-import GerarPDFButton from '../../components/GerarPDFButton';
 
 // CSS
 import styles from '../Ferias/Ferias.module.css';
@@ -120,7 +119,7 @@ const Ferias = () => {
       );
 
       const servidoresOrdenados = servidoresComFerias.sort((a, b) =>
-        a.nome.localeCompare(b.nome)
+        a.nome.trim().toLowerCase().localeCompare(b.nome.trim().toLowerCase())
       ); // Ordena por nome
       setServidoresComFerias(servidoresOrdenados);
     } catch (error) {
@@ -231,6 +230,7 @@ const Ferias = () => {
       [10, 20],
       [20, 10],
       [15, 15],
+      [20, 20],
       [30],
     ];
 
@@ -243,7 +243,7 @@ const Ferias = () => {
 
     if (!combinacaoValida) {
       alert(
-        'Combinação de períodos inválida. As combinações válidas são: 10+10+10, 10+20, 20+10, 15+15 ou 30 dias.'
+        'Combinação de períodos inválida. As combinações válidas são: 10+10+10, 10+20, 20+10, 15+15, 20+20 ou 30 dias.'
       );
       return false;
     }
@@ -462,7 +462,7 @@ const Ferias = () => {
                     placeholder="Nome do servidor"
                   />
                   <input
-                    type="number"
+                    type="text"
                     name="matricula"
                     value={newServidor.matricula}
                     onChange={handleServidorInputChange}
@@ -538,8 +538,7 @@ const Ferias = () => {
           </div>
         )}
       </div>
-      {/* Botão para gerar PDF */}
-      <GerarPDFButton tabelaId="tabelaFerias" fileName="ferias.pdf" />
+
       <div>
         <table className={styles.table} id="tabelaFerias">
           <thead>
@@ -652,12 +651,12 @@ const Ferias = () => {
                       .map((periodo, index) => {
                         const dataInicio = periodo.dataInicio
                           ? typeof periodo.dataInicio === 'string'
-                            ? new Date(periodo.dataInicio)
+                            ? new Date(periodo.dataInicio + 'T00:00:00')
                             : new Date(periodo.dataInicio.seconds * 1000)
                           : null;
                         const dataFim = periodo.dataFim
                           ? typeof periodo.dataFim === 'string'
-                            ? new Date(periodo.dataFim)
+                            ? new Date(periodo.dataFim + 'T23:59:59')
                             : new Date(periodo.dataFim.seconds * 1000)
                           : null;
 

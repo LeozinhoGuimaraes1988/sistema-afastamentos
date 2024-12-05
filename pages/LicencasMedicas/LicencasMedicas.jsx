@@ -291,7 +291,7 @@ const LicencasMedicas = () => {
             </option>
           ))}
         </select>
-        <GerarPDFButton tabelaId="tabelaLicencasMedicasMes" fileName="lm.pdf" />
+
         <table className={styles.table} id="tabelaLicencasMedicasMes">
           <thead>
             <tr className={styles.titles}>
@@ -359,10 +359,7 @@ const LicencasMedicas = () => {
         </table>
 
         <h2>Visualizar Totais de Atestados no Ano</h2>
-        <GerarPDFButton
-          tabelaId="tabelaLicencasMedicasTotal"
-          fileName="lm.pdf"
-        />
+
         <table className={styles.table} id="tabelaLicencasMedicasTotal">
           <thead>
             <tr className={styles.titles}>
