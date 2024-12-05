@@ -23,7 +23,6 @@ import EditPeriodosAbonos from '../../components/EditPeriodosAbonos';
 import EditPeriodosLP from '../../components/EditPeriodosLP';
 import EditDados from '../../components/EditDados';
 import ScrollToTopButton from '../../components/ScrollButton';
-import GerarPDFButton from '../../components/GerarPDFButton';
 
 // CSS
 import styles from '../Ferias/Ferias.module.css';
@@ -539,8 +538,7 @@ const Ferias = () => {
           </div>
         )}
       </div>
-      {/* Botão para gerar PDF */}
-      <GerarPDFButton tabelaId="tabelaFerias" fileName="ferias.pdf" />
+
       <div>
         <table className={styles.table} id="tabelaFerias">
           <thead>
