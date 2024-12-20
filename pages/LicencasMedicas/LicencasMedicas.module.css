@@ -13,6 +13,10 @@
   justify-content: center;
 }
 
+tr {
+  color: black;
+}
+
 .licencasMedicas {
   width: 100%;
   margin-top: 130px;
@@ -62,9 +66,116 @@
   background-color: #007bff;
 }
 
-.tableContainer {
-  max-width: 800px;
+.tableWrapper {
+  position: relative;
+  width: 90%; /* Reduz a largura para criar margens laterais */
+  margin: 20px auto; /* Centraliza e adiciona margem vertical */
+  padding: 0 20px; /* Padding lateral adicional */
+}
+
+.tabelaContainer {
   width: 100%;
+  overflow-x: auto;
+  margin: 20px 0;
+}
+
+/* Estilo base para todas as tabelas */
+.table,
+.tableMonthly,
+.tabelaCategoria {
+  width: 100%;
+
+  border-collapse: collapse;
+  background-color: white;
+}
+
+.table th,
+.tableMonthly th,
+.tabelaCategoria th {
+  background-color: #f3f3f3;
+  padding: 12px 8px;
+  text-align: left;
+  border: 1px solid #ddd;
+  font-weight: bold;
+  color: #333;
+  white-space: nowrap;
+}
+
+/* Estilos para células */
+.table td,
+.tableMonthly td,
+.tabelaCategoria td {
+  padding: 8px;
+  border: 1px solid #ddd;
+  text-align: left;
+  vertical-align: middle;
+}
+
+/* Estilo para linhas alternadas */
+.table tbody tr:nth-child(even),
+.tableMonthly tbody tr:nth-child(even),
+.tabelaCategoria tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* Hover nas linhas */
+.table tbody tr:hover,
+.tableMonthly tbody tr:hover,
+.tabelaCategoria tbody tr:hover {
+  background-color: #f5f5f5;
+}
+
+/* Estilo para o botão excluir */
+.table button,
+.tableMonthly button {
+  padding: 5px 10px;
+  background-color: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+/* Ajuste para o título da tabela */
+.title_principal {
+  margin: 20px 0;
+  color: #333;
+  text-align: center;
+}
+
+/* Estilo para o select de mês */
+.select {
+  margin: 10px 0;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 200px;
+}
+
+.table button:hover,
+.tableMonthly button:hover {
+  background-color: #cc0000;
+}
+
+.tabelaContainer::-webkit-scrollbar {
+  height: 12px; /* Altura da barra de rolagem */
+  position: sticky;
+  bottom: 20px;
+}
+
+.tabelaContainer::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.tabelaContainer::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.tabelaContainer::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
 .titles th {
@@ -72,9 +183,11 @@
 }
 
 .select {
+  flex-grow: 1;
+  max-width: 200px; /* ou o tamanho que preferir */
   border-radius: 5px;
-  margin-bottom: 10px;
   padding: 10px;
+  margin: 0; /* Remove margem para alinhar com a tabela */
 }
 
 .deleteButton {
@@ -84,21 +197,31 @@
 
 .table {
   width: 100%;
-  border-collapse: collapse; /* Retorna a tabela a um layout colapsado */
-  background-color: #ffffff;
+  min-width: max-content;
+  border-collapse: collapse;
+}
+
+.tableMonthly {
+  width: 100%;
+
+  border-collapse: collapse;
+}
+
+.table th {
+  position: sticky;
+  top: 0;
+  background-color: #f8f9fa;
+  z-index: 1;
 }
 
 .table th,
 .table td {
-  text-align: center; /* Alinha o texto ao centro */
-}
-
-.table th,
-.table td {
-  padding: 8px 10px; /* Um leve espaçamento entre as células */
-  border: 1px solid #ddd; /* Linha divisória para cada célula */
-  text-align: left;
-  color: #000; /* Define a cor do texto como preto */
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+  color: #000;
+  white-space: nowrap;
+  min-width: 50px; /* Largura mínima para cada coluna */
 }
 
 .table th {
@@ -124,10 +247,203 @@
   cursor: pointer;
 }
 
-.table td button:hover {
-  background-color: #0056b3;
+.table tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.table tbody tr:hover {
+  background-color: #f2f2f2;
 }
 
 select {
   margin-right: 10px;
+}
+
+.titles th {
+  text-align: center;
+}
+
+.table td:first-child,
+.table th:first-child {
+  text-align: left; /* Apenas nome/servidor alinhado à esquerda */
+}
+
+.table td {
+  min-width: 100px; /* Garante uma largura mínima para as células */
+  padding: 8px;
+}
+
+.table th,
+.table td {
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  text-align: center; /* Alinhamento padrão central */
+  color: #000;
+}
+
+.title_principal {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.5rem;
+  margin: 20px 0;
+}
+
+/* Carregar Mais */
+.loadMoreButton {
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.loadMoreButton button {
+  padding: 8px 16px;
+  font-size: 14px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  max-width: 200px;
+}
+
+.tabs {
+  display: flex;
+  justify-content: center; /* Centraliza os botões */
+  gap: 10px;
+  margin: 20px 0;
+  width: 100%;
+}
+
+.tab {
+  padding: 10px 20px;
+  border: none;
+  background: #f0f0f0;
+  cursor: pointer;
+  border-radius: 4px;
+  min-width: 120px; /* Largura mínima para uniformidade */
+}
+
+.activeTab {
+  background: #ff0000;
+  color: white;
+}
+
+.categoriasContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.categoriaCard {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* Criar um container fixo para a barra de rolagem */
+.scrollContainer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 20px; /* altura da barra de rolagem */
+  background: #f1f1f1;
+  z-index: 1000;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* Elemento fantasma que replica a largura da tabela */
+.scrollContent {
+  height: 1px;
+  width: max-content; /* Vai se ajustar à largura da tabela */
+}
+
+/* Ajuste na tabela para dar espaço para a barra fixa */
+.tabelaContainer {
+  width: 95%;
+  margin: 20px auto;
+  margin-bottom: 30px; /* Espaço para a barra de rolagem fixa */
+  overflow-x: hidden; /* Remove o scroll da tabela */
+}
+
+.categoriaHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+}
+
+.categoriaHeader h3 {
+  margin: 0;
+  color: #333; /* Cor escura para o título */
+  font-size: 16px;
+}
+
+.categoriaHeader span {
+  color: #333; /* Cor escura para o total */
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.expandButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333;
+  font-size: 16px;
+}
+
+.mensagemSemDados {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+.mensagemSemDados p {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.gerarPdfButton {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 16px; /* Mesmo padding do select */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: 10px; /* Espaço entre o select e o botão */
+  height: 40px; /* Altura fixa para alinhar com o select */
+}
+
+.gerarPdfButton:hover {
+  background-color: #45a049;
+}
+
+.headerActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.gerarPdfButton {
+  background-color: #4caf50;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.gerarPdfButton:hover {
+  background-color: #45a049;
 }

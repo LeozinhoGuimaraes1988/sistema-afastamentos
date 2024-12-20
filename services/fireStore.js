@@ -224,40 +224,83 @@ export const addLicencaMedica = async (servidorId, licencaMedicaData) => {
       'licencasMedicas'
       // Após localizar o documento do servidor, a função collection aponta para a subcoleção licencasMedicas, onde as licenças médicas desse servidor serão armazenadas.
     );
-    await addDoc(licencaMedicaCollection, licencaMedicaData); // Essa função cria um novo documento na subcoleção licencasMedicas
-    // 'licencaMedicaCollection: O caminho da subcoleção onde o documento será inserido.
-    // licencaMedicaData: Os dados da licença médica (um objeto) que serão salvos no documento
+    const docRef = await addDoc(licencaMedicaCollection, licencaMedicaData);
     console.log('Período de licença médica adicionado com sucesso');
+    return docRef; // Retornando a referência do documento
   } catch (error) {
     console.error('Erro ao adicionar período de licença médica: ', error);
+    throw error; // Lançando o erro para ser tratado no componente
   }
 };
 
-export const getLicencaMedicas = async () => {
+export const getLicencaMedicas = async (servidorId) => {
   try {
-    // Refere-se à coleção 'servidores' e suas subcoleções 'licencasMedicas'
-    const servidoresCollection = collection(db, 'servidores');
-    const servidoresSnapshot = await getDocs(servidoresCollection);
+    const licencasRef = collection(
+      db,
+      'servidores',
+      servidorId,
+      'licencasMedicas'
+    );
+    const snapshot = await getDocs(licencasRef);
 
-    let licencas = [];
-
-    // Iterar sobre cada servidor para buscar as licenças médicas na subcoleção
-    for (const doc of servidoresSnapshot.docs) {
-      const licencasCollection = collection(doc.ref, 'licencasMedicas'); // Refere-se à subcoleção licencasMedicas dentro do documento do servidor.
-      const licencasSnapshot = await getDocs(licencasCollection); // Faz uma consulta para obter todos os documentos da subcoleção licencasMedicas do servidor atual.
-      // licencasSnapshot: Contém o resultado da consulta, ou seja, os documentos (licenças médicas) dessa subcoleção.
-      licencasSnapshot.forEach((licencaDoc) => {
-        // licencaDoc: Cada licença médica armazenada na subcoleção licencasMedicas.
-        licencas.push({
-          id: licencaDoc.id, // Adiciona o ID do documento da licença.
-          servidor: doc.id, // Adiciona o ID do servidor ao qual essa licença pertence.
-          ...licencaDoc.data(), // Insere todos os campos da licença médica como parte do objeto. licencaDoc.data() retorna os dados armazenados no documento da licença médica.
-        });
-      });
-    }
-    return licencas; // Retorna todas as licenças médicas encontradas
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
   } catch (error) {
     console.error('Erro ao buscar licenças médicas:', error);
-    throw error;
+    return [];
+  }
+};
+
+// Função principal de paginação
+export const getServidoresPaginado = async (
+  limitePorPagina = 5,
+  ultimoDoc = null
+) => {
+  try {
+    // Referência para coleção de servidores
+    const servidoresRef = collection(db, 'servidores');
+
+    // Iniciamos a construção da query
+    let queryServidores;
+
+    if (ultimoDoc) {
+      // Se temos um último documento, começamos depois dele
+      queryServidores = query(
+        servidoresRef,
+        orderBy('nome'), // Ordena por nome
+        startAfter(ultimoDoc), // Começa após o último doc da página anterior
+        limit(limitePorPagina) // Limitamos o número de resultados
+      );
+    } else {
+      // Se não temos o último documento, é a primeira página
+      queryServidores = query(
+        servidoresRef,
+        orderBy('nome'),
+        limit(limitePorPagina)
+      );
+    }
+
+    // Executamos a query
+    const snapshot = await getDocs(queryServidores);
+
+    // Obtemos o último documento desta página para usar na próxima
+    const ultimoDocumentoDaPagina = snapshot.docs[snapshot.docs.length - 1];
+
+    // Transformamos os documentos em objetos normais
+    const servidores = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    // Retornamos os dados necessários para controlar a paginação
+    return {
+      servidores,
+      ultimoDocumentoDaPagina,
+      temMais: snapshot.size === limitePorPagina, // Verifica se há mais páginas
+    };
+  } catch (error) {
+    console.error('Erro ao buscar servidores:', error);
   }
 };

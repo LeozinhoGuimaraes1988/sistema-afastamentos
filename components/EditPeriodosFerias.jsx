@@ -17,14 +17,42 @@ const EditPeriodosFerias = ({
 
   useEffect(() => {
     if (servidorSelecionado && currentPeriods.length > 0) {
-      const periodosValidos = currentPeriods.filter(
-        (periodo) => periodo.dataInicio && periodo.dataFim
-      );
-      if (JSON.stringify(periodosValidos) !== JSON.stringify(currentPeriods)) {
-        setCurrentPeriods(periodosValidos);
-      }
+      const periodosFormatados = currentPeriods
+        .filter((periodo) => periodo.tipo === 'ferias')
+        .map((periodo) => {
+          // Trata dataInicio
+          const dataInicio = periodo.dataInicio
+            ? typeof periodo.dataInicio === 'string'
+              ? periodo.dataInicio // se for string
+              : periodo.dataInicio.seconds // se tiver seconds
+              ? new Date(periodo.dataInicio.seconds * 1000)
+                  .toISOString()
+                  .split('T')[0]
+              : null // se não tiver seconds
+            : null; // se não tiver dataInicio
+
+          // Trata dataFim
+          const dataFim = periodo.dataFim
+            ? typeof periodo.dataFim === 'string'
+              ? periodo.dataFim // se for string
+              : periodo.dataFim.seconds // se tiver seconds
+              ? new Date(periodo.dataFim.seconds * 1000)
+                  .toISOString()
+                  .split('T')[0]
+              : null // se não tiver seconds
+            : null; // se não tiver dataFim
+
+          return {
+            ...periodo,
+            dataInicio: dataInicio,
+            dataFim: dataFim,
+            tipo: 'ferias',
+          };
+        });
+
+      setCurrentPeriods(periodosFormatados);
     }
-  }, [servidorSelecionado]);
+  }, [servidorSelecionado, currentPeriods]);
 
   const calcularDuracao = (dataInicio, dataFim) => {
     const inicio = new Date(dataInicio);
@@ -167,7 +195,9 @@ const EditPeriodosFerias = ({
             className={styles.changes}
             onClick={() => {
               handleSave(servidorSelecionado.id, currentPeriods);
-              handleClose();
+              setTimeout(() => {
+                handleClose();
+              }, 1000);
             }}
           >
             Salvar Alterações

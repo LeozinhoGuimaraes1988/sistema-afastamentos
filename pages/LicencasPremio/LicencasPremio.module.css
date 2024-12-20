@@ -1,70 +1,83 @@
-.container {
-  background-color: rgba(0, 0, 0, 0.4);
-  padding: 40px 50px;
+/* Reset e Configurações Globais */
+* {
+  box-sizing: border-box;
+}
+
+/* Layout Principal */
+.content {
+  margin-top: 150px;
+  padding: 20px;
+  background-color: white;
   border-radius: 5px;
-  text-align: center;
 }
 
-.title {
-  background-color: rgba(0, 0, 0, 0.4);
-  padding: 10px;
-  padding-bottom: 10px;
-  margin-top: -5px;
-  font-weight: bold;
-}
-
-.licencasMedicas {
+/* Título Principal */
+.header_title {
   font-size: 2.5rem;
   font-weight: bold;
   background-color: #ddd;
-}
-
-h1 {
-  font-weight: normal;
-}
-
-.form {
-  background-color: rgba(0, 0, 0, 0.4);
-  display: flex;
-  flex-direction: column;
-  height: 150px;
-  width: 400px;
-  padding-top: 10px;
-  padding-bottom: 20px;
-  font-weight: normal;
-}
-
-.name,
-.lot,
-.mat {
+  text-align: center;
   padding: 10px;
-  margin-top: 10px;
-  display: flex;
-  height: 20px;
-  align-items: center;
-  justify-content: right;
-  gap: 10px;
-  font-size: 10px;
-  margin-bottom: 10px;
-  font-family: 'Muli', sans-serif;
+  margin-bottom: 20px;
 }
 
-.lot {
-  margin-bottom: 10px;
+/* Título Secundário */
+.title_principal {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.5rem;
+  margin: 20px 0;
 }
 
-input {
-  height: 25px;
+/* Tabela */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
 }
 
-button {
-  padding: 5px;
+.table th,
+.table td {
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+  color: #000;
+}
 
-  background-color: rgb(211, 220, 227);
-  font-family: 'Muli';
+.table td:first-child,
+.table th:first-child {
+  text-align: left;
+}
+
+.table th {
+  background-color: #f3f3f3;
   font-weight: bold;
 }
 
-button:hover {
-  background-color: rgb(169, 203, 229);
+.table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.table tbody tr:hover {
+  background-color: #e6f7ff;
+}
+
+/* Botões */
+.tdButtons {
+  display: flex;
+  justify-content: center;
+}
+
+.tdButtons button {
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.tdButtons button:hover {
+  background-color: #0056b3;
 }

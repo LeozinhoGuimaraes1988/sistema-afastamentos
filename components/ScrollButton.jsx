@@ -28,7 +28,7 @@ const ScrollToTopButton = () => {
   return (
     showButton && (
       <button onClick={scrollToTop} className={styles.scrollToTop}>
-        ↑ Início
+        ↑
       </button>
     )
   );

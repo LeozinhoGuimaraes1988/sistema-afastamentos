@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import {
   addFerias,
   addAbono,
@@ -26,9 +27,6 @@ const AddPeriodos = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-   
-
-    
     try {
       switch (periodo.tipo) {
         case 'ferias':
@@ -61,9 +59,9 @@ const AddPeriodos = () => {
         default:
           console.error('Tipo de período inválido');
       }
-      alert('Período adicionado com sucesso!');
+      toast.success('Período adicionado com sucesso!');
     } catch (error) {
-      console.error('Erro ao adicionar período: ', error);
+      toast.error('Erro ao adicionar período: ', error);
     }
   };
 

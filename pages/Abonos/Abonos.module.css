@@ -51,7 +51,7 @@ body {
 .table td {
   padding: 8px 10px; /* Um leve espaçamento entre as células */
   border: 1px solid #ddd; /* Linha divisória para cada célula */
-  text-align: left;
+  text-align: center;
   color: #000; /* Define a cor do texto como preto */
 }
 
@@ -59,6 +59,10 @@ body {
   background-color: #f3f3f3; /* Fundo mais claro para o cabeçalho */
   font-weight: bold;
   color: #333;
+}
+
+.table td:first-child {
+  text-align: left;
 }
 
 .table tbody tr:nth-child(even) {
@@ -140,4 +144,21 @@ tbody td {
     font-size: 10px;
     padding: 4px;
   }
+}
+
+/* Carregar Mais */
+.loadMoreButton {
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.loadMoreButton button {
+  padding: 8px 16px;
+  font-size: 14px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  max-width: 200px;
 }

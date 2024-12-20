@@ -1,18 +1,23 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { PeriodsContext } from '../../contexts/PeriodosContext';
-import { getServidores } from '../../services/fireStore';
+import { getServidoresPaginado } from '../../services/servidoresServices';
 
 import EditPeriodosLP from '../../components/EditPeriodosLP';
 import styles from '../Abonos/Abonos.module.css';
 import Navbar from '../../components/Navbar';
 import ScrollToTopButton from '../../components/ScrollButton';
-import GerarPDFButton from '../../components/GerarPDFButton';
 
 const LicencasPremio = () => {
   const { currentPeriods, setCurrentPeriods } = useContext(PeriodsContext);
   const [showModalLicencasPremio, setShowLicencasPremio] = useState(false);
   const [servidores, setServidores] = useState([]);
   const [servidorSelecionado, setServidorSelecionado] = useState(null);
+
+  // Paginação
+  const [ultimoDoc, setUltimoDoc] = useState(null);
+  const [temMais, setTemMais] = useState(true);
+  const [carregando, setCarregando] = useState(false);
+  const [limitePorPagina] = useState(10);
 
   const handleInserirLicencasPremio = (servidor) => {
     if (!showModalLicencasPremio) {
@@ -31,17 +36,22 @@ const LicencasPremio = () => {
     setServidorSelecionado(null);
   };
 
-  const fetchData = async () => {
+  const fetchData = async (limpar = false) => {
     try {
-      const servidoresData = await getServidores();
+      setCarregando(true);
 
-      const servidoresComLP = await Promise.all(
-        servidoresData.map(async (servidor) => {
+      const resultado = await getServidoresPaginado(
+        limitePorPagina,
+        limpar ? null : ultimoDoc
+      );
+
+      const servidoresProcessados = await Promise.all(
+        resultado.servidores.map(async (servidor) => {
           if (servidor.periodos && servidor.periodos.length > 0) {
             const periodosConvertidos = servidor.periodos.map((periodo) => {
               let dataInicioConvertida, dataFimConvertida;
 
-              // Verificação e conversão para `dataInicio`
+              // Conversão de dataInicio
               if (periodo.dataInicio) {
                 if (typeof periodo.dataInicio === 'string') {
                   dataInicioConvertida = periodo.dataInicio;
@@ -53,15 +63,10 @@ const LicencasPremio = () => {
                     .toDate()
                     .toISOString()
                     .split('T')[0];
-                } else {
-                  console.warn(
-                    'Tipo inesperado para dataInicio:',
-                    periodo.dataInicio
-                  );
                 }
               }
 
-              // Verificação e conversão para `dataFim`
+              // Conversão de dataFim
               if (periodo.dataFim) {
                 if (typeof periodo.dataFim === 'string') {
                   dataFimConvertida = periodo.dataFim;
@@ -73,11 +78,6 @@ const LicencasPremio = () => {
                     .toDate()
                     .toISOString()
                     .split('T')[0];
-                } else {
-                  console.warn(
-                    'Tipo inesperado para dataFim:',
-                    periodo.dataFim
-                  );
                 }
               }
 
@@ -95,14 +95,31 @@ const LicencasPremio = () => {
         })
       );
 
-      const servidoresOrdenados = servidoresComLP.sort((a, b) =>
-        a.nome.localeCompare(b.nome)
-      ); // Ordena por nome
-      setServidores(servidoresOrdenados);
+      setServidores((prevServidores) => {
+        if (limpar) return servidoresProcessados;
+
+        const todosServidores = [...prevServidores, ...servidoresProcessados];
+        const servidoresUnicos = Array.from(
+          new Map(todosServidores.map((item) => [item.id, item])).values()
+        );
+
+        return servidoresUnicos.sort((a, b) =>
+          a.nome.localeCompare(b.nome, 'pt-BR', {
+            sensitivity: 'base',
+            ignorePunctuation: true,
+          })
+        );
+      });
+
+      setUltimoDoc(resultado.ultimoDocumentoDaPagina);
+      setTemMais(resultado.temMais);
     } catch (error) {
-      console.error('Erro ao buscar dados dos servidores:', error);
+      console.error('Erro ao buscar dados:', error);
+    } finally {
+      setCarregando(false);
     }
   };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -115,8 +132,6 @@ const LicencasPremio = () => {
       <div className={styles.content}>
         <h1 className={styles.abonos}>Licenças-prêmio</h1>
         <div>
-          <h2 className={styles.title}>Servidores</h2>
-
           <table className={styles.table} id="tabelaLP">
             <thead>
               <tr className={styles.titles}>
@@ -198,6 +213,22 @@ const LicencasPremio = () => {
               ))}
             </tbody>
           </table>
+          {carregando && (
+            <div className={styles.loading}>
+              <p>Carregando mais servidores...</p>
+            </div>
+          )}
+          {temMais && !carregando && (
+            <div className={styles.loadMoreButton}>
+              <button
+                className={styles.loadButton}
+                onClick={() => fetchData(false)}
+                disabled={carregando}
+              >
+                Carregar Mais Servidores
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Modal Component */}

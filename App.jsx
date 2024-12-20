@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { PeriodsProvider } from './contexts/PeriodosContext'; // Supondo que você tenha um contexto de períodos
 import { AuthProvider } from './contexts/AuthContext';
+import { Toaster } from 'react-hot-toast';
 import ProtectedRoute from './components/ProtectedRoute'; // Certifique-se de que a importação esteja correta
 
 import Login from './pages/Login/Login';
@@ -14,6 +15,7 @@ import BuscarPeriodos from './components/BuscarPeriodos';
 function App() {
   return (
     <AuthProvider>
+      <Toaster />
       <BrowserRouter>
         <PeriodsProvider>
           <Routes>

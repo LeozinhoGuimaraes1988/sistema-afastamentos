@@ -1,10 +1,11 @@
+import toast from 'react-hot-toast';
 import { deletePeriodo } from '../services/fireStore';
 
 const DeletePeriodo = ({ periodoId, onClose }) => {
   const handleDelete = async () => {
     try {
       await deletePeriodo(periodoId);
-      alert('Período excluído com sucesso!');
+      toast.success('Período excluído com sucesso!');
       onClose(); // Fecha o modal ou componente de confirmação
     } catch (error) {
       console.error(error);

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { db } from '../firebase/config';
 import { addLicencaPremio } from '../services/fireStore';
 import { getDoc, doc, updateDoc, arrayUnion } from 'firebase/firestore';
+import toast from 'react-hot-toast';
 
 const EditPeriodosLP = ({
   currentPeriods,
@@ -60,12 +61,12 @@ const EditPeriodosLP = ({
 
   const handleAddLP = async () => {
     if (!validarDiasLicencaPremio(novalp.dataInicio, novalp.dataFim)) {
-      alert('A licença-prêmio deve ter exatamente 30 dias.');
+      toast.error('A licença-prêmio deve ter exatamente 30 dias.');
       return;
     }
 
     if (verificarConflitos(novalp.dataInicio, novalp.dataFim)) {
-      alert(
+      toast.error(
         'O período selecionado conflita com outra licença-prêmio, férias ou abono.'
       );
       return;
@@ -80,12 +81,12 @@ const EditPeriodosLP = ({
         });
         setLP((prev) => [...prev, novalp]);
         setNovaLP({ dataInicio: '', dataFim: '' });
-        console.log('Licença-prêmio adicionada com sucesso');
+        toast.success('Licença-prêmio adicionada com sucesso');
       } catch (error) {
-        console.error('Erro ao adicionar licença-prêmio:', error);
+        toast.error(`Erro ao adicionar licença-prêmio: ${error.message}`);
       }
     } else {
-      alert('Por favor, selecione as datas de início e fim.');
+      toast.error('Por favor, selecione as datas de início e fim.');
     }
   };
 
@@ -112,12 +113,12 @@ const EditPeriodosLP = ({
         );
 
         await updateDoc(servidorRef, { periodos: novosPeriodos });
-        console.log('Licença-prêmio removida do Firebase com sucesso!');
+        toast.success('Licença-prêmio removida com sucesso!');
       } else {
-        console.error('Documento do servidor não encontrado.');
+        toast.error('Documento do servidor não encontrado.');
       }
     } catch (error) {
-      console.error('Erro ao remover licença-prêmio:', error);
+      toast.error(`Erro ao remover licença-prêmio: ${error.message}`);
     }
   };
 
@@ -139,14 +140,13 @@ const EditPeriodosLP = ({
         ),
       });
 
-      console.log(
-        'Licenças-prêmio adicionadas diretamente no array de períodos!'
-      );
-      alert('Alterações salvas com sucesso!');
+      toast.success('Alterações salvas com sucesso!');
       setLP([]);
-      // handleCloseLicencasPremio();
+      setTimeout(() => {
+        handleCloseLicencasPremio();
+      }, 1000);
     } catch (error) {
-      console.error('Erro ao salvar licenças-prêmio:', error);
+      toast.error('Erro ao salvar licenças-prêmio:', error);
     }
   };
 
@@ -163,7 +163,6 @@ const EditPeriodosLP = ({
       );
 
       if (!servidorDoc.exists()) {
-        console.log('Nenhum documento encontrado para o servidor selecionado.');
         return;
       }
 
@@ -177,7 +176,7 @@ const EditPeriodosLP = ({
 
       setLP(lpsConvertidas);
     } catch (error) {
-      console.error('Erro ao buscar licenças-prêmio:', error);
+      toast.error('Erro ao buscar licenças-prêmio:', error);
     }
   };
 

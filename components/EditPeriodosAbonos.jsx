@@ -3,12 +3,8 @@ import styles from './EditPeriodosAbonos.module.css';
 import { useState, useEffect } from 'react';
 import { db } from '../firebase/config';
 
-// Hook
-// import { useUpdatePeriodo } from '../hooks/useUpdatePeriodo';
-
-import Abonos from '../pages/Abonos/Abonos';
-
 import { collection, getDoc, doc, addDoc, updateDoc } from 'firebase/firestore';
+import toast from 'react-hot-toast';
 
 const EditPeriodosAbonos = ({
   showModalAbonos,
@@ -46,10 +42,10 @@ const EditPeriodosAbonos = ({
         // Limpar o campo após adicionar
         setNovoAbono({ data: '' });
       } catch (error) {
-        console.error('Erro ao adicionar abono:', error);
+        toast.error('Erro ao adicionar abono:', error);
       }
     } else {
-      alert('Por favor, selecione uma data.');
+      toast.error('Por favor, selecione uma data.');
     }
   };
 
@@ -59,7 +55,7 @@ const EditPeriodosAbonos = ({
       const abonoParaRemover = abonos[index];
 
       if (!abonoParaRemover || !abonoParaRemover.data) {
-        console.error('Abono não possui uma data válida para exclusão.');
+        toast.error('Abono não possui uma data válida para exclusão.');
         return;
       }
 
@@ -85,14 +81,18 @@ const EditPeriodosAbonos = ({
         );
 
         await updateDoc(servidorRef, { periodos: novosPeriodos });
-        console.log('Abono removido do Firebase com sucesso!');
+        toast.success('Abono removido com sucesso!');
+
+        setTimeout(() => {
+          handleCloseAbonos();
+        }, 1000);
       } else {
-        console.error(
+        toast.error(
           'Documento do servidor não encontrado para remoção do abono.'
         );
       }
     } catch (error) {
-      console.error('Erro ao remover o abono:', error);
+      toast.error('Erro ao remover o abono:', error);
     }
   };
 
@@ -111,7 +111,7 @@ const EditPeriodosAbonos = ({
       // Busca o documento do servidor no Firestore de forma assíncrona.
 
       if (!servidorDoc.exists()) {
-        console.log('Nenhum documento encontrado para o servidor selecionado.');
+        toast.error('Nenhum documento encontrado para o servidor selecionado.');
         return;
       }
       // Verifica se o documento do servidor foi encontrado no Firestore.
@@ -142,15 +142,15 @@ const EditPeriodosAbonos = ({
       // Atualiza o documento do servidor no Firestore, substituindo o campo `periodos` pelo `novosPeriodos`.
       // Isso adiciona ou atualiza os abonos no array de períodos do servidor.
 
-      console.log('Abonos salvos diretamente no array de períodos!');
-      alert('Abonos salvos com sucesso!');
+      toast.success('Abonos salvos com sucesso!');
       // Exibe mensagens de sucesso no console e em um alerta para o usuário.
 
-      handleCloseAbonos();
+      setTimeout(() => {
+        handleCloseAbonos();
+      }, 1000);
       // Fecha o modal de abonos após salvar as alterações.
     } catch (error) {
-      console.error('Erro ao salvar abonos:', error);
-      alert('Ocorreu um erro ao salvar os abonos.');
+      toast.error('Ocorreu um erro ao salvar os abonos.');
       // Captura qualquer erro que ocorra durante a execução do bloco `try`.
       // Exibe uma mensagem de erro no console e alerta o usuário sobre o problema.
     }
@@ -185,7 +185,7 @@ const EditPeriodosAbonos = ({
 
       setAbonos(abonosConvertidos);
     } catch (error) {
-      console.error('Erro ao buscar abonos:', error);
+      toast.error('Erro ao buscar abonos:', error);
     }
   };
 
@@ -242,6 +242,69 @@ const EditPeriodosAbonos = ({
                 <div className={styles.dates}>
                   {currentPeriods.length > 0 ? (
                     currentPeriods
+                      .filter(
+                        (period) =>
+                          period.tipo === 'ferias' &&
+                          period.dataInicio &&
+                          period.dataFim
+                      )
+                      .map((period, index) => {
+                        // Trata dataInicio
+                        const dataInicio = period.dataInicio
+                          ? typeof period.dataInicio === 'string'
+                            ? period.dataInicio // se for string
+                            : period.dataInicio.seconds // se tiver seconds
+                            ? new Date(period.dataInicio.seconds * 1000)
+                                .toISOString()
+                                .split('T')[0]
+                            : null // se não tiver seconds
+                          : null; // se não tiver dataInicio
+
+                        // Trata dataFim
+                        const dataFim = period.dataFim
+                          ? typeof period.dataFim === 'string'
+                            ? period.dataFim // se for string
+                            : period.dataFim.seconds // se tiver seconds
+                            ? new Date(period.dataFim.seconds * 1000)
+                                .toISOString()
+                                .split('T')[0]
+                            : null // se não tiver seconds
+                          : null; // se não tiver dataFim
+
+                        return (
+                          <div
+                            key={`${period.tipo}-${index}`}
+                            className={styles.periodForm}
+                          >
+                            <div className={styles.inputAbonos}>
+                              <div className={styles.inputFieldAbonos}>
+                                <label>Data Início</label>
+                                <input
+                                  type="date"
+                                  value={dataInicio || ''}
+                                  disabled
+                                />
+                              </div>
+                              <div className={styles.inputFieldAbonos}>
+                                <label>Data de Fim</label>
+                                <input
+                                  type="date"
+                                  value={dataFim || ''}
+                                  disabled
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })
+                  ) : (
+                    <p>
+                      Nenhum período registrado para {servidorSelecionado.nome}
+                    </p>
+                  )}
+
+                  {/* {currentPeriods.length > 0 ? (
+                    currentPeriods
                       .filter((period) => period.dataInicio && period.dataFim)
                       .map((period, index) => (
                         <div
@@ -272,7 +335,7 @@ const EditPeriodosAbonos = ({
                     <p>
                       Nenhum período registrado para {servidorSelecionado.nome}
                     </p>
-                  )}
+                  )} */}
                 </div>
               </div>
             ) : (

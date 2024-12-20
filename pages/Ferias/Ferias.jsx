@@ -1,12 +1,11 @@
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-// import { NavLink, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 import Navbar from '../../components/Navbar';
 
 import { useEffect, useState } from 'react';
 import {
-  getServidores,
   addServidor,
   deleteServidor,
   updateServidor,
@@ -26,6 +25,7 @@ import ScrollToTopButton from '../../components/ScrollButton';
 
 // CSS
 import styles from '../Ferias/Ferias.module.css';
+import { getServidoresPaginado } from '../../services/servidoresServices';
 
 const Ferias = () => {
   // Estado para armazenar os dados do novo servidor
@@ -38,7 +38,7 @@ const Ferias = () => {
 
   //const navigate = useNavigate();
 
-  const { documents, loading, error } = useFetchFerias('feriasCollection');
+  const { loading, error } = useFetchFerias('feriasCollection');
   const { addPeriodo } = useAddPeriodo();
 
   // Estado para armazenar os períodos de férias
@@ -52,78 +52,70 @@ const Ferias = () => {
   // Estado para armazenar os períodos de férias dos servidores
   const [servidoresComFerias, setServidoresComFerias] = useState([]);
 
+  // Estados para paginação
+  const [ultimoDoc, setUltimoDoc] = useState(null);
+  const [temMais, setTemMais] = useState(true);
+  const [carregando, setCarregando] = useState(false);
+  const [limitePorPagina] = useState(10);
+
   const [servidores, setServidores] = useState([]); // para armazenar a lista de servidores
 
-  const fetchData = async () => {
+  const fetchData = async (limpar = false) => {
     try {
-      const servidoresData = await getServidores();
+      setCarregando(true);
 
-      const servidoresComFerias = await Promise.all(
-        servidoresData.map(async (servidor) => {
-          if (servidor.periodos && servidor.periodos.length > 0) {
-            const periodosConvertidos = servidor.periodos.map((periodo) => {
-              let dataInicioConvertida, dataFimConvertida;
-
-              // Verificação e conversão para `dataInicio`
-              if (periodo.dataInicio) {
-                if (typeof periodo.dataInicio === 'string') {
-                  dataInicioConvertida = periodo.dataInicio;
-                } else if (
-                  periodo.dataInicio instanceof Object &&
-                  typeof periodo.dataInicio.toDate === 'function'
-                ) {
-                  dataInicioConvertida = periodo.dataInicio
-                    .toDate()
-                    .toISOString()
-                    .split('T')[0];
-                } else {
-                  console.warn(
-                    'Tipo inesperado para dataInicio:',
-                    periodo.dataInicio
-                  );
-                }
-              }
-
-              // Verificação e conversão para `dataFim`
-              if (periodo.dataFim) {
-                if (typeof periodo.dataFim === 'string') {
-                  dataFimConvertida = periodo.dataFim;
-                } else if (
-                  periodo.dataFim instanceof Object &&
-                  typeof periodo.dataFim.toDate === 'function'
-                ) {
-                  dataFimConvertida = periodo.dataFim
-                    .toDate()
-                    .toISOString()
-                    .split('T')[0];
-                } else {
-                  console.warn(
-                    'Tipo inesperado para dataFim:',
-                    periodo.dataFim
-                  );
-                }
-              }
-
-              return {
-                ...periodo,
-                dataInicio: dataInicioConvertida,
-                dataFim: dataFimConvertida,
-              };
-            });
-
-            return { ...servidor, ferias: periodosConvertidos };
-          } else {
-            return { ...servidor, ferias: [] };
-          }
-        })
+      const resultado = await getServidoresPaginado(
+        limitePorPagina,
+        limpar ? null : ultimoDoc
       );
 
-      const servidoresOrdenados = servidoresComFerias.sort((a, b) =>
-        a.nome.trim().toLowerCase().localeCompare(b.nome.trim().toLowerCase())
-      ); // Ordena por nome
-      setServidoresComFerias(servidoresOrdenados);
+      if (!resultado || !resultado.servidores?.length) {
+        console.log('Sem mais resultados para carregar');
+        setTemMais(false);
+        return;
+      }
+
+      const servidoresProcessados = await Promise.all(
+        resultado.servidores.map(async (servidor) => ({
+          id: servidor.id,
+          nome: servidor.nome,
+          cargo: servidor.cargo,
+          lotacao: servidor.lotacao,
+          matricula: servidor.matricula,
+          ferias: servidor.periodos || [],
+        }))
+      );
+
+      setServidoresComFerias((prevServidores) => {
+        // Se estiver limpando, retorna apenas os novos servidores
+        if (limpar) {
+          return servidoresProcessados;
+        }
+
+        // Combina servidores antigos e novos
+        const todosServidores = [...prevServidores, ...servidoresProcessados];
+
+        // Remove duplicatas usando Set e mantém a ordem correta
+        const servidoresUnicos = Array.from(
+          new Map(todosServidores.map((item) => [item.id, item])).values()
+        );
+
+        // Ordena corretamente considerando caracteres especiais
+        return servidoresUnicos.sort((a, b) =>
+          a.nome.localeCompare(b.nome, 'pt-BR', {
+            sensitivity: 'base',
+            ignorePunctuation: true,
+          })
+        );
+      });
+
+      setUltimoDoc(resultado.ultimoDocumentoDaPagina);
+      setTemMais(resultado.temMais);
     } catch (error) {
-      console.error('Erro ao buscar dados dos servidores:', error);
+      console.error('Erro no fetchData:', error);
+      setTemMais(false);
+    } finally {
+      setCarregando(false);
     }
   };
 
@@ -173,9 +165,11 @@ const Ferias = () => {
       if (!servidorId) {
         throw new Error('ServidorId não fornecido!');
       }
-      await addPeriodo(ferias[0], servidorId); // Se `ferias` é um array, passe o primeiro objeto
-      setFerias([...ferias, { dataInicio: '', dataFim: '' }]); // Atualiza o estado local
+      await addPeriodo(ferias[0], servidorId);
+      toast.success('Período adicionado com sucesso!');
+      setFerias([...ferias, { dataInicio: '', dataFim: '' }]);
     } catch (error) {
+      toast.error('Erro ao adicionar período');
       console.error('Erro ao adicionar período:', error);
     }
   };
@@ -260,41 +254,48 @@ const Ferias = () => {
 
     let servidorId = editingId;
 
-    // Atualiza ou adiciona um servidor
-    if (editingId) {
-      await updateServidor(editingId, newServidor);
-      setEditingId(null);
-    } else {
-      const newServerRef = await addServidor(newServidor);
-
-      if (!newServerRef) {
-        // Se newServerRef for null, o servidor já existe
-        alert('Este servidor já está cadastrado.');
-        return; // Encerra a função para evitar erros
-      }
-      servidorId = newServerRef.id; // Define o servidorId corretamente
-    }
-
     try {
-      // Adiciona os períodos de férias para o servidor
-      for (const periodo of ferias) {
-        await addFerias(servidorId, {
-          dataInicio: periodo.dataInicio,
-          dataFim: periodo.dataFim,
-          dias: periodo.dias,
-        });
+      // Atualiza ou adiciona um servidor
+      if (editingId) {
+        await updateServidor(editingId, newServidor);
+        setEditingId(null);
+        toast.success('Servidor atualizado com sucesso!');
+      } else {
+        const newServerRef = await addServidor(newServidor);
+
+        if (!newServerRef) {
+          toast.error('Este servidor já está cadastrado.');
+          return;
+        }
+        servidorId = newServerRef.id;
+        toast.success('Servidor cadastrado com sucesso!');
       }
-      alert('Servidor e períodos adicionados com sucesso!');
+
+      // Adiciona os períodos de férias
+      try {
+        for (const periodo of ferias) {
+          await addFerias(servidorId, {
+            dataInicio: periodo.dataInicio,
+            dataFim: periodo.dataFim,
+            dias: periodo.dias,
+          });
+        }
+        toast.success('Períodos adicionados com sucesso!');
+      } catch (error) {
+        toast.error('Erro ao adicionar períodos de férias');
+        console.log('Erro ao adicionar período de férias: ', error);
+      }
+
+      // Limpa o estado após o envio
+      setNewServidor({ nome: '', cargo: '', lotacao: '', matricula: '' });
+      setFerias([{ dataInicio: '', dataFim: '', dias: 0 }]);
+
+      // Atualiza a lista de servidores
+      fetchData();
     } catch (error) {
-      console.log('Erro ao adicionar período de férias: ', error);
+      toast.error('Erro ao processar operação');
+      console.error('Erro:', error);
     }
-
-    // Limpa o estado após o envio
-    setNewServidor({ nome: '', cargo: '', lotacao: '', matricula: '' });
-    setFerias([{ dataInicio: '', dataFim: '', dias: 0 }]);
-
-    // Atualiza a lista de servidores
-    fetchData();
   };
 
   // Função para lidar com a exclusão de um servidor
@@ -302,15 +303,13 @@ const Ferias = () => {
     if (window.confirm('Tem certeza de que deseja excluir este servidor?')) {
       try {
         await deleteServidor(id);
-
-        // Atualize o estado filtrando o servidor excluído
+        toast.success('Servidor excluído com sucesso!');
         setServidores((prevServidores) =>
           prevServidores.filter((servidor) => servidor.id !== id)
         );
-        await fetchData(); // Chamamos a fetchData para garantir que os dados estejam sincronizados corretamente com o banco de dados
-        alert('Servidor excluído com sucesso!');
+        await fetchData();
       } catch (error) {
-        console.log('Erro ao excluir servidor: ', error);
+        toast.error('Erro ao excluir servidor');
       }
     }
   };
@@ -321,8 +320,11 @@ const Ferias = () => {
   const handleEdit = (servidor) => {
     // Verifica se o servidor possui período de férias
     if (servidor.ferias && servidor.ferias.length > 0) {
+      const periodosFeriasServidor = servidor.ferias.filter(
+        (periodo) => periodo.tipo === 'ferias'
+      );
       setServidorSelecionado(servidor); // Armazena o servidor selecionado em um estado
-      setCurrentPeriods(servidor.ferias); // Atualiza o currentPeriods com os períodos de férias do servidor selecionado
+      setCurrentPeriods(periodosFeriasServidor); // Atualiza o currentPeriods com os períodos de férias do servidor selecionado
     } else {
       console.log('Nenhum período de férias encontrado para o servidor.');
       setCurrentPeriods([]); // Limpa se não houver períodos
@@ -539,7 +541,7 @@ const Ferias = () => {
         )}
       </div>
 
-      <div>
+      <div className={styles.tableContainer}>
         <table className={styles.table} id="tabelaFerias">
           <thead>
             <tr className={styles.titles}>
@@ -731,6 +733,22 @@ const Ferias = () => {
             ))}
           </tbody>
         </table>
+        {carregando && (
+          <div className={styles.loading}>
+            <p>Carregando mais servidores...</p>
+          </div>
+        )}
+        {temMais && !carregando && (
+          <div className={styles.loadMoreButton}>
+            <button
+              className={styles.loadButton}
+              onClick={() => fetchData(false)}
+              disabled={carregando}
+            >
+              {carregando ? 'Carregando...' : 'Carregar Mais Servidores'}
+            </button>
+          </div>
+        )}
       </div>
       <div>
         <ScrollToTopButton />

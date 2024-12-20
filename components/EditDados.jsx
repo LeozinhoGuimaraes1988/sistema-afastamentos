@@ -2,6 +2,7 @@ import Modal from 'react-modal';
 import { useEffect, useState } from 'react';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase/config';
+import toast from 'react-hot-toast';
 
 import styles from './EditDados.module.css';
 
@@ -35,17 +36,23 @@ const EditDados = ({ servidorSelecionado, isOpen, handleClose }) => {
   const [saved, setSaved] = useState(false);
 
   const handleSave = async () => {
-    // Atualiza os dados no banco de dados
-    const servidorRef = doc(db, 'servidores', servidorSelecionado.id);
-    await updateDoc(servidorRef, dados);
-    if (servidorRef) {
-      alert('Dados atualizados com sucesso!');
-    } else {
-      alert('Erro ao atualizar dados');
-    }
+    try {
+      // Atualiza os dados no banco de dados
+      const servidorRef = doc(db, 'servidores', servidorSelecionado.id);
+      await updateDoc(servidorRef, dados);
 
-    setSaved(true);
-    setTimeout(() => setSaved(false), 1000); // Reseta o feedback após 2 segundos
+      toast.success('Dados atualizados com sucesso!');
+      setSaved(true);
+
+      // Fecha o modal após um breve delay
+      setTimeout(() => {
+        handleClose();
+        setSaved(false);
+      }, 1000);
+    } catch (error) {
+      toast.error(`Erro ao atualizar dados: ${error.message}`);
+      setSaved(false);
+    }
   };
 
   const customStyles = {

@@ -1,18 +1,24 @@
 import { useContext, useState, useEffect } from 'react';
 import { PeriodsContext } from '../../contexts/PeriodosContext';
-import { getServidores } from '../../services/fireStore';
+import { getServidoresPaginado } from '../../services/servidoresServices';
 
 import styles from '../Abonos/Abonos.module.css';
 
 import Navbar from '../../components/Navbar';
 import EditPeriodosAbonos from '../../components/EditPeriodosAbonos';
-import GerarPDFButton from '../../components/GerarPDFButton';
+import ScrollToTopButton from '../../components/ScrollButton';
 
 const Abonos = () => {
   const { currentPeriods, setCurrentPeriods } = useContext(PeriodsContext);
   const [showModalAbonos, setShowModalAbonos] = useState(false);
   const [servidores, setServidores] = useState([]);
   const [servidorSelecionado, setServidorSelecionado] = useState(null);
+
+  // Paginação
+  const [ultimoDoc, setUltimoDoc] = useState(null);
+  const [temMais, setTemMais] = useState(true);
+  const [carregando, setCarregando] = useState(false);
+  const [limitePorPagina] = useState(10);
 
   const handleInserirAbono = (servidor) => {
     setServidorSelecionado(servidor);
@@ -44,33 +50,44 @@ const Abonos = () => {
     setServidorSelecionado(null);
   };
 
-  const fetchData = async () => {
+  const fetchData = async (limpar = false) => {
     try {
-      const servidoresData = await getServidores();
+      setCarregando(true);
 
-      // Ordena os servidores em ordem alfabética pelo nome
-      const servidoresComAbonos = servidoresData
-        .map((servidor) => {
-          if (servidor.periodos && servidor.periodos.length > 0) {
-            const abonos = servidor.periodos
-              .filter((periodo) => periodo.tipo === 'abono')
-              .map((periodo) => {
-                const dataConvertida =
-                  periodo.data instanceof Object && periodo.data.seconds
-                    ? new Date(periodo.data.seconds * 1000)
-                    : new Date(periodo.data);
+      const resultado = await getServidoresPaginado(
+        limitePorPagina,
+        limpar ? null : ultimoDoc
+      );
 
-                return { ...periodo, dataConvertida };
-              });
-            return { ...servidor, abonos };
-          }
-          return { ...servidor, abonos: [] };
-        })
-        .sort((a, b) => a.nome.localeCompare(b.nome)); // Ordena por nome
+      const servidoresProcessados = resultado.servidores.map((servidor) => ({
+        ...servidor,
+        abonos:
+          servidor.periodos?.filter((periodo) => periodo.tipo === 'abono') ||
+          [],
+      }));
 
-      setServidores(servidoresComAbonos);
+      setServidores((prevServidores) => {
+        if (limpar) return servidoresProcessados;
+
+        const todosServidores = [...prevServidores, ...servidoresProcessados];
+        const servidoresUnicos = Array.from(
+          new Map(todosServidores.map((item) => [item.id, item])).values()
+        );
+
+        return servidoresUnicos.sort((a, b) =>
+          a.nome.localeCompare(b.nome, 'pt-BR', {
+            sensitivity: 'base',
+            ignorePunctuation: true,
+          })
+        );
+      });
+
+      setUltimoDoc(resultado.ultimoDocumentoDaPagina);
+      setTemMais(resultado.temMais);
     } catch (error) {
-      console.error('Erro ao buscar servidores: ', error);
+      console.error('Erro ao buscar dados:', error);
+    } finally {
+      setCarregando(false);
     }
   };
 
@@ -86,8 +103,6 @@ const Abonos = () => {
       <div className={styles.content}>
         <h1 className={styles.abonos}>Abonos</h1>
         <div>
-          <h2 className={styles.title}>Servidores</h2>
-
           <table className={styles.table} id="tabelaAbonos">
             <thead>
               <tr className={styles.titles}>
@@ -146,6 +161,22 @@ const Abonos = () => {
               ))}
             </tbody>
           </table>
+          {carregando && (
+            <div className={styles.loading}>
+              <p>Carregando mais servidores...</p>
+            </div>
+          )}
+          {temMais && !carregando && (
+            <div className={styles.loadMoreButton}>
+              <button
+                className={styles.loadButton}
+                onClick={() => fetchData(false)}
+                disabled={carregando}
+              >
+                Carregar Mais Servidores
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Modal Component */}
@@ -158,6 +189,9 @@ const Abonos = () => {
             setCurrentPeriods={setCurrentPeriods}
           />
         )}
+      </div>
+      <div>
+        <ScrollToTopButton />
       </div>
     </div>
   );
