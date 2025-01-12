@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { getServidores } from '../services/fireStore';
 import styles from '../components/BuscarPeriodos.module.css';
+import removeAccents from 'remove-accents';
 
 import DropdownCheckbox from './DropdownCheckbox';
 import ScrollToTopButton from './ScrollButton';
 import Navbar from './Navbar';
 import GerarPDFButton from '../components/GerarPDFButton';
+import toast from 'react-hot-toast';
 
 const BuscarPeriodos = () => {
   const [servidores, setServidores] = useState([]);
@@ -17,8 +19,8 @@ const BuscarPeriodos = () => {
   const [filtroDataInicio, setFiltroDataInicio] = useState('');
   const [filtroDataFim, setFiltroDataFim] = useState('');
   const [filtroTipos, setFiltroTipos] = useState('');
-
   const [tipoParaPDF, setTipoParaPDF] = useState('');
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -31,7 +33,7 @@ const BuscarPeriodos = () => {
 
         setServidores(servidoresOrdenados);
       } catch (error) {
-        console.error('Erro ao buscar dados dos servidores e licenças:', error);
+        toast.error('Erro ao buscar dados dos servidores e licenças:', error);
       }
     };
     fetchData();
@@ -48,7 +50,9 @@ const BuscarPeriodos = () => {
 
     if (filtroNome) {
       filtrados = filtrados.filter((servidor) =>
-        servidor.nome.includes(filtroNome)
+        removeAccents(servidor.nome.toLowerCase()).includes(
+          removeAccents(filtroNome.toLowerCase())
+        )
       );
     }
 

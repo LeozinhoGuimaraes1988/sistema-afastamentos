@@ -1,6 +1,7 @@
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import toast from 'react-hot-toast';
+import removeAccents from 'remove-accents';
 
 import Navbar from '../../components/Navbar';
 
@@ -47,8 +48,6 @@ const Ferias = () => {
   // Estado para armazenar o ID do servidor em edição
   const [editingId, setEditingId] = useState(null);
 
-  // const [periodoAtual, setPeriodoAtual] = useState(null);
-
   // Estado para armazenar os períodos de férias dos servidores
   const [servidoresComFerias, setServidoresComFerias] = useState([]);
 
@@ -78,7 +77,7 @@ const Ferias = () => {
       const servidoresProcessados = await Promise.all(
         resultado.servidores.map(async (servidor) => ({
           id: servidor.id,
-          nome: servidor.nome,
+          nome: decodeURIComponent(servidor.nome),
           cargo: servidor.cargo,
           lotacao: servidor.lotacao,
           matricula: servidor.matricula,
@@ -102,7 +101,7 @@ const Ferias = () => {
 
         // Ordena corretamente considerando caracteres especiais
         return servidoresUnicos.sort((a, b) =>
-          a.nome.localeCompare(b.nome, 'pt-BR', {
+          removeAccents(a.nome).localeCompare(removeAccents(b.nome), 'pt-BR', {
             sensitivity: 'base',
             ignorePunctuation: true,
           })
@@ -462,6 +461,7 @@ const Ferias = () => {
                     value={newServidor.nome}
                     onChange={handleServidorInputChange}
                     placeholder="Nome do servidor"
+                    autoComplete="off"
                   />
                   <input
                     type="text"

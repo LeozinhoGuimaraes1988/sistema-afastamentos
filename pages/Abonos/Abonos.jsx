@@ -29,15 +29,20 @@ const Abonos = () => {
           .map((periodo) => ({
             ...periodo,
             dataInicio: periodo.dataInicio
-              ? new Date(periodo.dataInicio.seconds * 1000)
-                  .toISOString()
-                  .split('T')[0]
-              : '', // Define como string vazia se não existir
+              ? typeof periodo.dataInicio === 'object' &&
+                periodo.dataInicio.seconds
+                ? new Date(periodo.dataInicio.seconds * 1000)
+                    .toISOString()
+                    .split('T')[0]
+                : new Date(periodo.dataInicio).toISOString().split('T')[0]
+              : '', // String vazia se for inválido
             dataFim: periodo.dataFim
-              ? new Date(periodo.dataFim.seconds * 1000)
-                  .toISOString()
-                  .split('T')[0]
-              : '', // Define como string vazia se não existir
+              ? typeof periodo.dataFim === 'object' && periodo.dataFim.seconds
+                ? new Date(periodo.dataFim.seconds * 1000)
+                    .toISOString()
+                    .split('T')[0]
+                : new Date(periodo.dataFim).toISOString().split('T')[0]
+              : '', // String vazia se for inválido
           }))
       : [];
 
