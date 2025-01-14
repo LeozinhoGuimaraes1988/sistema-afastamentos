@@ -5,9 +5,7 @@ Este é um sistema desenvolvido para facilitar o gerenciamento de férias, abono
 ---
 
 ## 🖥️ **Demonstração**
-<img src="https://github.com/LeozinhoGuimaraes1988/sistema-afastamentos/blob/main/path_to_screenshot.png" alt="Demonstração do Sistema" width="800">
-
-> *Adicione um print ou GIF mostrando as principais telas ou funcionalidades do sistema aqui!*
+![image](https://github.com/user-attachments/assets/d395f641-e7fc-4c1b-9819-0e2a3fb9e51e)
 
 ---
 
