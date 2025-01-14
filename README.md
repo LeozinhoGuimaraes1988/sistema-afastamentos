@@ -6,6 +6,8 @@ Este é um sistema desenvolvido para facilitar o gerenciamento de férias, abono
 
 ## 🖥️ **Demonstração**
 ![image](https://github.com/user-attachments/assets/d395f641-e7fc-4c1b-9819-0e2a3fb9e51e)
+![image](https://github.com/user-attachments/assets/5e823ce6-8b95-498e-b1e8-0ecb65ae6e10)
+
 
 ---
 
