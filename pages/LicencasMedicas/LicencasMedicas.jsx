@@ -67,15 +67,41 @@ const LicencasMedicas = () => {
   }, []);
 
   useEffect(() => {
-    if (filtroTipos.length === 0) {
-      setLicencasFiltradas(licencas);
-    } else {
-      const novasLicencas = licencas.filter((licenca) =>
+    let filtradas = licencas;
+
+    if (mesFiltro) {
+      filtradas = filtradas.filter((licenca) => {
+        if (licenca.dataInicio) {
+          const inicio = licenca.dataInicio.seconds
+            ? new Date(licenca.dataInicio.seconds * 1000)
+            : new Date(licenca.dataInicio);
+          const inicioMes = inicio.getMonth() + 1;
+
+          const fim = licenca.dataFim
+            ? licenca.dataFim.seconds
+              ? new Date(licenca.dataFim.seconds * 1000)
+              : new Date(licenca.dataFim)
+            : inicio;
+          const fimMes = fim.getMonth() + 1;
+
+          return (
+            inicioMes === parseInt(mesFiltro, 10) ||
+            fimMes === parseInt(mesFiltro, 10)
+          );
+        }
+        return false;
+      });
+    }
+
+    // Aplicar filtro de tipos de licença, se houver
+    if (filtroTipos.length > 0) {
+      filtradas = filtradas.filter((licenca) =>
         filtroTipos.includes(licenca.tipoAtestado)
       );
-      setLicencasFiltradas(novasLicencas);
     }
-  }, [filtroTipos, licencas]);
+
+    setLicencasFiltradas(filtradas);
+  }, [mesFiltro, filtroTipos, licencas]);
 
   // 🔹 Adicionar/Remover tipo de licença selecionado
   const toggleTipo = (tipo) => {
