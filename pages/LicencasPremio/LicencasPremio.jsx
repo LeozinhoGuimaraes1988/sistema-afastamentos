@@ -132,6 +132,38 @@ const LicencasPremio = () => {
       <div className={styles.content}>
         <h1 className={styles.abonos}>Licenças-prêmio</h1>
         <div>
+          <div className={styles.legendaContainer}>
+            <h4 className={styles.legendaTitulo}>Legenda:</h4>
+            <div className={styles.legendaItens}>
+              <div className={styles.legendaItem}>
+                <div
+                  className={`${styles.legendaCor} ${styles.legendaAndamento}`}
+                ></div>
+                <span>Em andamento</span>
+              </div>
+
+              <div className={styles.legendaItem}>
+                <div
+                  className={`${styles.legendaCor} ${styles.legendaProximo}`}
+                ></div>
+                <span>Próximo (em até 15 dias)</span>
+              </div>
+
+              <div className={styles.legendaItem}>
+                <div
+                  className={`${styles.legendaCor} ${styles.legendaFuturo}`}
+                ></div>
+                <span>Futuro (além de 15 dias)</span>
+              </div>
+
+              <div className={styles.legendaItem}>
+                <div
+                  className={`${styles.legendaCor} ${styles.legendaPassado}`}
+                ></div>
+                <span>Passado</span>
+              </div>
+            </div>
+          </div>
           <table className={styles.table} id="tabelaLP">
             <thead>
               <tr className={styles.titles}>
@@ -151,53 +183,86 @@ const LicencasPremio = () => {
                   <td>{servidor.lotacao}</td>
                   <td>{servidor.matricula}</td>
                   <td>
-                    {servidor.ferias &&
-                    servidor.ferias.some(
-                      (periodo) => periodo.tipo === 'licenca-premio'
-                    ) ? (
-                      servidor.ferias
-                        .filter((periodo) => periodo.tipo === 'licenca-premio')
-                        .map((periodo, index) => {
-                          const dataInicio = periodo.dataInicio
-                            ? typeof periodo.dataInicio === 'string'
-                              ? new Date(periodo.dataInicio + 'T00:00:00')
-                              : new Date(periodo.dataInicio.seconds * 1000)
-                            : null;
-                          const dataFim = periodo.dataFim
-                            ? typeof periodo.dataFim === 'string'
-                              ? new Date(periodo.dataFim + 'T23:59:59')
-                              : new Date(periodo.dataFim.seconds * 1000)
+                    {(() => {
+                      // Filtra os períodos do tipo "licenca-premio"
+                      const licencasPremioFiltradas = servidor.ferias
+                        ? servidor.ferias.filter(
+                            (periodo) => periodo.tipo === 'licenca-premio'
+                          )
+                        : [];
+
+                      // Se não houver licenças-prêmio, exibe a mensagem
+                      if (licencasPremioFiltradas.length === 0) {
+                        return <p>Nenhuma licença-prêmio registrada</p>;
+                      }
+
+                      return licencasPremioFiltradas.map((periodo, index) => {
+                        const dataInicio = periodo.dataInicio
+                          ? new Date(periodo.dataInicio + 'T00:00:00')
+                          : null;
+                        const dataFim = periodo.dataFim
+                          ? new Date(periodo.dataFim + 'T23:59:59')
+                          : null;
+
+                        const hoje = new Date();
+                        hoje.setHours(0, 0, 0, 0);
+
+                        let periodoStatus = '';
+
+                        if (dataInicio && dataFim) {
+                          if (hoje >= dataInicio && hoje <= dataFim) {
+                            periodoStatus = 'andamento';
+                          } else if (hoje < dataInicio) {
+                            const diasParaInicio = Math.ceil(
+                              (dataInicio - hoje) / (1000 * 60 * 60 * 24)
+                            );
+                            periodoStatus =
+                              diasParaInicio <= 15 ? 'proximo' : 'futuro';
+                          } else if (hoje > dataFim) {
+                            periodoStatus = 'passado';
+                          }
+                        }
+
+                        const diffDays =
+                          dataInicio && dataFim
+                            ? Math.floor(
+                                (dataFim - dataInicio) / (1000 * 60 * 60 * 24)
+                              ) + 1
                             : null;
 
-                          const diffDays =
-                            dataInicio && dataFim
-                              ? Math.floor(
-                                  (dataFim - dataInicio) /
-                                    (1000 * 60 * 60 * 24) +
-                                    1
-                                )
-                              : null;
-
-                          return (
-                            <div key={index}>
-                              <p>
-                                {dataInicio
-                                  ? dataInicio.toLocaleDateString()
-                                  : 'Data de Início inválida'}{' '}
-                                a{' '}
-                                {dataFim
-                                  ? dataFim.toLocaleDateString()
-                                  : 'Data de Fim inválida'}
-                                {diffDays !== null
-                                  ? ` (${diffDays} dias)`
-                                  : ' (Dias não calculados)'}
-                              </p>
-                            </div>
-                          );
-                        })
-                    ) : (
-                      <p>Nenhuma licença-prêmio agendada</p>
-                    )}
+                        return (
+                          <div
+                            key={index}
+                            className={`periodo-licenca ${periodoStatus}`}
+                            style={{
+                              borderBottom: '1px solid #ccc',
+                              padding: '4px',
+                              backgroundColor:
+                                periodoStatus === 'andamento'
+                                  ? 'lightblue'
+                                  : periodoStatus === 'proximo'
+                                  ? 'yellow'
+                                  : periodoStatus === 'futuro'
+                                  ? 'lightgreen'
+                                  : periodoStatus === 'passado'
+                                  ? 'lightgray'
+                                  : 'transparent',
+                            }}
+                          >
+                            <p>
+                              {dataInicio
+                                ? dataInicio.toLocaleDateString()
+                                : 'Data Inválida'}{' '}
+                              a{' '}
+                              {dataFim
+                                ? dataFim.toLocaleDateString()
+                                : 'Data Inválida'}{' '}
+                              ({diffDays} dias)
+                            </p>
+                          </div>
+                        );
+                      });
+                    })()}
                   </td>
 
                   <td className="hide-pdf">

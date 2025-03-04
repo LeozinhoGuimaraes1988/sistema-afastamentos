@@ -386,8 +386,6 @@ const Ferias = () => {
     setShowModalAbonos(true);
   };
 
-  // Função de Voltar ao início da página
-
   return (
     <div>
       <div className={styles.navbar}>
@@ -539,6 +537,39 @@ const Ferias = () => {
             </form>
           </div>
         )}
+
+        <div className={styles.legendaContainer}>
+          <h4 className={styles.legendaTitulo}>Legenda:</h4>
+          <div className={styles.legendaItens}>
+            <div className={styles.legendaItem}>
+              <div
+                className={`${styles.legendaCor} ${styles.legendaAndamento}`}
+              ></div>
+              <span>Em andamento</span>
+            </div>
+
+            <div className={styles.legendaItem}>
+              <div
+                className={`${styles.legendaCor} ${styles.legendaProximo}`}
+              ></div>
+              <span>Próximo (em até 15 dias)</span>
+            </div>
+
+            <div className={styles.legendaItem}>
+              <div
+                className={`${styles.legendaCor} ${styles.legendaFuturo}`}
+              ></div>
+              <span>Futuro (além de 15 dias)</span>
+            </div>
+
+            <div className={styles.legendaItem}>
+              <div
+                className={`${styles.legendaCor} ${styles.legendaPassado}`}
+              ></div>
+              <span>Passado</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className={styles.tableContainer}>
@@ -570,32 +601,68 @@ const Ferias = () => {
                     servidor.ferias
                       .filter((periodo) => periodo.tipo === 'ferias')
                       .map((periodo, index) => {
-                        // Manipula dataInicio
                         const dataInicio = periodo.dataInicio
-                          ? typeof periodo.dataInicio === 'string' // Se for string
-                            ? new Date(periodo.dataInicio + 'T00:00:00') // Força o horário inicial para evitar timezone
-                            : new Date(periodo.dataInicio.seconds * 1000) // Se vier do Firestore (timestamp)
+                          ? typeof periodo.dataInicio === 'string'
+                            ? new Date(periodo.dataInicio + 'T00:00:00')
+                            : new Date(periodo.dataInicio.seconds * 1000)
                           : null;
 
-                        // Manipula dataFim
                         const dataFim = periodo.dataFim
-                          ? typeof periodo.dataFim === 'string' // Se for string
-                            ? new Date(periodo.dataFim + 'T23:59:59') // Força o horário final para o dia correto
-                            : new Date(periodo.dataFim.seconds * 1000) // Se vier do Firestore (timestamp)
+                          ? typeof periodo.dataFim === 'string'
+                            ? new Date(periodo.dataFim + 'T23:59:59')
+                            : new Date(periodo.dataFim.seconds * 1000)
                           : null;
 
-                        // Adiciona 1 dia ao cálculo para incluir o último dia
+                        const hoje = new Date();
+                        hoje.setHours(0, 0, 0, 0); // Zera a hora para evitar problemas de fuso horário
+
+                        let periodoStatus = '';
+
+                        if (dataInicio && dataFim) {
+                          if (hoje >= dataInicio && hoje <= dataFim) {
+                            periodoStatus = 'andamento'; // Período em andamento
+                          } else if (hoje < dataInicio) {
+                            const diasParaInicio = Math.ceil(
+                              (dataInicio - hoje) / (1000 * 60 * 60 * 24)
+                            );
+
+                            if (diasParaInicio <= 15) {
+                              periodoStatus = 'proximo'; // Próximo em até 15 dias
+                            } else {
+                              periodoStatus = 'futuro'; // Futuro além de 15 dias
+                            }
+                          } else if (hoje > dataFim) {
+                            periodoStatus = 'passado'; // Período passado
+                          }
+                        }
+
                         const diffDays =
                           dataInicio && dataFim
                             ? Math.floor(
                                 (dataFim.getTime() - dataInicio.getTime()) /
                                   (1000 * 60 * 60 * 24)
-                              ) + 1 // Inclui o último dia
+                              ) + 1
                             : null;
 
-                        // Exibição das datas
                         return (
-                          <div key={index}>
+                          <div
+                            key={index}
+                            className={`periodo-ferias ${periodoStatus}`}
+                            style={{
+                              borderBottom: '1px solid #ccc',
+                              padding: '4px',
+                              backgroundColor:
+                                periodoStatus === 'andamento'
+                                  ? 'lightblue'
+                                  : periodoStatus === 'proximo'
+                                  ? 'yellow'
+                                  : periodoStatus === 'futuro'
+                                  ? 'lightgreen'
+                                  : periodoStatus === 'passado'
+                                  ? 'lightgray'
+                                  : 'transparent',
+                            }}
+                          >
                             <p>
                               {dataInicio
                                 ? dataInicio.toLocaleDateString()
@@ -605,8 +672,8 @@ const Ferias = () => {
                                 ? dataFim.toLocaleDateString()
                                 : 'Data de Fim inválida'}{' '}
                               {diffDays !== null
-                                ? ` (${diffDays} dias)`
-                                : ' (Dias não calculados)'}
+                                ? `(${diffDays} dias)`
+                                : '(Dias não calculados)'}
                             </p>
                           </div>
                         );
@@ -618,79 +685,155 @@ const Ferias = () => {
 
                 {/* Coluna para Períodos de Abonos */}
                 <td>
-                  {servidor.ferias && servidor.ferias.length > 0 ? (
-                    servidor.ferias
-                      .filter((periodo) => periodo.tipo === 'abono')
-                      .map((periodo, index) => (
-                        <div key={index}>
+                  {(() => {
+                    // Agora usa servidor.periodos ao invés de servidor.ferias
+                    const abonosFiltrados = servidor.ferias
+                      ? servidor.ferias.filter(
+                          (periodo) => periodo.tipo === 'abono'
+                        )
+                      : [];
+
+                    if (abonosFiltrados.length === 0) {
+                      return <p>Nenhum abono registrado</p>;
+                    }
+
+                    return abonosFiltrados.map((periodo, index) => {
+                      const dataAbono = periodo.data
+                        ? new Date(periodo.data + 'T00:00:00')
+                        : null;
+
+                      const hoje = new Date();
+                      hoje.setHours(0, 0, 0, 0);
+
+                      let periodoStatus = '';
+
+                      if (dataAbono) {
+                        if (hoje.toDateString() === dataAbono.toDateString()) {
+                          periodoStatus = 'andamento';
+                        } else if (hoje < dataAbono) {
+                          const diasParaInicio = Math.ceil(
+                            (dataAbono - hoje) / (1000 * 60 * 60 * 24)
+                          );
+                          periodoStatus =
+                            diasParaInicio <= 15 ? 'proximo' : 'futuro';
+                        } else if (hoje > dataAbono) {
+                          periodoStatus = 'passado';
+                        }
+                      }
+
+                      return (
+                        <div
+                          key={index}
+                          className={`periodo-abono ${periodoStatus}`}
+                          style={{
+                            borderBottom: '1px solid #ccc',
+                            padding: '4px',
+                            backgroundColor:
+                              periodoStatus === 'andamento'
+                                ? 'lightblue'
+                                : periodoStatus === 'proximo'
+                                ? 'yellow'
+                                : periodoStatus === 'futuro'
+                                ? 'lightgreen'
+                                : periodoStatus === 'passado'
+                                ? 'lightgray'
+                                : 'transparent',
+                          }}
+                        >
                           <p>
-                            {index + 1}
-                            {index === 0
-                              ? 'º' // Exibe "1º"
-                              : index === 1
-                              ? 'º' // Exibe "2º"
-                              : index === 2
-                              ? 'º' // Exibe "3º"
-                              : 'º'}{' '}
-                            {periodo.data
-                              ? new Date(
-                                  periodo.data + 'T00:00:00'
-                                ).toLocaleDateString()
-                              : 'Data inválida'}
+                            {index + 1}º Abono -{' '}
+                            {dataAbono
+                              ? dataAbono.toLocaleDateString()
+                              : 'Data Inválida'}
                           </p>
                         </div>
-                      ))
-                  ) : (
-                    <p>Nenhum abono registrado</p>
-                  )}
+                      );
+                    });
+                  })()}
                 </td>
 
                 {/* Coluna para Períodos de Licenças-prêmio */}
                 <td>
-                  {servidor.ferias && servidor.ferias.length > 0 ? (
-                    servidor.ferias
-                      .filter((periodo) => periodo.tipo === 'licenca-premio')
-                      .map((periodo, index) => {
-                        const dataInicio = periodo.dataInicio
-                          ? typeof periodo.dataInicio === 'string'
-                            ? new Date(periodo.dataInicio + 'T00:00:00')
-                            : new Date(periodo.dataInicio.seconds * 1000)
-                          : null;
-                        const dataFim = periodo.dataFim
-                          ? typeof periodo.dataFim === 'string'
-                            ? new Date(periodo.dataFim + 'T23:59:59')
-                            : new Date(periodo.dataFim.seconds * 1000)
+                  {(() => {
+                    // Filtra os períodos do tipo "licenca-premio"
+                    const licencasPremioFiltradas = servidor.ferias
+                      ? servidor.ferias.filter(
+                          (periodo) => periodo.tipo === 'licenca-premio'
+                        )
+                      : [];
+
+                    // Se não houver licenças-prêmio, exibe a mensagem
+                    if (licencasPremioFiltradas.length === 0) {
+                      return <p>Nenhuma licença-prêmio registrada</p>;
+                    }
+
+                    return licencasPremioFiltradas.map((periodo, index) => {
+                      const dataInicio = periodo.dataInicio
+                        ? new Date(periodo.dataInicio + 'T00:00:00')
+                        : null;
+                      const dataFim = periodo.dataFim
+                        ? new Date(periodo.dataFim + 'T23:59:59')
+                        : null;
+
+                      const hoje = new Date();
+                      hoje.setHours(0, 0, 0, 0);
+
+                      let periodoStatus = '';
+
+                      if (dataInicio && dataFim) {
+                        if (hoje >= dataInicio && hoje <= dataFim) {
+                          periodoStatus = 'andamento';
+                        } else if (hoje < dataInicio) {
+                          const diasParaInicio = Math.ceil(
+                            (dataInicio - hoje) / (1000 * 60 * 60 * 24)
+                          );
+                          periodoStatus =
+                            diasParaInicio <= 15 ? 'proximo' : 'futuro';
+                        } else if (hoje > dataFim) {
+                          periodoStatus = 'passado';
+                        }
+                      }
+
+                      const diffDays =
+                        dataInicio && dataFim
+                          ? Math.floor(
+                              (dataFim - dataInicio) / (1000 * 60 * 60 * 24)
+                            ) + 1
                           : null;
 
-                        // Calcula a diferença entre as datas
-                        const diffDays =
-                          dataInicio && dataFim
-                            ? Math.floor(
-                                (dataFim - dataInicio) / (1000 * 60 * 60 * 24) +
-                                  1
-                              ) // Ajuste para incluir o último dia
-                            : null;
-
-                        return (
-                          <div key={index}>
-                            <p>
-                              {dataInicio
-                                ? dataInicio.toLocaleDateString()
-                                : 'Data de Início inválida'}{' '}
-                              a{' '}
-                              {dataFim
-                                ? dataFim.toLocaleDateString()
-                                : 'Data de Fim inválida'}
-                              {diffDays !== null
-                                ? ` (${diffDays} dias)`
-                                : ' (Dias não calculados)'}
-                            </p>
-                          </div>
-                        );
-                      })
-                  ) : (
-                    <p>Nenhuma licença-prêmio registrada</p>
-                  )}
+                      return (
+                        <div
+                          key={index}
+                          className={`periodo-licenca ${periodoStatus}`}
+                          style={{
+                            borderBottom: '1px solid #ccc',
+                            padding: '4px',
+                            backgroundColor:
+                              periodoStatus === 'andamento'
+                                ? 'lightblue'
+                                : periodoStatus === 'proximo'
+                                ? 'yellow'
+                                : periodoStatus === 'futuro'
+                                ? 'lightgreen'
+                                : periodoStatus === 'passado'
+                                ? 'lightgray'
+                                : 'transparent',
+                          }}
+                        >
+                          <p>
+                            {dataInicio
+                              ? dataInicio.toLocaleDateString()
+                              : 'Data Inválida'}{' '}
+                            a{' '}
+                            {dataFim
+                              ? dataFim.toLocaleDateString()
+                              : 'Data Inválida'}{' '}
+                            ({diffDays} dias)
+                          </p>
+                        </div>
+                      );
+                    });
+                  })()}
                 </td>
 
                 {/* Coluna para Ações */}

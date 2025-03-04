@@ -107,6 +107,39 @@ const Abonos = () => {
       </div>
       <div className={styles.content}>
         <h1 className={styles.abonos}>Abonos</h1>
+
+        <div className={styles.legendaContainer}>
+          <h4 className={styles.legendaTitulo}>Legenda:</h4>
+          <div className={styles.legendaItens}>
+            <div className={styles.legendaItem}>
+              <div
+                className={`${styles.legendaCor} ${styles.legendaAndamento}`}
+              ></div>
+              <span>Em andamento</span>
+            </div>
+
+            <div className={styles.legendaItem}>
+              <div
+                className={`${styles.legendaCor} ${styles.legendaProximo}`}
+              ></div>
+              <span>Próximo (em até 15 dias)</span>
+            </div>
+
+            <div className={styles.legendaItem}>
+              <div
+                className={`${styles.legendaCor} ${styles.legendaFuturo}`}
+              ></div>
+              <span>Futuro (além de 15 dias)</span>
+            </div>
+
+            <div className={styles.legendaItem}>
+              <div
+                className={`${styles.legendaCor} ${styles.legendaPassado}`}
+              ></div>
+              <span>Passado</span>
+            </div>
+          </div>
+        </div>
         <div>
           <table className={styles.table} id="tabelaAbonos">
             <thead>
@@ -128,31 +161,64 @@ const Abonos = () => {
                   <td>{servidor.matricula}</td>
                   <td>
                     {servidor.abonos && servidor.abonos.length > 0 ? (
-                      servidor.abonos.map((abono, index) => (
-                        <div key={index}>
-                          <p>
-                            {index + 1}
-                            {index === 0
-                              ? 'º'
-                              : index === 1
-                              ? 'º'
-                              : index === 2
-                              ? 'º'
-                              : index === 3
-                              ? 'º'
-                              : index === 4
-                              ? 'ª'
-                              : index === 5}{' '}
-                            {abono.data
-                              ? new Date(abono.data + 'T23:59:59')
-                                  .toLocaleDateString()
-                                  .split('T')[0]
-                              : 'Data inválida'}
-                          </p>
-                        </div>
-                      ))
+                      servidor.abonos
+                        .filter((periodo) => periodo.tipo === 'abono')
+                        .map((periodo, index) => {
+                          const dataAbono = periodo.data
+                            ? new Date(periodo.data + 'T00:00:00')
+                            : null;
+
+                          const hoje = new Date();
+                          hoje.setHours(0, 0, 0, 0);
+
+                          let periodoStatus = '';
+
+                          if (dataAbono) {
+                            if (
+                              hoje.toDateString() === dataAbono.toDateString()
+                            ) {
+                              periodoStatus = 'andamento';
+                            } else if (hoje < dataAbono) {
+                              const diasParaInicio = Math.ceil(
+                                (dataAbono - hoje) / (1000 * 60 * 60 * 24)
+                              );
+                              periodoStatus =
+                                diasParaInicio <= 15 ? 'proximo' : 'futuro';
+                            } else if (hoje > dataAbono) {
+                              periodoStatus = 'passado';
+                            }
+                          }
+
+                          return (
+                            <div
+                              key={index}
+                              className={`periodo-abono ${periodoStatus}`}
+                              style={{
+                                borderBottom: '1px solid #ccc',
+                                padding: '4px',
+                                backgroundColor:
+                                  periodoStatus === 'andamento'
+                                    ? 'lightblue'
+                                    : periodoStatus === 'proximo'
+                                    ? 'yellow'
+                                    : periodoStatus === 'futuro'
+                                    ? 'lightgreen'
+                                    : periodoStatus === 'passado'
+                                    ? 'lightgray'
+                                    : 'transparent',
+                              }}
+                            >
+                              <p>
+                                {index + 1}º Abono -{' '}
+                                {dataAbono
+                                  ? dataAbono.toLocaleDateString()
+                                  : 'Data Inválida'}
+                              </p>
+                            </div>
+                          );
+                        })
                     ) : (
-                      <p>Nenhum abono agendado</p>
+                      <p>Nenhum abono registrado</p>
                     )}
                   </td>
                   <td>

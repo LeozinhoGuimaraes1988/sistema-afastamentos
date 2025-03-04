@@ -10,7 +10,7 @@ import Ferias from './pages/Ferias/Ferias';
 import Abonos from './pages/Abonos/Abonos';
 import LicencasPremio from './pages/LicencasPremio/LicencasPremio';
 import LicencasMedicas from './pages/LicencasMedicas/LicencasMedicas';
-import BuscarPeriodos from './components/BuscarPeriodos';
+import BuscarPeriodos from './pages/BuscarPeriodos/BuscarPeriodos';
 
 function App() {
   return (

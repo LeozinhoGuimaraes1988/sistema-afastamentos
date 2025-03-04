@@ -176,3 +176,130 @@ tbody td {
 .pdfButton:hover {
   background-color: #45a049; /* Tom mais escuro de verde */
 }
+
+/* Estilo do contêiner da legenda */
+.legendaContainer {
+  margin: 20px auto;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: fit-content;
+  background-color: #f9f9f9;
+  color: #000;
+  display: flex;
+  align-items: center; /* Garante alinhamento vertical */
+  gap: 15px; /* Espaçamento entre os elementos */
+}
+
+.legendaTitulo {
+  font-size: 16px;
+  font-weight: bold;
+  white-space: nowrap; /* Evita quebra de linha */
+}
+
+.legendaItens {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap; /* Garante que não quebre desalinhado */
+}
+
+/* Cada item (cor + descrição) */
+.legendaItem {
+  display: flex;
+  align-items: center;
+}
+
+/* Bloco colorido */
+.legendaCor {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #000;
+  margin-right: 5px;
+  border-radius: 3px;
+}
+
+/* Cores específicas */
+.legendaAndamento {
+  background-color: lightblue;
+}
+
+.legendaProximo {
+  background-color: yellow;
+}
+
+.legendaFuturo {
+  background-color: lightgreen;
+}
+
+.legendaPassado {
+  background-color: lightgray;
+}
+
+/* Responsividade */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .legendaContainer {
+    width: 90%;
+    margin: 20px auto;
+    text-align: center;
+  }
+
+  .legendaItens {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap; /* Quebra os itens se faltar espaço */
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .form_container {
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  input {
+    padding: 8px;
+  }
+
+  .table td,
+  .table th {
+    font-size: 12px;
+    padding: 4px;
+  }
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+  .legendaContainer {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .legendaItens {
+    flex-direction: column; /* Empilha itens */
+    gap: 8px;
+  }
+
+  .legendaItem {
+    width: 100%;
+  }
+}
+
+/* Ajuste fino para telas muito pequenas */
+@media (max-width: 480px) {
+  .legendaContainer {
+    width: 100%;
+    padding: 8px;
+  }
+
+  .legendaTitulo {
+    font-size: 14px;
+  }
+
+  .legendaCor {
+    width: 16px;
+    height: 16px;
+  }
+}

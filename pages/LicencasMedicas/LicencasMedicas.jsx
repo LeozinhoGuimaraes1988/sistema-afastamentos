@@ -1,3 +1,4 @@
+import React from 'react';
 import styles from '../LicencasMedicas/LicencasMedicas.module.css';
 import { getServidores, getLicencaMedicas } from '../../services/fireStore';
 import { useState, useEffect } from 'react';
@@ -10,94 +11,37 @@ import 'jspdf-autotable';
 
 import ScrollToTopButton from '../../components/ScrollButton';
 import Navbar from '../../components/Navbar';
+import GerarPDFButton from '../../components/GerarPDFButton';
 
 const LicencasMedicas = () => {
   const [servidores, setServidores] = useState([]);
   const [servidorSelecionado, setServidorSelecionado] = useState('');
-
   const [quantidadeDias, setQuantidadeDias] = useState('');
   const [mesSelecionado, setMesSelecionado] = useState('');
   const [licencas, setLicencas] = useState([]);
   const [mesFiltro, setMesFiltro] = useState('');
   const [dataInicio, setDataInicio] = useState('');
   const [dataFim, setDataFim] = useState('');
-
   const [activeTab, setActiveTab] = useState('mensal'); // mensal, categoria, totais
   const [categoriaExpandida, setCategoriaExpandida] = useState(null);
   const [filtroCategoria, setFiltroCategoria] = useState('');
   const [categoriaLicenca, setCategoriaLicenca] = useState('');
-
-  // Paginação
-  // const [carregando, setCarregando] = useState(false);
-  // const [ultimoDoc, setUltimoDoc] = useState(null);
-  // const [temMais, setTemMais] = useState(true);
-  // const [limitePorPagina] = useState(10);
-
-  // const fetchPaginatedData = async (limpar = false) => {
-  //   try {
-  //     setCarregando(true);
-
-  //     const resultado = await getServidoresPaginado(
-  //       limitePorPagina,
-  //       limpar ? null : ultimoDoc
-  //     );
-
-  //     const licencasProcessadas = resultado.servidores.map((licenca) => {
-  //       const dataInicioConvertida =
-  //         licenca.dataInicio &&
-  //         (typeof licenca.dataInicio === 'string'
-  //           ? new Date(licenca.dataInicio + 'T00:00:00')
-  //           : new Date(licenca.dataInicio.seconds * 1000));
-
-  //       const dataFimConvertida =
-  //         licenca.dataFim &&
-  //         (typeof licenca.dataFim === 'string'
-  //           ? new Date(licenca.dataFim + 'T23:59:59')
-  //           : new Date(licenca.dataFim.seconds * 1000));
-
-  //       return {
-  //         ...licenca,
-  //         dataInicio: dataInicioConvertida,
-  //         dataFim: dataFimConvertida,
-  //       };
-  //     });
-
-  //     setLicencas((prevLicencas) => {
-  //       if (limpar) return licencasProcessadas;
-
-  //       const todasLicencas = [...prevLicencas, ...licencasProcessadas];
-  //       const licencasUnicas = Array.from(
-  //         new Map(todasLicencas.map((item) => [item.id, item])).values()
-  //       );
-
-  //       // Mantendo a ordenação por data de início
-  //       return licencasUnicas.sort(
-  //         (a, b) => new Date(a.dataInicio) - new Date(b.dataInicio)
-  //       );
-  //     });
-
-  //     setUltimoDoc(resultado.ultimoDocumentoDaPagina);
-  //     setTemMais(resultado.temMais);
-  //   } catch (error) {
-  //     console.error('Erro ao buscar licenças médicas:', error);
-  //   } finally {
-  //     setCarregando(false);
-  //   }
-  // };
+  const [filtroTipos, setFiltroTipos] = useState([]);
+  const [dropdownAberto, setDropdownAberto] = useState(false);
+  const [licencasFiltradas, setLicencasFiltradas] = useState([]);
 
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        // Busca servidores primeiro
         const servidoresData = await getServidores();
         const servidoresOrdenados = servidoresData.sort((a, b) =>
           a.nome.localeCompare(b.nome)
         );
         setServidores(servidoresOrdenados);
 
-        // Busca licenças de forma mais eficiente
+        // Carrega licenças em lotes
         const todasLicencas = [];
-        const batchSize = 10; // Processa em lotes menores
+        const batchSize = 10;
 
         for (let i = 0; i < servidoresData.length; i += batchSize) {
           const batch = servidoresData.slice(i, i + batchSize);
@@ -110,11 +54,9 @@ const LicencasMedicas = () => {
               lotacao: servidor.lotacao,
             }));
           });
-
           const resultados = await Promise.all(promises);
-          resultados.forEach((licencas) => todasLicencas.push(...licencas));
+          resultados.forEach((lics) => todasLicencas.push(...lics));
         }
-
         setLicencas(todasLicencas);
       } catch (error) {
         console.error('Erro ao carregar dados iniciais:', error);
@@ -124,6 +66,41 @@ const LicencasMedicas = () => {
     fetchInitialData();
   }, []);
 
+  useEffect(() => {
+    if (filtroTipos.length === 0) {
+      setLicencasFiltradas(licencas);
+    } else {
+      const novasLicencas = licencas.filter((licenca) =>
+        filtroTipos.includes(licenca.tipoAtestado)
+      );
+      setLicencasFiltradas(novasLicencas);
+    }
+  }, [filtroTipos, licencas]);
+
+  // 🔹 Adicionar/Remover tipo de licença selecionado
+  const toggleTipo = (tipo) => {
+    setFiltroTipos((prev) =>
+      prev.includes(tipo) ? prev.filter((t) => t !== tipo) : [...prev, tipo]
+    );
+  };
+
+  // 🔹 Fecha o dropdown ao clicar fora dele
+  const dropdownRef = React.useRef(null);
+
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setDropdownAberto(false);
+    }
+  };
+
+  // Fecha o dropdown ao clicar fora dele
+  React.useEffect(() => {
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
+
   const gerarPDFVisaoMensal = () => {
     if (!mesFiltro) {
       alert('Selecione um mês para gerar o relatório');
@@ -131,7 +108,7 @@ const LicencasMedicas = () => {
     }
 
     const pdf = new jsPDF({
-      orientation: 'portrait',
+      orientation: 'landscape',
       unit: 'mm',
       format: 'a4',
     });
@@ -139,25 +116,40 @@ const LicencasMedicas = () => {
     const mesNome = new Date(0, mesFiltro - 1).toLocaleString('pt-BR', {
       month: 'long',
     });
+
     pdf.setFontSize(14);
     pdf.text(`Relatório de Licenças Médicas - ${mesNome}`, 15, 15);
 
-    const licencasFiltradas = licencas.filter(
-      (licenca) => licenca.mes === mesFiltro
-    );
+    // 🔹 Filtrar as licenças corretamente considerando os tipos selecionados
+    const licencasParaGerarPDF =
+      filtroTipos.length > 0
+        ? licencasFiltradas.filter((licenca) =>
+            filtroTipos.includes(licenca.tipoAtestado)
+          )
+        : licencasFiltradas;
+
+    // Se não houver licenças após a filtragem, exibe apenas a mensagem no PDF
+    if (licencasParaGerarPDF.length === 0) {
+      pdf.text(
+        'Nenhuma licença encontrada para os tipos selecionados.',
+        15,
+        30
+      );
+      pdf.save(`relatorio_licencas_medicas_${mesNome}.pdf`);
+      return;
+    }
 
     const colunas = [
-      { header: 'Servidor', dataKey: 'servidor' },
+      { header: 'Nome', dataKey: 'nome' },
       { header: 'Matrícula', dataKey: 'matricula' },
       { header: 'Lotação', dataKey: 'lotacao' },
       { header: 'Tipo de Atestado', dataKey: 'tipoAtestado' },
       { header: 'Período/Dias', dataKey: 'periodo' },
     ];
 
-    const linhas = licencasFiltradas.map((licenca) => {
+    const linhas = licencasParaGerarPDF.map((licenca) => {
       const servidor = servidores.find((s) => s.id === licenca.servidor);
 
-      // Usa a mesma lógica de formatação de data que já existe
       const dataInicio = licenca.dataInicio
         ? typeof licenca.dataInicio === 'string'
           ? new Date(licenca.dataInicio + 'T00:00:00')
@@ -182,7 +174,7 @@ const LicencasMedicas = () => {
       } (${diffDias} ${diffDias === 1 ? 'dia' : 'dias'})`;
 
       return {
-        servidor: servidor?.nome || 'Servidor não encontrado',
+        nome: servidor?.nome || 'Servidor não encontrado',
         matricula: servidor?.matricula || '-',
         lotacao: servidor?.lotacao || '-',
         tipoAtestado: licenca.tipoAtestado,
@@ -192,20 +184,22 @@ const LicencasMedicas = () => {
 
     pdf.autoTable({
       head: [colunas.map((col) => col.header)],
-      body: linhas.map((linha) => colunas.map((col) => linha[col.dataKey])),
+      body: linhas.map((linha) =>
+        colunas.map((col) => linha[col.dataKey] || '')
+      ),
       startY: 25,
-      margin: { top: 20, right: 15, left: 15, bottom: 20 },
+      margin: { top: 20, right: 10, left: 10, bottom: 20 },
       theme: 'grid',
       styles: {
         fontSize: 8,
         cellPadding: 2,
       },
       columnStyles: {
-        0: { cellWidth: 45 }, // Servidor
-        1: { cellWidth: 25 }, // Matrícula
-        2: { cellWidth: 30 }, // Lotação
-        3: { cellWidth: 40 }, // Tipo de Atestado
-        4: { cellWidth: 40 }, // Período/Dias
+        0: { cellWidth: 50 },
+        1: { cellWidth: 25 },
+        2: { cellWidth: 35 },
+        3: { cellWidth: 40 },
+        4: { cellWidth: 50 },
       },
       headStyles: {
         fillColor: [200, 200, 200],
@@ -218,7 +212,7 @@ const LicencasMedicas = () => {
       },
     });
 
-    pdf.save(`licencas_medicas_${mesNome}.pdf`);
+    pdf.save(`relatorio_licencas_medicas_${mesNome}.pdf`);
   };
 
   const handleAddLicencaMedica = async (e) => {
@@ -554,22 +548,39 @@ const LicencasMedicas = () => {
 
           <div className={styles.formGroup}>
             <label>Tipo de Licença:</label>
-            <select
-              value={categoriaLicenca}
-              onChange={(e) => setCategoriaLicenca(e.target.value)}
-              required
-            >
-              <option value="">Selecione a categoria</option>
-              {Object.entries(CATEGORIAS_LICENCA).map(([key, categoria]) => (
-                <optgroup key={key} label={categoria.titulo}>
-                  {categoria.tipos.map((tipo) => (
-                    <option key={tipo} value={tipo}>
-                      {tipo}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
+            <div ref={dropdownRef} className={styles.dropdownContainer}>
+              <button
+                type="button"
+                className={styles.dropdownButton}
+                onClick={() => setDropdownAberto(!dropdownAberto)}
+              >
+                {filtroTipos.length > 0
+                  ? filtroTipos.join(', ')
+                  : 'Selecione os tipos'}{' '}
+              </button>
+
+              {dropdownAberto && (
+                <div className={styles.dropdownMenu}>
+                  {Object.entries(CATEGORIAS_LICENCA).map(
+                    ([catKey, catValue]) => (
+                      <div key={catKey} className={styles.dropdownCategory}>
+                        <strong>{catValue.titulo}</strong>
+                        {catValue.tipos.map((tipo) => (
+                          <label key={tipo} className={styles.checkboxLabel}>
+                            <input
+                              type="checkbox"
+                              checked={filtroTipos.includes(tipo)}
+                              onChange={() => toggleTipo(tipo)}
+                            />
+                            {tipo}
+                          </label>
+                        ))}
+                      </div>
+                    )
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Campos para Atestado Médico */}
@@ -671,13 +682,10 @@ const LicencasMedicas = () => {
                   className={styles.tableMonthly}
                   id="tabelaLicencasMedicasMes"
                 >
-                  <div className={styles.tabelaContainer}>
-                    <table
-                      className={styles.tableMonthly}
-                      id="tabelaLicencasMedicasMes"
-                    >
+                  {licencasFiltradas.length > 0 ? (
+                    <>
                       <thead>
-                        <tr className={styles.titles}>
+                        <tr>
                           <th>Servidor</th>
                           <th>Matrícula</th>
                           <th>Lotação</th>
@@ -687,80 +695,69 @@ const LicencasMedicas = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {licencas
-                          .filter((licenca) => licenca.mes === mesFiltro)
-                          .map((licenca, index) => {
-                            const servidor = servidores.find(
-                              (s) => s.id === licenca.servidor
-                            );
+                        {licencasFiltradas.map((licenca, index) => {
+                          const servidor = servidores.find(
+                            (s) => s.id === licenca.servidor
+                          );
+                          return (
+                            <tr key={index}>
+                              <td>
+                                {servidor?.nome || 'Servidor não encontrado'}
+                              </td>
+                              <td>{servidor?.matricula || '-'}</td>
+                              <td>{servidor?.lotacao || '-'}</td>
+                              <td>{licenca.tipoAtestado}</td>
+                              <td>
+                                {(() => {
+                                  const dataInicio = licenca.dataInicio
+                                    ? new Date(
+                                        licenca.dataInicio
+                                      ).toLocaleDateString()
+                                    : 'Data inválida';
 
-                            return (
-                              <tr key={index}>
-                                <td>
-                                  {servidor?.nome || 'Servidor não encontrado'}
-                                </td>
-                                <td>{servidor?.matricula || '-'}</td>
-                                <td>{servidor?.lotacao || '-'}</td>
-                                <td>{licenca.tipoAtestado}</td>
-                                <td>
-                                  {(() => {
-                                    // Manipula dataInicio
-                                    const dataInicio = licenca.dataInicio
-                                      ? typeof licenca.dataInicio === 'string'
-                                        ? new Date(
-                                            licenca.dataInicio + 'T00:00:00'
-                                          )
-                                        : new Date(
-                                            licenca.dataInicio.seconds * 1000
-                                          )
-                                      : null;
+                                  const dataFim = licenca.dataFim
+                                    ? new Date(
+                                        licenca.dataFim
+                                      ).toLocaleDateString()
+                                    : null;
 
-                                    // Manipula dataFim
-                                    const dataFim = licenca.dataFim
-                                      ? typeof licenca.dataFim === 'string'
-                                        ? new Date(
-                                            licenca.dataFim + 'T23:59:59'
-                                          )
-                                        : new Date(
-                                            licenca.dataFim.seconds * 1000
-                                          )
-                                      : null;
+                                  const diffDias = dataFim
+                                    ? Math.floor(
+                                        (new Date(licenca.dataFim) -
+                                          new Date(licenca.dataInicio)) /
+                                          (1000 * 60 * 60 * 24)
+                                      ) + 1
+                                    : 1;
 
-                                    // Calcula a diferença de dias
-                                    const diffDias =
-                                      dataInicio && dataFim
-                                        ? Math.floor(
-                                            (dataFim.getTime() -
-                                              dataInicio.getTime()) /
-                                              (1000 * 60 * 60 * 24)
-                                          ) + 1
-                                        : 1;
-
-                                    return (
-                                      <>
-                                        {dataInicio
-                                          ? dataInicio.toLocaleDateString()
-                                          : 'Data inválida'}{' '}
-                                        {dataFim && (
-                                          <>a {dataFim.toLocaleDateString()} </>
-                                        )}
-                                        ({diffDias}{' '}
-                                        {diffDias === 1 ? 'dia' : 'dias'})
-                                      </>
-                                    );
-                                  })()}
-                                </td>
-                                <td className="hide-pdf">
-                                  <button onClick={() => handleDelete(index)}>
-                                    Excluir
-                                  </button>
-                                </td>
-                              </tr>
-                            );
-                          })}
+                                  return (
+                                    <>
+                                      {dataInicio}{' '}
+                                      {dataFim ? `a ${dataFim}` : ''} (
+                                      {diffDias}{' '}
+                                      {diffDias === 1 ? 'dia' : 'dias'})
+                                    </>
+                                  );
+                                })()}
+                              </td>
+                              <td className="hide-pdf">
+                                <button onClick={() => handleDelete(index)}>
+                                  Excluir
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
-                    </table>
-                  </div>
+                    </>
+                  ) : (
+                    <tbody>
+                      <tr>
+                        <td className={styles.mensagemSemDados} colSpan="6">
+                          Nenhuma licença encontrada para os tipos selecionados.
+                        </td>
+                      </tr>
+                    </tbody>
+                  )}
                 </table>
               </div>
             )}

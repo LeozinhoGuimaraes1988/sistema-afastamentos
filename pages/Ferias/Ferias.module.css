@@ -39,19 +39,19 @@ body {
 
 /* Formulário */
 .form_container {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
   max-width: 500px;
   width: 90%;
-  margin-top: 40px;
+  margin: 40px auto; /* Centralizado com espaçamento */
   padding: 20px;
   background-color: #fff;
   border-radius: 8px;
   border: 2px solid #ccc;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   z-index: 100;
+  position: relative; /* Deixa ele no fluxo normal */
+  transform: none; /* Remove o translate */
 }
+
 .form {
   display: flex;
   flex-wrap: wrap;
@@ -120,7 +120,6 @@ input {
 /* Tabela */
 .tableContainer {
   width: 100%;
-  margin-top: 550px; /* Aumentado para dar mais espaço após o formulário */
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   z-index: 1;
@@ -216,6 +215,79 @@ input {
   border-radius: 4px;
 }
 
+.periodo-ferias {
+  display: block;
+  margin-bottom: 2px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.periodo-ferias {
+  display: block;
+  margin-bottom: 2px;
+  border-radius: 4px;
+  padding: 4px;
+}
+
+/* Estilo do contêiner da legenda */
+.legendaContainer {
+  margin: 20px auto;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: fit-content;
+  background-color: #f9f9f9;
+  color: #000;
+  display: flex;
+  align-items: center; /* Garante alinhamento vertical */
+  gap: 15px; /* Espaçamento entre os elementos */
+}
+
+.legendaTitulo {
+  font-size: 16px;
+  font-weight: bold;
+  white-space: nowrap; /* Evita quebra de linha */
+}
+
+.legendaItens {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap; /* Garante que não quebre desalinhado */
+}
+
+/* Cada item (cor + descrição) */
+.legendaItem {
+  display: flex;
+  align-items: center;
+}
+
+/* Bloco colorido */
+.legendaCor {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #000;
+  margin-right: 5px;
+  border-radius: 3px;
+}
+
+/* Cores específicas */
+.legendaAndamento {
+  background-color: lightblue;
+}
+
+.legendaProximo {
+  background-color: yellow;
+}
+
+.legendaFuturo {
+  background-color: lightgreen;
+}
+
+.legendaPassado {
+  background-color: lightgray;
+}
+
 /* Responsividade */
 @media (max-width: 1024px) {
   .table td,
@@ -225,10 +297,37 @@ input {
   }
 }
 
+@media (max-width: 1024px) and (min-width: 769px) {
+  .form_container {
+    margin-top: 90px; /* Empurra o formulário para baixo */
+    width: 90%; /* Usa boa parte da tela */
+    position: static; /* Remove o posicionamento que está causando sobreposição */
+  }
+
+  .mainContent {
+    margin-top: 150px; /* Espaço extra para não esconder atrás da navbar */
+  }
+
+  .legendaContainer {
+    width: 90%;
+    margin: 20px auto;
+    text-align: center;
+  }
+
+  .legendaItens {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap; /* Quebra os itens se faltar espaço */
+    gap: 10px;
+  }
+}
+
 @media (max-width: 768px) {
   .form_container {
-    width: 95%;
-    padding: 15px;
+    width: 90%;
+    margin: 100px auto 0 auto; /* Centraliza o formulário e afasta da navbar */
+    position: relative;
+    transform: none; /* Remove qualquer transformação que possa causar desalinhamento */
   }
 
   .form {
@@ -263,7 +362,12 @@ input {
 
   .mainContent {
     padding: 0 10px;
-    margin-top: 100px;
+  }
+
+  .form_container input,
+  .form_container button {
+    width: 100%; /* Campos ocupam a largura total */
+    box-sizing: border-box;
   }
 }
 
@@ -281,5 +385,40 @@ input {
   .table th {
     font-size: 12px;
     padding: 4px;
+  }
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+  .legendaContainer {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .legendaItens {
+    flex-direction: column; /* Empilha itens */
+    gap: 8px;
+  }
+
+  .legendaItem {
+    width: 100%;
+  }
+}
+
+/* Ajuste fino para telas muito pequenas */
+@media (max-width: 480px) {
+  .legendaContainer {
+    width: 100%;
+    padding: 8px;
+  }
+
+  .legendaTitulo {
+    font-size: 14px;
+  }
+
+  .legendaCor {
+    width: 16px;
+    height: 16px;
   }
 }

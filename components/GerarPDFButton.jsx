@@ -131,3 +131,61 @@ const GerarPDFButton = ({ dadosFiltrados }) => {
 };
 
 export default GerarPDFButton;
+
+// const GerarPDFButton = ({ titulo, dadosFiltrados, colunas, nomeArquivo }) => {
+//   const gerarPDF = () => {
+//     if (!dadosFiltrados || dadosFiltrados.length === 0) {
+//       alert('Não há dados para gerar o PDF.');
+//       return;
+//     }
+
+//     const pdf = new jsPDF({
+//       orientation: 'landscape', // Mantém horizontal para evitar quebras
+//       unit: 'mm',
+//       format: 'a4',
+//     });
+
+//     pdf.setFontSize(14);
+//     pdf.text(titulo, 15, 15);
+
+//     pdf.autoTable({
+//       head: [colunas.map((col) => col.header)], // Define os cabeçalhos corretamente
+//       body: dadosFiltrados.map((linha) =>
+//         colunas.map((col) => linha[col.dataKey] || '')
+//       ), // Usa apenas as colunas esperadas
+//       startY: 25,
+//       margin: { left: 15, right: 15 },
+//       theme: 'grid',
+//       styles: {
+//         fontSize: 8,
+//         cellPadding: 2,
+//       },
+//       columnStyles: {
+//         0: { cellWidth: 45 }, // Ajuste de largura para evitar cortes
+//         1: { cellWidth: 25 },
+//         2: { cellWidth: 30 },
+//         3: { cellWidth: 40 },
+//         4: { cellWidth: 50 },
+//       },
+//       headStyles: {
+//         fillColor: [200, 200, 200],
+//         textColor: 20,
+//         fontSize: 9,
+//         halign: 'center',
+//       },
+//       alternateRowStyles: {
+//         fillColor: [245, 245, 245],
+//       },
+//     });
+
+//     pdf.save(`${nomeArquivo}.pdf`);
+//   };
+
+//   return (
+//     <button onClick={gerarPDF} className={styles.gerarPdfButton}>
+//       Gerar PDF
+//     </button>
+//   );
+// };
+
+// export default GerarPDFButton;
