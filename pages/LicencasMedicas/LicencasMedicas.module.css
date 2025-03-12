@@ -538,3 +538,153 @@ select {
   color: #666; /* Cor neutra */
   background-color: #f9f9f9; /* Mantém a aparência de destaque */
 }
+
+.pesquisarLicencasContainer {
+  background: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 1100px;
+  margin: 20px auto;
+}
+
+.pesquisarLicencasContainer h2 {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.filtrosContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 0;
+}
+
+.filtrosContainer select {
+  flex: 1;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.selectContainer {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 180px;
+}
+
+.selectContainer label {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+.limparPesquisaButton {
+  background: #007bff;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 14px;
+}
+
+.limparPesquisaButton:hover {
+  background: #0056b3;
+}
+
+.multiSelectContainer {
+  position: relative;
+  width: 100%;
+}
+
+.multiSelectButton {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  text-align: left;
+}
+
+.multiSelectDropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+  padding: 10px;
+}
+
+.multiSelectCategory {
+  margin-bottom: 10px;
+}
+
+.multiSelectCategory strong {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #333;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  color: #333;
+}
+
+.actionsContainer {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.limparPesquisaButton {
+  background: #007bff;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 14px;
+}
+
+.limparPesquisaButton:hover {
+  background: #0056b3;
+}
+
+.gerarPdfButton {
+  background: #28a745;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 14px;
+}
+
+.gerarPdfButton:hover {
+  background: #218838;
+}

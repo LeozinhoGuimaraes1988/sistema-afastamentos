@@ -235,6 +235,11 @@ export const addLicencaMedica = async (servidorId, licencaMedicaData) => {
 
 export const getLicencaMedicas = async (servidorId) => {
   try {
+    if (!servidorId) {
+      console.error('Erro: servidorId está indefinido.');
+      return []; // Retorna um array vazio para evitar erro
+    }
+
     const licencasRef = collection(
       db,
       'servidores',

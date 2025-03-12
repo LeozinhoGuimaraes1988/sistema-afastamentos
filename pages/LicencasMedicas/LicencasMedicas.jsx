@@ -29,6 +29,8 @@ const LicencasMedicas = () => {
   const [filtroTipos, setFiltroTipos] = useState([]);
   const [dropdownAberto, setDropdownAberto] = useState(false);
   const [licencasFiltradas, setLicencasFiltradas] = useState([]);
+  const [filtroNome, setFiltroNome] = useState('');
+  const [filtroLotacao, setFiltroLotacao] = useState('');
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -57,6 +59,7 @@ const LicencasMedicas = () => {
           const resultados = await Promise.all(promises);
           resultados.forEach((lics) => todasLicencas.push(...lics));
         }
+        console.log('Licenças carregadas:', todasLicencas);
         setLicencas(todasLicencas);
       } catch (error) {
         console.error('Erro ao carregar dados iniciais:', error);
@@ -69,31 +72,31 @@ const LicencasMedicas = () => {
   useEffect(() => {
     let filtradas = licencas;
 
+    // 🔹 Filtro pelo Mês Selecionado
     if (mesFiltro) {
       filtradas = filtradas.filter((licenca) => {
-        if (licenca.dataInicio) {
-          const inicio = licenca.dataInicio.seconds
-            ? new Date(licenca.dataInicio.seconds * 1000)
-            : new Date(licenca.dataInicio);
-          const inicioMes = inicio.getMonth() + 1;
-
-          const fim = licenca.dataFim
-            ? licenca.dataFim.seconds
-              ? new Date(licenca.dataFim.seconds * 1000)
-              : new Date(licenca.dataFim)
-            : inicio;
-          const fimMes = fim.getMonth() + 1;
-
-          return (
-            inicioMes === parseInt(mesFiltro, 10) ||
-            fimMes === parseInt(mesFiltro, 10)
-          );
+        if (licenca.mes) {
+          return licenca.mes.toString() === mesFiltro;
         }
         return false;
       });
     }
 
-    // Aplicar filtro de tipos de licença, se houver
+    // 🔹 Filtro pelo Nome do Servidor Selecionado
+    if (filtroNome && filtroNome !== 'Todos') {
+      filtradas = filtradas.filter((licenca) =>
+        licenca.nome.toLowerCase().includes(filtroNome.toLowerCase())
+      );
+    }
+
+    // 🔹 Filtro pela Lotação Selecionada
+    if (filtroLotacao && filtroLotacao !== 'Todas') {
+      filtradas = filtradas.filter(
+        (licenca) => licenca.lotacao === filtroLotacao
+      );
+    }
+
+    // 🔹 Filtro pelo Tipo de Atestado Selecionado
     if (filtroTipos.length > 0) {
       filtradas = filtradas.filter((licenca) =>
         filtroTipos.includes(licenca.tipoAtestado)
@@ -101,7 +104,8 @@ const LicencasMedicas = () => {
     }
 
     setLicencasFiltradas(filtradas);
-  }, [mesFiltro, filtroTipos, licencas]);
+    console.log('Licenças filtradas para exibição:', filtradas);
+  }, [mesFiltro, filtroTipos, filtroLotacao, filtroNome, licencas]);
 
   // 🔹 Adicionar/Remover tipo de licença selecionado
   const toggleTipo = (tipo) => {
@@ -115,17 +119,19 @@ const LicencasMedicas = () => {
 
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setDropdownAberto(false);
+      setTimeout(() => setDropdownAberto(false), 200); // Pequeno delay para permitir a seleção
     }
   };
 
   // Fecha o dropdown ao clicar fora dele
   React.useEffect(() => {
-    document.addEventListener('click', handleClickOutside);
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
-  }, []);
+    if (dropdownAberto) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [dropdownAberto]);
 
   const gerarPDFVisaoMensal = () => {
     if (!mesFiltro) {
@@ -246,8 +252,6 @@ const LicencasMedicas = () => {
     console.log('Iniciando salvamento...');
 
     const servidor = servidores.find((s) => s.nome === servidorSelecionado);
-    console.log('Servidor encontrado:', servidor);
-
     if (!servidor) {
       alert('Selecione um servidor');
       return;
@@ -264,26 +268,37 @@ const LicencasMedicas = () => {
       return;
     }
 
-    const dataInicioObj = new Date(dataInicio + 'T00:00:00');
-    const dataFimObj = dataFim ? new Date(dataFim + 'T23:59:59') : null;
+    // 🔹 Ajuste de datas APENAS para novos cadastros
+    const corrigirDataParaFirestore = (dataString) => {
+      if (!dataString) return null;
 
-    const quantidadeDiasCalculada = dataFimObj
+      // 🔹 Ajustamos para o meio-dia UTC para evitar mudanças ao salvar
+      const partes = dataString.split('-');
+      return new Date(Date.UTC(partes[0], partes[1] - 1, partes[2], 12, 0, 0));
+    };
+
+    const dataInicioCorrigida = corrigirDataParaFirestore(dataInicio);
+    const dataFimCorrigida = dataFim
+      ? corrigirDataParaFirestore(dataFim)
+      : null;
+
+    const quantidadeDiasCalculada = dataFimCorrigida
       ? Math.floor(
-          (dataFimObj.getTime() - dataInicioObj.getTime()) /
+          (dataFimCorrigida.getTime() - dataInicioCorrigida.getTime()) /
             (1000 * 60 * 60 * 24)
         ) + 1
       : 1;
 
     const novaLicenca = {
       tipoAtestado: categoriaLicenca,
-      dias: calcularDiasLicenca({ dataInicio, dataFim }),
+      dias: quantidadeDiasCalculada,
       mes: mesSelecionado,
-      dataInicio: dataInicio,
-      dataFim: dataFim || null,
+      dataInicio: dataInicioCorrigida, // 🔹 Agora corrigida antes de salvar
+      dataFim: dataFimCorrigida,
       servidor: servidor.id,
       nome: servidor.nome,
       lotacao: servidor.lotacao,
-      numeroDias: calcularDiasLicenca({ dataInicio, dataFim }),
+      numeroDias: quantidadeDiasCalculada,
     };
 
     try {
@@ -302,7 +317,13 @@ const LicencasMedicas = () => {
           );
         });
 
-        // Limpa os campos do formulário
+        // 🔹 Atualiza os filtros sem perder os dados
+        setTimeout(() => {
+          setMesFiltro(mesSelecionado);
+          setFiltroTipos([...filtroTipos]);
+        }, 150);
+
+        // 🔹 Limpa os campos do formulário
         setServidorSelecionado('');
         setCategoriaLicenca('');
         setQuantidadeDias('');
@@ -320,11 +341,10 @@ const LicencasMedicas = () => {
 
   const handleDelete = async (index) => {
     try {
-      // Pega a licença pelo índice
-      const licencaParaRemover = licencas[index];
+      const licencaParaRemover = licencasFiltradas[index];
 
-      if (!licencaParaRemover) {
-        console.error('Licença não encontrada');
+      if (!licencaParaRemover || !licencaParaRemover.id) {
+        console.error('Licença não encontrada ou ID inválido');
         return;
       }
 
@@ -337,11 +357,11 @@ const LicencasMedicas = () => {
         licencaParaRemover.id
       );
 
-      // Deleta o documento
       await deleteDoc(licencaRef);
 
-      // Atualiza o estado local removendo a licença
-      setLicencas(licencas.filter((_, i) => i !== index));
+      // Atualiza os estados de licenças e licenças filtradas
+      setLicencas((prev) => prev.filter((_, i) => i !== index));
+      setLicencasFiltradas((prev) => prev.filter((_, i) => i !== index));
 
       console.log('Licença removida com sucesso');
     } catch (error) {
@@ -573,25 +593,124 @@ const LicencasMedicas = () => {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Tipo de Licença:</label>
-            <div ref={dropdownRef} className={styles.dropdownContainer}>
+            <label>Tipos de Licença:</label>
+            <select
+              value={categoriaLicenca}
+              onChange={(e) => setCategoriaLicenca(e.target.value)}
+              required
+            >
+              <option value="">Selecione o tipo</option>
+              {Object.entries(CATEGORIAS_LICENCA).flatMap(
+                ([categoria, dados]) =>
+                  dados.tipos.map((tipo) => (
+                    <option key={tipo} value={tipo}>
+                      {tipo}
+                    </option>
+                  ))
+              )}
+            </select>
+          </div>
+
+          {/* Campos para Atestado Médico */}
+          <div className={styles.formGroup}>
+            <label>Data de Início:</label>
+            <input
+              type="date"
+              value={dataInicio}
+              onChange={(e) => setDataInicio(e.target.value)}
+              required
+            />
+            <label>Data de Fim:</label>
+            <input
+              type="date"
+              value={dataFim}
+              onChange={(e) => setDataFim(e.target.value)}
+            />
+          </div>
+
+          <button type="submit" className={styles.submitButton}>
+            Registrar Licença
+          </button>
+        </form>
+      </div>
+
+      {/* Pesquisar licenças médicas */}
+      <div className={styles.pesquisarLicencasContainer}>
+        <h1>Pesquisar Licenças Médicas</h1>
+
+        <div className={styles.filtrosContainer}>
+          <div className={styles.selectContainer}>
+            <label>Nome:</label>
+            <select
+              value={filtroNome}
+              onChange={(e) => setFiltroNome(e.target.value)}
+            >
+              <option value="">Todos</option>
+              {Array.from(
+                new Set(servidores.map((servidor) => servidor.nome))
+              ).map((nome, index) => (
+                <option key={index} value={nome}>
+                  {nome}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className={styles.selectContainer}>
+            <label>Lotação:</label>
+            <select
+              value={filtroLotacao}
+              onChange={(e) => setFiltroLotacao(e.target.value)}
+            >
+              <option value="">Todas</option>
+              {Array.from(
+                new Set(servidores.map((servidor) => servidor.lotacao))
+              ).map((lotacao, index) => (
+                <option key={index} value={lotacao}>
+                  {lotacao}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className={styles.selectContainer}>
+            <label>Mês:</label>
+            <select
+              value={mesFiltro}
+              onChange={(e) => setMesFiltro(e.target.value)}
+            >
+              <option value="">Todos</option>
+              {Array.from({ length: 12 }, (_, i) => (
+                <option key={i + 1} value={i + 1}>
+                  {new Date(0, i).toLocaleString('pt-BR', { month: 'long' })}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className={styles.selectContainer}>
+            <label>Tipos de Licença:</label>
+            <div className={styles.multiSelectContainer} ref={dropdownRef}>
               <button
                 type="button"
-                className={styles.dropdownButton}
+                className={styles.multiSelectButton}
                 onClick={() => setDropdownAberto(!dropdownAberto)}
               >
                 {filtroTipos.length > 0
                   ? filtroTipos.join(', ')
-                  : 'Selecione os tipos'}{' '}
+                  : 'Selecione os tipos'}
               </button>
 
               {dropdownAberto && (
-                <div className={styles.dropdownMenu}>
+                <div className={styles.multiSelectDropdown}>
                   {Object.entries(CATEGORIAS_LICENCA).map(
-                    ([catKey, catValue]) => (
-                      <div key={catKey} className={styles.dropdownCategory}>
-                        <strong>{catValue.titulo}</strong>
-                        {catValue.tipos.map((tipo) => (
+                    ([categoria, dados]) => (
+                      <div
+                        key={categoria}
+                        className={styles.multiSelectCategory}
+                      >
+                        <strong>{dados.titulo}</strong>
+                        {dados.tipos.map((tipo) => (
                           <label key={tipo} className={styles.checkboxLabel}>
                             <input
                               type="checkbox"
@@ -608,31 +727,28 @@ const LicencasMedicas = () => {
               )}
             </div>
           </div>
+        </div>
 
-          {/* Campos para Atestado Médico */}
-          {categoriaLicenca && (
-            <div className={styles.formGroup}>
-              <label>Data de Início:</label>
-              <input
-                type="date"
-                value={dataInicio}
-                onChange={(e) => setDataInicio(e.target.value)}
-                required
-              />
-              <label>Data de Fim:</label>
-              <input
-                type="date"
-                value={dataFim}
-                onChange={(e) => setDataFim(e.target.value)}
-                required
-              />
-            </div>
-          )}
-
-          <button type="submit" className={styles.submitButton}>
-            Registrar Licença
+        <div className={styles.actionsContainer}>
+          <button
+            className={styles.limparPesquisaButton}
+            onClick={() => {
+              setFiltroNome('');
+              setFiltroLotacao('');
+              setMesFiltro('');
+              setFiltroTipos([]);
+            }}
+          >
+            Limpar Pesquisa
           </button>
-        </form>
+
+          <button
+            className={styles.gerarPdfButton}
+            onClick={gerarPDFVisaoMensal}
+          >
+            Gerar PDF
+          </button>
+        </div>
       </div>
 
       {/* Sistema de Tabs e Visualização */}
@@ -670,28 +786,6 @@ const LicencasMedicas = () => {
             <h2 className={styles.title_principal}>
               Licenças Registradas no Mês Selecionado
             </h2>
-            <div className={styles.headerActions}>
-              <select
-                className={styles.select}
-                value={mesFiltro}
-                onChange={(e) => setMesFiltro(e.target.value)}
-              >
-                <option value="">Selecione o mês</option>
-                {Array.from({ length: 12 }, (_, i) => (
-                  <option key={i + 1} value={i + 1}>
-                    {new Date(0, i).toLocaleString('pt-BR', { month: 'long' })}
-                  </option>
-                ))}
-              </select>
-              {mesFiltro && (
-                <button
-                  onClick={gerarPDFVisaoMensal}
-                  className={styles.gerarPdfButton}
-                >
-                  Gerar PDF
-                </button>
-              )}
-            </div>
 
             {!mesFiltro ? (
               <div className={styles.mensagemSemDados}>
@@ -735,36 +829,64 @@ const LicencasMedicas = () => {
                               <td>{licenca.tipoAtestado}</td>
                               <td>
                                 {(() => {
-                                  const dataInicio = licenca.dataInicio
-                                    ? new Date(
-                                        licenca.dataInicio
-                                      ).toLocaleDateString()
-                                    : 'Data inválida';
+                                  const formatarData = (data) => {
+                                    if (!data) return 'Sem data';
 
+                                    let dataConvertida;
+
+                                    if (data.seconds) {
+                                      dataConvertida = new Date(
+                                        data.seconds * 1000
+                                      );
+                                    } else if (typeof data === 'string') {
+                                      dataConvertida = new Date(data);
+                                    } else if (data instanceof Date) {
+                                      dataConvertida = data;
+                                    } else {
+                                      return 'Data inválida';
+                                    }
+
+                                    return dataConvertida.toLocaleDateString(
+                                      'pt-BR'
+                                    );
+                                  };
+
+                                  const dataInicio = licenca.dataInicio
+                                    ? new Date(licenca.dataInicio)
+                                    : null;
                                   const dataFim = licenca.dataFim
-                                    ? new Date(
-                                        licenca.dataFim
-                                      ).toLocaleDateString()
+                                    ? new Date(licenca.dataFim)
                                     : null;
 
-                                  const diffDias = dataFim
-                                    ? Math.floor(
-                                        (new Date(licenca.dataFim) -
-                                          new Date(licenca.dataInicio)) /
-                                          (1000 * 60 * 60 * 24)
-                                      ) + 1
-                                    : 1;
+                                  if (dataInicio)
+                                    dataInicio.setHours(12, 0, 0, 0);
+                                  if (dataFim) dataFim.setHours(12, 0, 0, 0);
+
+                                  const diffDias =
+                                    dataInicio && dataFim
+                                      ? Math.ceil(
+                                          (dataFim.getTime() -
+                                            dataInicio.getTime()) /
+                                            (1000 * 60 * 60 * 24)
+                                        ) + 1
+                                      : 1;
 
                                   return (
                                     <>
-                                      {dataInicio}{' '}
-                                      {dataFim ? `a ${dataFim}` : ''} (
-                                      {diffDias}{' '}
+                                      {formatarData(licenca.dataInicio)}{' '}
+                                      {licenca.dataFim
+                                        ? `a ${formatarData(licenca.dataFim)}`
+                                        : ''}{' '}
+                                      (
+                                      {isNaN(diffDias) || diffDias < 1
+                                        ? '1'
+                                        : diffDias}{' '}
                                       {diffDias === 1 ? 'dia' : 'dias'})
                                     </>
                                   );
                                 })()}
                               </td>
+
                               <td className="hide-pdf">
                                 <button onClick={() => handleDelete(index)}>
                                   Excluir
