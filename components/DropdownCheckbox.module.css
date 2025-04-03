@@ -1,0 +1,60 @@
+.dropdown {
+  position: relative;
+  display: inline-block;
+  width: 70%;
+}
+
+.dropdownButton {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  padding: 8px;
+  width: 100%; /* Altera para uma largura fixa */
+  text-align: left;
+  cursor: pointer;
+  border-radius: 4px;
+  color: rgb(65, 65, 65);
+  min-width: 690px; /* Define uma largura mínima para evitar que diminua */
+}
+
+.dropdownContent {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  background-color: white;
+  min-width: 100%;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px;
+}
+
+.optionContent {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Espaço entre o checkbox e o texto */
+  width: 100%;
+  padding: 4px 0;
+}
+
+.optionContent label {
+  display: flex;
+  align-items: center;
+  font-weight: normal;
+}
+
+.optionContent input[type='checkbox'] {
+  width: 16px; /* Define um tamanho fixo */
+  height: 16px; /* Define um tamanho fixo */
+  margin: 0; /* Remove o espaço padrão em torno do checkbox */
+  padding: 0;
+}
+
+.dropdown button {
+  background-color: #ffffff;
+}
+button:hover {
+  color: #007bff;
+}

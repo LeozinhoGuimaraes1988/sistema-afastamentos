@@ -1,0 +1,188 @@
+* {
+  box-sizing: border-box; /* Garante que o tamanho total inclua a borda */
+}
+
+.titles {
+  margin-top: -8px;
+  background-color: #ccc;
+  border-radius: 5px;
+  padding: 5px;
+  color: black;
+  display: flex;
+  margin-bottom: -10px;
+  align-items: first baseline;
+  justify-content: space-between;
+  gap: 30px;
+  font-size: 15px;
+}
+
+.container {
+  display: flex;
+  gap: 20px; /* Espaçamento entre as colunas */
+}
+
+.feriasSection {
+  flex: 1;
+
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.abonosSection {
+  flex: 1;
+
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.days p {
+  color: black;
+  font-weight: bold;
+}
+
+.periodForm {
+  display: flex;
+  margin-bottom: -30px;
+}
+
+h2 {
+  margin-top: 40px;
+}
+
+h1,
+h2,
+p {
+  color: black;
+}
+
+.formContainer {
+  margin-bottom: 20px;
+}
+
+.inputFieldAbonos {
+  width: 100%;
+  margin-bottom: 5px;
+  margin-top: 10px;
+}
+.inputFieldAbonos input {
+  margin-bottom: 10px;
+}
+
+.inputAbonos {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.inputField p {
+  margin-bottom: 0px;
+}
+
+input {
+  width: 100%;
+}
+
+.dates {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.insertAbonos {
+  margin-top: -8px;
+  background-color: aquamarine;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.button,
+.addButton {
+  background-color: red;
+  width: 100%;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.remove {
+  background-color: red;
+  width: 20%;
+  color: white;
+  padding: 5px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 30px;
+}
+
+.endButtons {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  margin-top: 20px; /* Ajuste o espaçamento conforme necessário */
+}
+
+.button:hover {
+  background-color: darkred;
+}
+
+.days {
+  display: flex;
+  justify-content: space-between;
+}
+
+.close,
+.changes {
+  background-color: red;
+  width: 20%;
+  color: white;
+  padding: 5px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.abonos {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-radius: 5px;
+  background-color: #fcfcfc;
+  height: 30px;
+}
+
+.abonos p {
+  margin: 0;
+  margin-left: 10px;
+  flex-grow: 1;
+  max-width: 70%; /* Define uma largura máxima para o texto do abono */
+}
+
+.eraseButton {
+  width: 30%; /* Reduz a largura do botão */
+  height: 30px;
+  background-color: red;
+
+  color: white;
+  padding: 3px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.abonos:hover {
+  border: 2px solid #ff7458; /* Define a cor e espessura da borda ao passar o mouse */
+  background-color: #fff; /* Adiciona um fundo leve para destacar */
+  cursor: pointer;
+}
+
+.p {
+  margin-top: 20px;
+}

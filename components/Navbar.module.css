@@ -1,0 +1,180 @@
+/* Reset básico */
+* {
+  font-family: 'Muli', sans-serif;
+  box-sizing: border-box;
+}
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+/* Navbar Container */
+.navbarContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.navbarInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.logo {
+  width: 60px;
+  margin-right: auto; /* Alinha a logo à esquerda */
+}
+
+.title {
+  flex-grow: 1;
+  text-align: center;
+  font-size: 1.8em;
+  font-weight: bold;
+  color: black;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  margin-right: 20px; /* Adiciona um espaçamento antes dos links */
+}
+
+.buttons {
+  display: flex;
+  margin-left: 100px;
+}
+
+.linksList {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  list-style: none;
+
+  padding: 0.5em;
+  margin: 0;
+  border-radius: 0.3em;
+}
+
+.linksList li {
+  cursor: pointer;
+  margin-right: 1em;
+  background-color: red;
+  height: 45px;
+  width: 85px;
+  border-radius: 5px;
+  display: flex; /* Adiciona flex para alinhar o conteúdo */
+  align-items: center; /* Centraliza verticalmente */
+  justify-content: center; /* Centraliza horizontalmente */
+  font-size: 13px;
+  text-align: center;
+}
+
+.linksList li a {
+  color: black;
+  text-decoration: none;
+  font-weight: bold;
+  color: white;
+}
+
+.linksList button {
+  width: 70px;
+  border-radius: 6px;
+  border: none;
+  padding: 15px;
+  margin-left: 20px;
+  background-color: #0044ff;
+  cursor: pointer;
+}
+
+.linksList button a {
+  color: white;
+  text-decoration: none;
+}
+
+.linksList button:hover {
+  background-color: #4e41af;
+}
+
+.linksList li:hover {
+  background-color: #b94242;
+}
+
+li {
+  background-color: #ff6500;
+  height: 55px;
+  justify-content: center;
+  border-radius: 5px;
+  align-items: center;
+  width: 90px;
+  padding: 8px;
+  font-size: 15px;
+  text-align: center;
+}
+
+/* Estilo do botão hambúrguer */
+
+/* Menu Responsivo */
+.menuOpen {
+  display: flex;
+  flex-direction: column; /* Empilha os links em telas menores */
+}
+
+/* Media query para resoluções menores */
+@media (max-width: 768px) {
+  .logo,
+  .title {
+    display: none; /* Esconde a logo e o título */
+  }
+
+  .navbarInner {
+    padding: 10px 15px; /* Ajusta o padding geral do container em telas menores */
+  }
+
+  .buttons {
+    padding-top: 25px;
+    margin-left: 0;
+    justify-content: flex-start; /* Garante que os botões fiquem na margem */
+    width: 100%; /* Ocupa toda a largura disponível */
+  }
+
+  .linksList {
+    display: flex;
+    flex-wrap: wrap; /* Quebra de linha automática */
+    justify-content: center; /* Centraliza os botões */
+    gap: 5px;
+    padding: 0%;
+  }
+
+  .linksList li {
+    width: 45%; /* Ajuste de largura para caber 2 por linha */
+    text-align: center;
+    height: 40px;
+    font-size: 12px;
+    padding: 5px 0;
+  }
+
+  .linksList button {
+    width: 45%;
+    height: 40px;
+    font-size: 12px;
+  }
+
+  .navbarInner {
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+  }
+
+  .logo,
+  .title {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+}

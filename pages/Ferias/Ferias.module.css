@@ -1,0 +1,424 @@
+/* Reset e Configurações Globais */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+  width: 100%;
+  min-height: 100vh;
+  font-family: 'Muli', sans-serif;
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+/* Navbar */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  padding: 15px 0;
+  background-color: #ffffff;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000; /* Aumentado para ficar acima de tudo */
+}
+
+/* Container Principal */
+.mainContent {
+  width: 100%;
+  margin-top: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+/* Formulário */
+.form_container {
+  max-width: 500px;
+  width: 90%;
+  margin: 40px auto; /* Centralizado com espaçamento */
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  border: 2px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  position: relative; /* Deixa ele no fluxo normal */
+  transform: none; /* Remove o translate */
+}
+
+.form {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* Inputs */
+.input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1 1 45%;
+  min-width: 200px;
+}
+
+input {
+  width: 100%;
+  height: 40px;
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  margin: 8px 0;
+  box-shadow: 1px 1px 1px #dbdada;
+}
+
+/* Data Inputs */
+.date {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.date input {
+  width: 150px;
+  height: 35px;
+  padding: 6px 10px;
+}
+
+/* Botões */
+.buttonDate,
+.addPeriodo button,
+.saveServidor button {
+  padding: 5px 14px;
+  height: 35px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12px;
+  margin: 10px 5px;
+}
+
+.saveServidor {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin-top: 15px;
+}
+
+/* Tabela */
+.tableContainer {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  z-index: 1;
+}
+
+.table {
+  width: 100%;
+  min-width: 1200px;
+  border-collapse: collapse;
+  background-color: #ffffff;
+}
+
+.table th,
+.table td {
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+  color: #333; /* Cor do texto na tabela */
+}
+
+.table tbody tr td {
+  color: #000; /* Garante que o texto no corpo da tabela seja preto */
+}
+
+.table th {
+  background-color: #f3f3f3;
+  font-weight: bold;
+  color: #333;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.table td:first-child {
+  text-align: left; /* Alinha à esquerda apenas a primeira coluna (Nome) */
+}
+
+.table tbody tr:hover {
+  background-color: #e6f7ff;
+}
+
+/* Botões da Tabela */
+.tdButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tdButtons button {
+  font-size: 13px;
+  padding: 6px;
+  background-color: #007bff;
+  color: white; /* Cor do texto dos botões */
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.tdButtons button:hover {
+  background-color: #0056b3;
+}
+
+/* Carregar Mais */
+.loadMoreButton {
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.loadMoreButton button {
+  padding: 8px 16px;
+  font-size: 14px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  max-width: 200px;
+}
+
+/* Scrollbar Personalizada */
+.tableContainer::-webkit-scrollbar {
+  height: 8px;
+}
+
+.tableContainer::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.tableContainer::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.periodo-ferias {
+  display: block;
+  margin-bottom: 2px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.periodo-ferias {
+  display: block;
+  margin-bottom: 2px;
+  border-radius: 4px;
+  padding: 4px;
+}
+
+/* Estilo do contêiner da legenda */
+.legendaContainer {
+  margin: 20px auto;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: fit-content;
+  background-color: #f9f9f9;
+  color: #000;
+  display: flex;
+  align-items: center; /* Garante alinhamento vertical */
+  gap: 15px; /* Espaçamento entre os elementos */
+}
+
+.legendaTitulo {
+  font-size: 16px;
+  font-weight: bold;
+  white-space: nowrap; /* Evita quebra de linha */
+}
+
+.legendaItens {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap; /* Garante que não quebre desalinhado */
+}
+
+/* Cada item (cor + descrição) */
+.legendaItem {
+  display: flex;
+  align-items: center;
+}
+
+/* Bloco colorido */
+.legendaCor {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #000;
+  margin-right: 5px;
+  border-radius: 3px;
+}
+
+/* Cores específicas */
+.legendaAndamento {
+  background-color: lightblue;
+}
+
+.legendaProximo {
+  background-color: yellow;
+}
+
+.legendaFuturo {
+  background-color: lightgreen;
+}
+
+.legendaPassado {
+  background-color: lightgray;
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+  .table td,
+  .table th {
+    padding: 8px 5px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 1024px) and (min-width: 769px) {
+  .form_container {
+    margin-top: 90px; /* Empurra o formulário para baixo */
+    width: 90%; /* Usa boa parte da tela */
+    position: static; /* Remove o posicionamento que está causando sobreposição */
+  }
+
+  .mainContent {
+    margin-top: 150px; /* Espaço extra para não esconder atrás da navbar */
+  }
+
+  .legendaContainer {
+    width: 90%;
+    margin: 20px auto;
+    text-align: center;
+  }
+
+  .legendaItens {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap; /* Quebra os itens se faltar espaço */
+    gap: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .form_container {
+    width: 90%;
+    margin: 100px auto 0 auto; /* Centraliza o formulário e afasta da navbar */
+    position: relative;
+    transform: none; /* Remove qualquer transformação que possa causar desalinhamento */
+  }
+
+  .form {
+    flex-direction: column;
+  }
+
+  .input {
+    width: 100%;
+  }
+
+  .date {
+    flex-direction: column;
+  }
+
+  .date input {
+    width: 100%;
+  }
+
+  .tdButtons {
+    flex-direction: column;
+  }
+
+  .tdButtons button {
+    width: 100%;
+  }
+
+  .loadMoreButton button {
+    width: 80%;
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+
+  .mainContent {
+    padding: 0 10px;
+  }
+
+  .form_container input,
+  .form_container button {
+    width: 100%; /* Campos ocupam a largura total */
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 480px) {
+  .form_container {
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  input {
+    padding: 8px;
+  }
+
+  .table td,
+  .table th {
+    font-size: 12px;
+    padding: 4px;
+  }
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+  .legendaContainer {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .legendaItens {
+    flex-direction: column; /* Empilha itens */
+    gap: 8px;
+  }
+
+  .legendaItem {
+    width: 100%;
+  }
+}
+
+/* Ajuste fino para telas muito pequenas */
+@media (max-width: 480px) {
+  .legendaContainer {
+    width: 100%;
+    padding: 8px;
+  }
+
+  .legendaTitulo {
+    font-size: 14px;
+  }
+
+  .legendaCor {
+    width: 16px;
+    height: 16px;
+  }
+}

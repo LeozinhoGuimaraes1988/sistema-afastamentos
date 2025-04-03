@@ -1,0 +1,291 @@
+* {
+  box-sizing: border-box; /* Se adicionarmos qualquer preenchimento ou borda a um elemento, isso não afeta a largura dele*/
+}
+
+body {
+  background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+  width: 100%;
+  height: 100%;
+  font-family: 'Muli', sans-serif;
+  display: flex; /* Ele já está no body porque vai ficar mais fácil para centralizar tudo */
+  justify-content: center;
+  overflow-y: auto; /* Adiciona uma barra de rolagem vertical quando necessário */
+  padding: 20px;
+}
+
+.content {
+  margin-top: 150px;
+}
+
+.navbar {
+  position: fixed;
+  margin-top: -15px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 16%; /* Defina a altura da navbar */
+  background-color: #ffffff; /* Cor de fundo da navbar */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.abonos {
+  font-size: 2.5rem;
+  font-weight: bold;
+  background-color: #ddd;
+}
+
+.title {
+  color: #000;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse; /* Retorna a tabela a um layout colapsado */
+  background-color: #ffffff;
+}
+
+.table th,
+.table td {
+  padding: 8px 10px; /* Um leve espaçamento entre as células */
+  border: 1px solid #ddd; /* Linha divisória para cada célula */
+  text-align: center;
+  color: #000; /* Define a cor do texto como preto */
+}
+
+.table th {
+  background-color: #f3f3f3; /* Fundo mais claro para o cabeçalho */
+  font-weight: bold;
+  color: #333;
+}
+
+.table td:first-child {
+  text-align: left;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #f9f9f9; /* Fundo levemente diferente nas linhas pares */
+}
+
+.table tbody tr:hover {
+  background-color: #e6f7ff; /* Fundo azul claro ao passar o mouse */
+}
+
+.tdButtons button {
+  padding: 8px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.tdButtons button:hover {
+  background-color: #0056b3;
+}
+
+.titles th {
+  text-align: center;
+}
+
+tbody td {
+  text-align: center;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .form_container {
+    width: 80%;
+    padding: 15px;
+  }
+
+  .date {
+    flex-direction: column; /* Empilha os itens verticalmente */
+  }
+
+  table,
+  th,
+  td {
+    width: 70%;
+    font-size: 12px; /* Reduz o tamanho da fonte */
+    padding: 5px; /* Reduz o espaçamento */
+  }
+
+  .tdButtons {
+    flex-direction: row; /* Coloca os botões em linha */
+    flex-wrap: wrap; /* Permite que os botões quebrem para nova linha */
+  }
+
+  .tdButtons button {
+    flex: 1 1 45%;
+    margin: 5px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .form_container {
+    margin: 10px;
+  }
+
+  input {
+    padding: 10px;
+  }
+
+  .date input[type='date'],
+  .buttonDate {
+    width: 100%;
+  }
+
+  th,
+  td {
+    font-size: 10px;
+    padding: 4px;
+  }
+}
+
+/* Carregar Mais */
+.loadMoreButton {
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.loadMoreButton button {
+  padding: 8px 16px;
+  font-size: 14px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  max-width: 200px;
+}
+
+/* Estilo do contêiner da legenda */
+.legendaContainer {
+  margin: 20px auto;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: fit-content;
+  background-color: #f9f9f9;
+  color: #000;
+  display: flex;
+  align-items: center; /* Garante alinhamento vertical */
+  gap: 15px; /* Espaçamento entre os elementos */
+}
+
+.legendaTitulo {
+  font-size: 16px;
+  font-weight: bold;
+  white-space: nowrap; /* Evita quebra de linha */
+}
+
+.legendaItens {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap; /* Garante que não quebre desalinhado */
+}
+
+/* Cada item (cor + descrição) */
+.legendaItem {
+  display: flex;
+  align-items: center;
+}
+
+/* Bloco colorido */
+.legendaCor {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #000;
+  margin-right: 5px;
+  border-radius: 3px;
+}
+
+/* Cores específicas */
+.legendaAndamento {
+  background-color: lightblue;
+}
+
+.legendaProximo {
+  background-color: yellow;
+}
+
+.legendaFuturo {
+  background-color: lightgreen;
+}
+
+.legendaPassado {
+  background-color: lightgray;
+}
+
+/* Responsividade */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .legendaContainer {
+    width: 90%;
+    margin: 20px auto;
+    text-align: center;
+  }
+
+  .legendaItens {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap; /* Quebra os itens se faltar espaço */
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .form_container {
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  input {
+    padding: 8px;
+  }
+
+  .table td,
+  .table th {
+    font-size: 12px;
+    padding: 4px;
+  }
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+  .legendaContainer {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .legendaItens {
+    flex-direction: column; /* Empilha itens */
+    gap: 8px;
+  }
+
+  .legendaItem {
+    width: 100%;
+  }
+}
+
+/* Ajuste fino para telas muito pequenas */
+@media (max-width: 480px) {
+  .legendaContainer {
+    width: 100%;
+    padding: 8px;
+  }
+
+  .legendaTitulo {
+    font-size: 14px;
+  }
+
+  .legendaCor {
+    width: 16px;
+    height: 16px;
+  }
+}

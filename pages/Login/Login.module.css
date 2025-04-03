@@ -1,0 +1,153 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 60px); /* Reduzir a altura considerando a navbar */
+  padding-top: 60px; /* Adicionar espaço abaixo da Navbar */
+}
+
+.content {
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.content h1 {
+  color: #0060b1;
+}
+
+.content input {
+  width: 80%;
+  height: 40px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  border: 1px solid #e3e0e0;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%; /* Ocupar a largura completa */
+  padding: 10px; /* Ajuste de espaçamento interno */
+
+  border-radius: 8px; /* Bordas arredondadas para a área azul */
+}
+
+.enter {
+  margin-top: -10px;
+  background-color: red;
+  border: none;
+  padding: 10px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  color: white;
+  width: 30%; /* Alinhar o botão de acordo com os inputs */
+  margin-bottom: 10px;
+}
+
+.registerLink {
+  margin-top: 10px;
+  color: #0060b1; /* Cor do link */
+  text-decoration: underline; /* Sublinhar o link */
+  cursor: pointer;
+  font-size: 14px; /* Tamanho do texto */
+  font-weight: bold;
+}
+.registerLink:hover {
+  text-decoration: none; /* Remove o sublinhado ao passar o mouse */
+}
+.message {
+  margin-top: -15px;
+  color: red;
+}
+
+.googleLogin {
+  background-color: #4285f4; /* Azul do Google */
+  color: white;
+  padding: 10px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+  max-width: 200px;
+}
+
+.googleLogin:hover {
+  background-color: #357ae8;
+}
+
+.navbar {
+  position: fixed; /* Fixar a navbar no topo */
+  top: 0; /* Alinhar ao topo */
+  left: 0;
+  width: 100%; /* Ocupar a largura total */
+  background-color: #ffffff; /* Cor de fundo */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
+  z-index: 1000; /* Garantir que fique acima de outros elementos */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+}
+
+.navbar h1 {
+  font-size: 30px; /* Tamanho padrão */
+  color: #000; /* Cor do texto */
+  margin: 0;
+  text-align: center;
+  white-space: nowrap; /* Evitar quebra de linha */
+  overflow: hidden; /* Esconder texto que exceder */
+  text-overflow: ellipsis; /* Adicionar reticências se o texto for muito longo */
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 10px; /* Ajustar padding em dispositivos menores */
+  }
+
+  .content {
+    width: 90%; /* Ocupa quase toda a largura da tela */
+    padding: 15px; /* Ajustar padding interno */
+  }
+
+  .content h1 {
+    font-size: 20px; /* Ajustar o tamanho do título */
+  }
+
+  .content input {
+    width: 100%; /* Inputs ocupam toda a largura */
+    margin-bottom: 15px; /* Espaço menor entre campos */
+  }
+
+  .buttons button {
+    width: 100%; /* Botões ocupam toda a largura */
+  }
+
+  .enter,
+  .googleLogin {
+    width: 100%; /* Ajustar os botões para ocupar toda a largura */
+  }
+}
+
+@media (max-width: 480px) {
+  .content h1 {
+    font-size: 18px; /* Ajustar ainda mais o título */
+  }
+
+  .googleLogin {
+    font-size: 14px; /* Ajustar o texto do botão */
+    padding: 8px; /* Reduzir o padding */
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-wrap: wrap; /* Permitir que os elementos quebrem linha em telas pequenas */
+  }
+}
