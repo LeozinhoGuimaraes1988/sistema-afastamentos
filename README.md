@@ -49,3 +49,8 @@ Este é um sistema desenvolvido para facilitar o gerenciamento de férias, abono
 
 ---
 
+🙌 
+Léo Guimarães
+Desenvolvedor Front-end | Pós-graduando em Análise e Desenvolvimento de Sistemas e Desenvolvimento Back-end
+LinkedIn (https://www.linkedin.com/in/leonardo-guimar%C3%A3es-dev/)
+
