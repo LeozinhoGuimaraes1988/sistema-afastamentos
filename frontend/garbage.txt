@@ -1,0 +1,1535 @@
+// import styles from '../Ferias/Ferias.module.css';
+// import DatePicker from 'react-datepicker';
+// import 'react-datepicker/dist/react-datepicker.css';
+// import { useEffect, useState } from 'react';
+// import {
+//   getServidores,
+//   addServidor,
+//   deleteServidor,
+//   updateServidor,
+//   addFerias,
+//   fetchFerias,
+// } from '../../services/fireStore';
+
+// const Ferias = () => {
+//   const [servidores, setServidores] = useState([]);
+//   const [newServidor, setNewServidor] = useState({
+//     nome: '',
+//     cargo: '',
+//     lotacao: '',
+//     matricula: '',
+//   });
+//   const [ferias, setFerias] = useState([
+//     { dataInicio: '', dataFim: '', dias: 0 },
+//   ]);
+//   const [editingId, setEditingId] = useState(null);
+
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       const servidoresData = await getServidores();
+//       const servidoresComFerias = await Promise.all(
+//         servidoresData.map(async (servidor) => {
+//           const feriasData = await fetchFerias(servidor.id);
+//           return { ...servidor, ferias: feriasData ? feriasData : [] };
+//         })
+//       );
+//       setServidores(servidoresComFerias);
+//     };
+//     fetchData();
+//   }, []);
+
+//   const calcularDias = (dataInicio, dataFim) => {
+//     const inicio = new Date(dataInicio);
+//     const fim = new Date(dataFim);
+//     const diffTime = fim - inicio;
+//     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+//   };
+
+//   const handleDateChange = (index, date, field) => {
+//     setFerias((prevFerias) => {
+//       const newFerias = [...prevFerias];
+//       newFerias[index] = { ...newFerias[index], [field]: date };
+
+//       if (newFerias[index].dataInicio && newFerias[index].dataFim) {
+//         const diasCalculados = calcularDias(
+//           newFerias[index].dataInicio,
+//           newFerias[index].dataFim
+//         );
+//         newFerias[index].dias = diasCalculados;
+//       }
+//       return newFerias;
+//     });
+//   };
+
+//   const validarFerias = () => {
+//     const periodosValidos = ferias.filter((periodo) => periodo.dias > 0);
+//     const totalDias = periodosValidos.reduce(
+//       (acc, periodo) => acc + periodo.dias,
+//       0
+//     );
+
+//     if (totalDias > 30) {
+//       alert('Férias não podem ultrapassar 30 dias.');
+//       return false;
+//     }
+
+//     const diasFerias = periodosValidos.map((p) => p.dias).sort((a, b) => a - b);
+//     const combinacoesValidas = [
+//       [10, 10, 10],
+//       [10, 20],
+//       [20, 10],
+//       [15, 15],
+//       [30],
+//     ];
+
+//     const combinacaoValida = combinacoesValidas.some(
+//       (combinacao) =>
+//         combinacao.length === diasFerias.length &&
+//         combinacao.every((dia, index) => dia === diasFerias[index])
+//     );
+
+//     if (!combinacaoValida) {
+//       alert(
+//         'Combinação de períodos inválida. As combinações válidas são: 10+10+10, 10+20, 20+10, 15+15 ou 30 dias.'
+//       );
+//       return false;
+//     }
+
+//     for (let i = 1; i < periodosValidos.length; i++) {
+//       const diffEntrePeriodos = calcularDias(
+//         periodosValidos[i - 1].dataFim,
+//         periodosValidos[i].dataInicio
+//       );
+//       if (diffEntrePeriodos < 30) {
+//         alert('O intervalo entre períodos deve ser de pelo menos 30 dias.');
+//         return false;
+//       }
+//     }
+
+//     return true;
+//   };
+
+//   const handleInputChange = (index, e) => {
+//     const { name, value } = e.target;
+//     setFerias((prevFerias) => {
+//       const newFerias = [...prevFerias];
+//       newFerias[index] = { ...newFerias[index], [name]: value };
+
+//       if (newFerias[index].dataInicio && newFerias[index].dataFim) {
+//         const diasCalculados = calcularDias(
+//           newFerias[index].dataInicio,
+//           newFerias[index].dataFim
+//         );
+//         newFerias[index].dias = diasCalculados;
+//       }
+//       return newFerias;
+//     });
+//   };
+
+//   const addPeriodo = () => {
+//     setFerias([...ferias, { dataInicio: '', dataFim: '', dias: 0 }]);
+//   };
+
+//   const removePeriodo = (index) => {
+//     setFerias(ferias.filter((__, i) => i !== index));
+//   };
+
+//   const handleServidorInputChange = (e) => {
+//     const { name, value } = e.target;
+//     setNewServidor({ ...newServidor, [name]: value });
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+
+//     if (!validarFerias()) {
+//       return;
+//     }
+
+//     let servidorId = editingId;
+
+//     if (editingId) {
+//       await updateServidor(editingId, newServidor);
+//       setEditingId(null);
+//     } else {
+//       const newServerRef = await addServidor(newServidor);
+//       servidorId = newServerRef.id;
+//     }
+
+//     try {
+//       for (const periodo of ferias) {
+//         await addFerias(servidorId, {
+//           dataInicio: periodo.dataInicio,
+//           dataFim: periodo.dataFim,
+//           dias: periodo.dias,
+//         });
+//       }
+//       alert('Servidor e períodos adicionados com sucesso!');
+//     } catch (error) {
+//       console.log('Erro ao adicionar período de férias: ', error);
+//     }
+
+//     setNewServidor({
+//       nome: '',
+//       cargo: '',
+//       lotacao: '',
+//       matricula: '',
+//     });
+//     setFerias([{ dataInicio: '', dataFim: '', dias: 0 }]);
+
+//     const data = await getServidores();
+//     setServidores(data);
+//   };
+
+//   const handleEdit = (servidor) => {
+//     setNewServidor({
+//       nome: servidor.nome,
+//       cargo: servidor.cargo,
+//       lotacao: servidor.lotacao,
+//       matricula: servidor.matricula,
+//     });
+//     setEditingId(servidor.id);
+//   };
+
+//   const handleDelete = async (id) => {
+//     await deleteServidor(id);
+//     const data = await getServidores();
+//     setServidores(data);
+//   };
+
+//   return (
+//     <div className={styles.container}>
+//       <div>
+//         <form onSubmit={handleSubmit}>
+//           <input
+//             type="text"
+//             name="nome"
+//             value={newServidor.nome}
+//             onChange={handleServidorInputChange}
+//             placeholder="Nome"
+//             required
+//           />
+//           <input
+//             type="text"
+//             name="cargo"
+//             value={newServidor.cargo}
+//             onChange={handleServidorInputChange}
+//             placeholder="Cargo"
+//             required
+//           />
+//           <input
+//             type="text"
+//             name="lotacao"
+//             value={newServidor.lotacao}
+//             onChange={handleServidorInputChange}
+//             placeholder="Lotação"
+//             required
+//           />
+//           <input
+//             type="text"
+//             name="matricula"
+//             value={newServidor.matricula}
+//             onChange={handleServidorInputChange}
+//             placeholder="Matrícula"
+//             required
+//           />
+
+//           {ferias.map((periodo, index) => (
+//             <div key={index}>
+//               <label>
+//                 Data início:
+//                 <input
+//                   type="date"
+//                   name="dataInicio"
+//                   value={periodo.dataInicio}
+//                   onChange={(e) => handleInputChange(index, e)}
+//                   required
+//                 />
+//               </label>
+//               <label>
+//                 Data fim:
+//                 <input
+//                   type="date"
+//                   name="dataFim"
+//                   value={periodo.dataFim}
+//                   onChange={(e) => handleInputChange(index, e)}
+//                   required
+//                 />
+//               </label>
+//               {ferias.length < 3 && index === ferias.length - 1 && (
+//                 <button type="button" onClick={addPeriodo}>
+//                   Adicionar Período
+//                 </button>
+//               )}
+//               {ferias.length > 1 && (
+//                 <button type="button" onClick={() => removePeriodo(index)}>
+//                   Remover Período
+//                 </button>
+//               )}
+//             </div>
+//           ))}
+
+//           <button type="submit">Salvar Dados</button>
+//         </form>
+
+//         <ul>
+//           {servidores.map((servidor) => {
+//             return (
+//               <li key={servidor.id}>
+//                 <div>Nome: {servidor.nome}</div>
+//                 <div>Cargo: {servidor.cargo}</div>
+//                 <div>Lotação: {servidor.lotacao}</div>
+//                 <div>Matrícula: {servidor.matricula}</div>
+//                 <div>
+//                   <h4>Períodos de Férias:</h4>
+//                   <ul>
+//                     {servidor.ferias && Array.isArray(servidor.ferias) ? (
+//                       servidor.ferias.map((ferias, index) => (
+//                         <li key={index}>
+//                           <div>Data Início: {ferias.dataInicio}</div>
+//                           <div>Data Fim: {ferias.dataFim}</div>
+//                           <div>Dias: {ferias.dias}</div>
+//                         </li>
+//                       ))
+//                     ) : (
+//                       <div>Sem períodos de férias registrados.</div>
+//                     )}
+//                   </ul>
+//                 </div>
+//                 <button onClick={() => handleEdit(servidor)}>Editar</button>
+//                 <button onClick={() => handleDelete(servidor.id)}>
+//                   Excluir
+//                 </button>
+//               </li>
+//             );
+//           })}
+//         </ul>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Ferias;
+//  // Estado que mantém os períodos, agora como um array de objetos
+//  const [periodos, setPeriodos] = useState([
+//     {
+//       tipo: 'ferias',
+//       dataInicio: '',
+//       dataFim: '',
+//       dias: 0,
+//       motivo: '',
+//     },
+//   ]);
+
+//   // Função para adicionar um novo período ao array de períodos
+//   const addPeriodo = () => {
+//     setPeriodos([
+//       ...periodos,
+//       { tipo: 'ferias', dataInicio: '', dataFim: '', dias: 0, motivo: '' },
+//     ]);
+//   };
+
+//   // Função para remover um período do array de períodos
+//   const removePeriodo = (index) => {
+//     setPeriodos(periodos.filter((__, i) => i !== index));
+//   };
+
+//   // Estado que guarda o ID do servidor que está sendo editado
+//   const [editingId, setEditingId] = useState(null);
+
+//   // useEffect para carregar os servidores ao montar o componente
+//   useEffect(() => {
+//     const fetchServidores = async () => {
+//       const data = await getServidores();
+//       setServidores(data);
+//     };
+//     fetchServidores();
+//   }, []);
+
+//   // Função que lida com a mudança nos campos do servidor
+//   const handleInputChange = (e) => {
+//     const { name, value } = e.target;
+//     setNewServidor({ ...newServidor, [name]: value });
+//   };
+
+//   // Função que lida com a mudança nos campos de cada período
+//   const handlePeriodoChange = (index, e) => {
+//     const { name, value } = e.target;
+//     setPeriodos((prevPeriodos) => {
+//       const newPeriodos = [...prevPeriodos];
+//       newPeriodos[index] = { ...newPeriodos[index], [name]: value };
+//       return newPeriodos;
+//     });
+//   };
+
+//   // Função que lida com o envio do formulário para adicionar ou editar um servidor e seus períodos
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+
+//     let servidorId = editingId;
+
+//     if (editingId) {
+//       await updateServidor(editingId, newServidor);
+//       setEditingId(null);
+//     } else {
+//       const newServerRef = await addServidor(newServidor);
+//       servidorId = newServerRef.id; // Obtenha o ID do servidor recém-criado
+//     }
+
+//     // Adicionar períodos associados ao servidor
+//     try {
+//       for (const periodo of periodos) {
+//         switch (periodo.tipo) {
+//           case 'ferias':
+//             await addFerias(servidorId, {
+//               dataInicio: periodo.dataInicio,
+//               dataFim: periodo.dataFim,
+//               dias: parseInt(periodo.dias, 10),
+//             });
+//             break;
+//           case 'abono':
+//             await addAbono(servidorId, {
+//               dataInicio: periodo.dataInicio,
+//               dataFim: periodo.dataFim,
+//               dias: parseInt(periodo.dias, 10),
+//             });
+//             break;
+//           case 'licencaPremio':
+//             await addLicencaPremio(servidorId, {
+//               dataInicio: periodo.dataInicio,
+//               dataFim: periodo.dataFim,
+//               dias: parseInt(periodo.dias, 10),
+//             });
+//             break;
+//           case 'licencaMedica':
+//             await addLicencaMedica(servidorId, {
+//               dataInicio: periodo.dataInicio,
+//               dataFim: periodo.dataFim,
+//               motivo: periodo.motivo,
+//             });
+//             break;
+//           default:
+//             console.error('Tipo de período inválido');
+//         }
+//       }
+//       alert('Servidor e períodos adicionados com sucesso!');
+//     } catch (error) {
+//       console.error('Erro ao adicionar período: ', error);
+//     }
+
+//     // Resetar estados
+//     setNewServidor({
+//       nome: '',
+//       cargo: '',
+//       lotacao: '',
+//       matricula: '',
+//     });
+//     setPeriodos([
+//       { tipo: 'ferias', dataInicio: '', dataFim: '', dias: 0, motivo: '' },
+//     ]);
+
+//     const data = await getServidores();
+//     setServidores(data);
+//   };
+
+//   // Função para carregar os dados de um servidor no formulário para edição
+//   const handleEdit = (servidor) => {
+//     setNewServidor({
+//       nome: servidor.nome,
+//       cargo: servidor.cargo,
+//       lotacao: servidor.lotacao,
+//       matricula: servidor.matricula,
+//     });
+//     setEditingId(servidor.id);
+//   };
+
+//   // Função para deletar um servidor
+//   const handleDelete = async (id) => {
+//     await deleteServidor(id);
+//     const data = await getServidores();
+//     setServidores(data);
+//   };
+
+//   return (
+//     <div>
+//       <form onSubmit={handleSubmit}>
+//         <input
+//           type="text"
+//           name="nome"
+//           value={newServidor.nome}
+//           onChange={handleInputChange}
+//           placeholder="Nome"
+//           required
+//         />
+//         <input
+//           type="text"
+//           name="cargo"
+//           value={newServidor.cargo}
+//           onChange={handleInputChange}
+//           placeholder="Cargo"
+//           required
+//         />
+//         <input
+//           type="text"
+//           name="lotacao"
+//           value={newServidor.lotacao}
+//           onChange={handleInputChange}
+//           placeholder="Lotação"
+//           required
+//         />
+//         <input
+//           type="text"
+//           name="matricula"
+//           value={newServidor.matricula}
+//           onChange={handleInputChange}
+//           placeholder="Matrícula"
+//           required
+//         />
+//         {/* Adicionar outros campos de input aqui... */}
+//         <button type="submit">Salvar Servidor</button>
+//       </form>
+
+//       {periodos.map((periodo, index) => (
+//         <div key={index}>
+//           <label>
+//             Tipo de período:
+//             <select
+//               name="tipo"
+//               value={periodo.tipo}
+//               onChange={(e) => handlePeriodoChange(index, e)}
+//             >
+//               <option value="ferias">Férias</option>
+//               <option value="abono">Abono</option>
+//               <option value="licencaPremio">Licença-Prêmio</option>
+//               <option value="licencaMedica">Licença Médica</option>
+//             </select>
+//           </label>
+
+//           <label>
+//             Data início:
+//             <input
+//               type="date"
+//               name="dataInicio"
+//               value={periodo.dataInicio}
+//               onChange={(e) => handlePeriodoChange(index, e)}
+//               required
+//             />
+//           </label>
+//           <label>
+//             Data fim:
+//             <input
+//               type="date"
+//               name="dataFim"
+//               value={periodo.dataFim}
+//               onChange={(e) => handlePeriodoChange(index, e)}
+//               required
+//             />
+//           </label>
+
+//           <button type="button" onClick={() => removePeriodo(index)}>
+//             Remover Período
+//           </button>
+//         </div>
+//       ))}
+
+//       <button type="button" onClick={addPeriodo}>
+//         Adicionar Período
+//       </button>
+
+//       <ul>
+//         {servidores.map((servidor) => (
+//           <li key={servidor.id}>
+//             <div>Nome:{servidor.nome}</div>
+//             <div>Cargo:{servidor.cargo}</div>
+//             <div>Lotação:{servidor.lotacao}</div>
+//             <div>Matrícula:{servidor.matricula}</div>
+//             <button onClick={() => handleEdit(servidor)}>Editar</button>
+//             <button onClick={() => handleDelete(servidor.id)}>Excluir</button>
+//           </li>
+//         ))}
+//       </ul>
+//       <ul>
+//         {periodos.map((afastamentos) => (
+//           <li key={afastamentos.id}>
+//             <div>Tipo:{afastamentos.tipo}</div>
+//             <div>Início:{afastamentos.dataInicio}</div>
+//             <div>Fim:{afastamentos.dataFim}</div>
+
+//             <button onClick={() => handleEdit(afastamentos)}>Editar</button>
+//             <button onClick={() => handleDelete(afastamentos.id)}>
+//               Excluir
+//             </button>
+//           </li>
+//         ))}
+//       </ul>
+//     </div>
+//   );
+// };
+
+// export default Register;
+
+/* 
+<ul>
+        {servidores.map((servidor) => (
+          <li key={servidor.id}>
+            <div>Nome: {servidor.nome}</div>
+            <div>Cargo: {servidor.cargo}</div>
+            <div>Lotação: {servidor.lotacao}</div>
+            <div>Matrícula: {servidor.matricula}</div>
+
+            <h3>Períodos de Afastamento</h3>
+            <ul>
+              {servidor.periodos && servidor.periodos.length > 0 ? (
+                servidor.periodos.map((afastamento, index) => (
+                  <li key={index}>
+                    <div>Tipo: {afastamento.tipo}</div>
+                    <div>Data início: {afastamento.dataInicio}</div>
+                    <div>Data fim: {afastamento.dataFim}</div>
+                    <div>Dias: {afastamento.dias}</div>
+                    <div>Motivo: {afastamento.motivo}</div>
+                    <button onClick={() => handleEdit(afastamento)}>
+                      Editar
+                    </button>
+                    <button onClick={() => handleDelete(afastamento.id)}>
+                      Excluir
+                    </button>
+                  </li>
+                ))
+              ) : (
+                <li>Nenhum afastamento registrado</li>
+              )}
+            </ul>
+
+            <button onClick={() => handleEdit(servidor)}>
+              Editar Servidor
+            </button>
+            <button onClick={() => handleDelete(servidor.id)}>
+              Excluir Servidor
+            </button>
+          </li>
+        ))}
+      </ul>
+
+      <h2>{editingId ? 'Editar Servidor' : 'Adicionar Novo Servidor'}</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          name="nome"
+          value={newServidor.nome}
+          onChange={handleInputChange}
+          placeholder="Nome"
+          required
+        />
+        <input
+          type="text"
+          name="cargo"
+          value={newServidor.cargo}
+          onChange={handleInputChange}
+          placeholder="Cargo"
+          required
+        />
+        <input
+          type="text"
+          name="lotacao"
+          value={newServidor.lotacao}
+          onChange={handleInputChange}
+          placeholder="Lotação"
+          required
+        />
+        <input
+          type="text"
+          name="matricula"
+          value={newServidor.matricula}
+          onChange={handleInputChange}
+          placeholder="Matrícula"
+          required
+        />
+
+        <div>
+          <label>
+            Tipo de período:
+            <select
+              name="tipo"
+              value={periodo.tipo}
+              onChange={handlePeriodoChange}
+            >
+              <option value="ferias">Férias</option>
+              <option value="abono">Abono</option>
+              <option value="licencaPremio">Licença-Prêmio</option>
+              <option value="licencaMedica">Licença Médica</option>
+            </select>
+          </label>
+        </div>
+
+        {/* FÉRIAS */
+/*
+        <div>
+          <label>
+            Data Início:
+            <input
+              type="date"
+              name="dataInicio"
+              value={periodo.dataInicio}
+              onChange={handlePeriodoChange}
+              required
+            />
+          </label>
+          {periodo.tipo == 'ferias' && (
+            <label>
+              Data Início:
+              <input
+                type="date"
+                name="dataInicio"
+                value={periodo.dataInicio}
+                onChange={handlePeriodoChange}
+                required
+              />
+            </label>
+          )}
+          {periodo.tipo == 'ferias' && (
+            <label>
+              Data Início:
+              <input
+                type="date"
+                name="dataInicio"
+                value={periodo.dataInicio}
+                onChange={handlePeriodoChange}
+                required
+              />
+            </label>
+          )}
+        </div>
+        {periodo.tipo == 'ferias' && (
+          <div>
+            <label>
+              Data Fim:
+              <input
+                type="date"
+                name="dataFim"
+                value={periodo.dataFim}
+                onChange={handlePeriodoChange}
+                required
+              />
+            </label>
+          </div>
+        )}
+        {periodo.tipo == 'ferias' && (
+          <div>
+            <label>
+              Data Fim:
+              <input
+                type="date"
+                name="dataFim"
+                value={periodo.dataFim}
+                onChange={handlePeriodoChange}
+                required
+              />
+            </label>
+          </div>
+        )}
+
+        {/* LICENÇA-PRÊMIO */
+/*
+        {periodo.tipo == 'licencaPremio' && (
+          <label>
+            Data Início:
+            <input
+              type="date"
+              name="dataInicio"
+              value={periodo.dataInicio}
+              onChange={handlePeriodoChange}
+              required
+            />
+          </label>
+        )}
+        <div>
+          <label>
+            Data Fim:
+            <input
+              type="date"
+              name="dataFim"
+              value={periodo.dataFim}
+              onChange={handlePeriodoChange}
+              required
+            />
+          </label>
+        </div>
+
+        <div>
+          <label>
+            Dias:
+            <input
+              type="number"
+              name="dias"
+              value={periodo.dias}
+              onChange={handlePeriodoChange}
+              required
+            />
+          </label>
+        </div>
+
+        {/* LICENÇA MÉDICA */
+/*
+        {periodo.tipo === 'licencaMedica' && (
+          <div>
+            <label>
+              Motivo:
+              <input
+                type="text"
+                name="motivo"
+                value={periodo.motivo}
+                onChange={handlePeriodoChange}
+              />
+            </label>
+          </div>
+        )}
+
+        <button type="submit">{editingId ? 'Atualizar' : 'Adicionar'}</button>
+      </form>
+
+      */
+
+// const customStyles = {
+//   overlay: {
+//     backgroundColor: 'rgba(0,0,0,0.75)',
+//   },
+//   content: {
+//     top: '50%',
+//     left: '50%',
+//     right: 'auto',
+//     bottom: 'auto',
+//     marginRight: '-50%',
+//     transform: 'translate(-50%, -50%)',
+//   },
+// };
+
+// Modal.setAppElement('#root');
+
+{
+  /* <Modal
+isOpen={modalIsOpen}
+onRequestClose={() => setIsOpen(false)}
+style={customStyles}
+>
+<h1>Excluir produto</h1>
+<p>Deseja realmente excluir este produto?</p>
+<div className={styles.buttons}>
+  <div className={styles.yes}>
+    <button className={styles.modalButton}>Sim</button>
+  </div>
+  <div className={styles.no}>
+    <button
+      className={styles.modalButton}
+      onClick={() => setIsOpen(false)}
+    >
+      Não
+    </button>
+  </div>
+</div>
+</Modal> */
+}
+
+
+const EditForm = () => (
+    <form onSubmit={handleEditSubmit}>
+      {ferias.map((periodo, index) => (
+        <div key={index}>
+          <DatePicker
+            selected={periodo.dataInicio}
+            onChange={(date) => handleDateChange(index, date, 'dataInicio')}
+            dateFormat="dd/MM/yyyy"
+            placeholderText="Data de Início"
+          />
+          <DatePicker
+            selected={periodo.dataFim}
+            onChange={(date) => handleDateChange(index, date, 'dataFim')}
+            dateFormat="dd/MM/yyyy"
+            placeholderText="Data de Fim"
+          />
+          {ferias.length > 1 && (
+            <button type="button" onClick={() => removePeriodo(index)}>
+              Remover Período
+            </button>
+          )}
+        </div>
+      ))}
+      {ferias.length < 3 && (
+        <button type="button" onClick={addPeriodo}>
+          Adicionar Período
+        </button>
+      )}
+      <button type="submit">Salvar Alterações</button>
+    </form>
+  );
+
+  const handleEdit = async (id) => {
+    if (!periodoAtual || typeof periodoAtual !== 'object') {
+      console.error('Período inválido:', periodoAtual);
+      return;
+    }
+
+    try {
+      setEditingId(id);
+
+      // Atualiza o período de férias no banco de dados
+      //await updatePeriodo(id, periodoAtual);
+
+      // Recarrega a lista de servidores com seus períodos de férias atualizados
+      const servidoresData = await getServidores();
+      const servidoresComFerias = await Promise.all(
+        servidoresData.map(async (servidor) => {
+          const feriasData = await fetchFerias(servidor.id);
+
+          // Converter Timestamps para objetos Date
+          const feriasConvertidas = feriasData.map((periodo) => ({
+            ...periodo,
+            dataInicio: periodo.dataInicio.toDate().toISOString().split('T')[0],
+            dataFim: periodo.dataFim.toDate().toISOString().split('T')[0],
+          }));
+
+          return { ...servidor, ferias: feriasConvertidas || [] };
+        })
+      );
+
+      // Atualiza o estado dos servidores
+      setServidores(servidoresComFerias);
+      alert('Período de férias editado com sucesso!');
+    } catch (error) {
+      console.log('Erro ao editar período de férias: ', error);
+    } finally {
+      // Limpa o ID de edição após a edição ser concluída
+      setEditingId(null);
+    }
+  };
+
+  // Função para deletar um período de férias
+  // const handleDeletePeriodo = async (periodId, servidorId) => {
+  //   if (window.confirm('Tem certeza que deseja excluir este período?')) {
+  //     try {
+  //       await deletePeriodo(periodId, servidorId);
+  //       setCurrentPeriods((prev) =>
+  //         prev.filter((periodo) => periodo.id !== periodId)
+  //       );
+
+  //       alert('Período excluído com sucesso!');
+  //     } catch (error) {
+  //       console.log('Erro ao excluir período: ', error);
+  //     }
+  //   }
+  // };
+
+
+  // Função utilitária para converter data para o formato ISO (YYYY-MM-DD)
+  // const converterParaDataISO = (data) => {
+  //   // Verifica se a data é um Timestamp do Firebase
+  //   if (data && typeof data.toDate === 'function') {
+  //     return data.toDate().toISOString().split('T')[0];
+  //   }
+
+  //   // Verifica se a data é uma string no formato YYYY-MM-DD
+  //   if (typeof data === 'string') {
+  //     return data; // A string já está no formato ISO, então podemos retorná-la diretamente
+  //   }
+
+  //   // Verifica se a data é um objeto Date
+  //   if (data instanceof Date) {
+  //     return data.toISOString().split('T')[0];
+  //   }
+
+  //   // Se não for nenhum dos casos, retorna uma mensagem padrão
+  //   console.error('Formato de data inválido:', data);
+  //   return 'Data inválida';
+  // };
+
+
+  // addPeriodo
+  // export const useAddPeriodo = async (servidorId, feriasData) => {
+//   try {
+//     console.log('Iniciando adição de período', { servidorId, feriasData });
+
+//     if (!servidorId) {
+//       throw new Error('ID do servidor inválido ou não fornecido.');
+//     }
+
+//     const servidorRef = doc(db, 'servidores', servidorId);
+
+//     await verificarSobreposicao(servidorId, feriasData, 'ferias');
+
+//     await updateDoc(servidorRef, {
+//       periodos: arrayUnion({
+//         tipo: 'ferias',
+//         ...feriasData,
+//       }),
+//     });
+
+//     console.log('Período de férias adicionado com sucesso!');
+//   } catch (error) {
+//     console.error('Erro ao adicionar período de férias: ', error);
+//   }
+// };
+
+
+// PRIMEIRO CÓDIGO DE ABONOS
+// import styles from '../Ferias/Ferias.module.css';
+// import DatePicker from 'react-datepicker';
+// import 'react-datepicker/dist/react-datepicker.css';
+
+// import { useEffect, useState } from 'react';
+// import {
+//   getServidores,
+//   addServidor,
+//   deleteServidor,
+//   updateServidor,
+//   addFerias,
+// } from '../../services/fireStore';
+
+// // Hooks
+// import { useFetchFerias } from '../../hooks/useFetchFerias';
+// import { useAddPeriodo } from '../../hooks/useAddPeriodo';
+
+// // Components
+// import EditPeriodos from '../../components/EditPeriodosAbonos';
+
+// const Abonos = () => {
+//   // Estado para armazenar os dados do novo servidor
+//   const [newServidor, setNewServidor] = useState({
+//     nome: '',
+//     cargo: '',
+//     lotacao: '',
+//     matricula: '',
+//   });
+//   const { documents, loading, error } = useFetchFerias('feriasCollection');
+//   const { addPeriodo } = useAddPeriodo();
+
+//   // Estado para armazenar os períodos de férias
+//   const [ferias, setFerias] = useState([]);
+
+//   // Estado para armazenar o ID do servidor em edição
+//   const [editingId, setEditingId] = useState(null);
+
+//   const [periodoAtual, setPeriodoAtual] = useState(null);
+
+//   // Estado para armazenar os períodos de férias dos servidores
+//   const [servidoresComFerias, setServidoresComFerias] = useState([]);
+
+//   const [servidores, setServidores] = useState([]); // para armazenar a lista de servidores
+
+//   const fetchData = async () => {
+//     try {
+//       const servidoresData = await getServidores();
+
+//       const servidoresComFerias = await Promise.all(
+//         servidoresData.map(async (servidor) => {
+//           if (servidor.periodos && servidor.periodos.length > 0) {
+//             const periodosConvertidos = servidor.periodos.map((periodo) => {
+//               let dataInicioConvertida, dataFimConvertida;
+
+//               // Verificação e conversão para `dataInicio`
+//               if (typeof periodo.dataInicio === 'string') {
+//                 dataInicioConvertida = periodo.dataInicio; // Mantém a string como está
+//               } else if (
+//                 periodo.dataInicio instanceof Object &&
+//                 typeof periodo.dataInicio.toDate === 'function'
+//               ) {
+//                 dataInicioConvertida = periodo.dataInicio
+//                   .toDate()
+//                   .toISOString()
+//                   .split('T')[0]; // Timestamp -> ISO
+//               } else {
+//                 console.error(
+//                   'Tipo inesperado para dataInicio:',
+//                   periodo.dataInicio
+//                 );
+//               }
+
+//               // Verificação e conversão para `dataFim`
+//               if (typeof periodo.dataFim === 'string') {
+//                 dataFimConvertida = periodo.dataFim; // Mantém a string como está
+//               } else if (
+//                 periodo.dataFim instanceof Object &&
+//                 typeof periodo.dataFim.toDate === 'function'
+//               ) {
+//                 dataFimConvertida = periodo.dataFim
+//                   .toDate()
+//                   .toISOString()
+//                   .split('T')[0]; // Timestamp -> ISO
+//               } else {
+//                 console.error('Tipo inesperado para dataFim:', periodo.dataFim);
+//               }
+
+//               return {
+//                 ...periodo,
+//                 dataInicio: dataInicioConvertida,
+//                 dataFim: dataFimConvertida,
+//               };
+//             });
+
+//             armazenarPeriodo(periodosConvertidos);
+//             setPeriodoAtual(periodosConvertidos);
+
+//             return { ...servidor, ferias: periodosConvertidos };
+//           } else {
+//             return { ...servidor, ferias: [] };
+//           }
+//         })
+//       );
+
+//       setServidoresComFerias(servidoresComFerias);
+//     } catch (error) {
+//       console.error('Erro ao buscar dados:', error);
+//     }
+//   };
+
+//   // Função para armazenar o novo período no estado, sem sobrescrever os anteriores
+//   const armazenarPeriodo = (periodo) => {
+//     if (periodoAtual) {
+//       setPeriodoAtual([...periodoAtual, periodo]);
+//     } else {
+//       setPeriodoAtual([periodo]);
+//     }
+//   };
+
+//   useEffect(() => {
+//     const fetchData = () => {
+//       const fetchedFerias = [{ dataInicio: '', dataFim: '' }];
+//       setFerias(fetchedFerias); // Inicia com apenas um campo de período de férias
+//     };
+
+//     fetchData(); // Chama a função fetchData após ela ser definida
+//   }, []);
+
+//   // useEffect para chamar fetchData quando o componente for montado
+//   useEffect(() => {
+//     fetchData();
+//   }, []);
+
+//   // Função para calcular o número de dias entre duas datas
+//   const calcularDias = (dataInicio, dataFim) => {
+//     const inicio = new Date(dataInicio);
+//     const fim = new Date(dataFim);
+//     const diffTime = fim - inicio;
+//     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+//   };
+
+//   // Função para atualizar a data de início ou de fim de um período
+//   const handleDateChange = (index, date, field) => {
+//     setFerias((prevFerias) => {
+//       const newFerias = [...prevFerias];
+//       newFerias[index] = { ...newFerias[index], [field]: date };
+
+//       if (newFerias[index].dataInicio && newFerias[index].dataFim) {
+//         const diasCalculados = calcularDias(
+//           newFerias[index].dataInicio,
+//           newFerias[index].dataFim
+//         );
+//         newFerias[index].dias = diasCalculados;
+//       }
+//       return newFerias;
+//     });
+//   };
+
+//   // Função para adicionar um novo período de férias
+
+//   const handleAddPeriodo = async (servidorId) => {
+//     try {
+//       if (!servidorId) {
+//         throw new Error('ServidorId não fornecido!');
+//       }
+//       await addPeriodo(ferias[0], servidorId); // Se `ferias` é um array, passe o primeiro objeto
+//       setFerias([...ferias, { dataInicio: '', dataFim: '' }]); // Atualiza o estado local
+//     } catch (error) {
+//       console.error('Erro ao adicionar período:', error);
+//     }
+//   };
+
+//   useEffect(() => {
+//     if (!ferias.length) {
+//       setFerias([{ dataInicio: '', dataFim: '', dias: 0 }]);
+//     }
+//   }, [ferias]);
+
+//   // Função para remover um período de férias
+//   const removePeriodo = (index) => {
+//     setFerias(ferias.filter((_, i) => i !== index));
+//   };
+
+//   const [showModal, setShowModal] = useState(false);
+
+//   // Armazena os períodos atuais do servidor
+//   const [currentPeriods, setCurrentPeriods] = useState([]);
+
+//   // Função para atualizar o estado do novo servidor com base no input
+//   const handleServidorInputChange = (e) => {
+//     const { name, value } = e.target;
+//     setNewServidor({ ...newServidor, [name]: value });
+//   };
+
+//   // Função para validar os períodos de férias
+//   const validarPeriodosFerias = (periodosValidos) => {
+//     // Calcular o número de dias de cada período
+//     const diasFerias = periodosValidos.map((periodo) =>
+//       calcularDias(periodo.dataInicio, periodo.dataFim)
+//     );
+
+//     // Verificar se há um intervalo menor que 30 dias entre os períodos
+//     for (let i = 1; i < periodosValidos.length; i++) {
+//       const diffEntrePeriodos = calcularDias(
+//         periodosValidos[i - 1].dataFim,
+//         periodosValidos[i].dataInicio
+//       );
+//       if (diffEntrePeriodos < 30) {
+//         alert('Intervalo entre os períodos não pode ser menor que 30 dias.');
+//         return false;
+//       }
+//     }
+
+//     // Definir as combinações válidas
+//     const combinacoesValidas = [
+//       [10, 10, 10],
+//       [10, 20],
+//       [20, 10],
+//       [15, 15],
+//       [30],
+//     ];
+
+//     // Verificar se a combinação de dias é válida
+//     const combinacaoValida = combinacoesValidas.some(
+//       (combinacao) =>
+//         combinacao.length === diasFerias.length &&
+//         combinacao.every((dia, index) => dia === diasFerias[index])
+//     );
+
+//     if (!combinacaoValida) {
+//       alert(
+//         'Combinação de períodos inválida. As combinações válidas são: 10+10+10, 10+20, 20+10, 15+15 ou 30 dias.'
+//       );
+//       return false;
+//     }
+
+//     return true;
+//   };
+
+//   const handleEditSubmit = async (e) => {
+//     e.preventDefault();
+
+//     if (!validarPeriodosFerias(ferias)) {
+//       return;
+//     }
+
+//     let servidorId = editingId;
+
+//     // Atualiza ou adiciona um servidor
+//     if (editingId) {
+//       await updateServidor(editingId, newServidor);
+//       setEditingId(null);
+//     } else {
+//       const newServerRef = await addServidor(newServidor);
+
+//       if (!newServerRef) {
+//         // Se newServerRef for null, o servidor já existe
+//         alert('Este servidor já está cadastrado.');
+//         return; // Encerra a função para evitar erros
+//       }
+//       servidorId = newServerRef.id; // Define o servidorId corretamente
+//     }
+
+//     try {
+//       // Adiciona os períodos de férias para o servidor
+//       for (const periodo of ferias) {
+//         await addFerias(servidorId, {
+//           dataInicio: periodo.dataInicio,
+//           dataFim: periodo.dataFim,
+//           dias: periodo.dias,
+//         });
+//       }
+//       alert('Servidor e períodos adicionados com sucesso!');
+//     } catch (error) {
+//       console.log('Erro ao adicionar período de férias: ', error);
+//     }
+
+//     // Limpa o estado após o envio
+//     setNewServidor({ nome: '', cargo: '', lotacao: '', matricula: '' });
+//     setFerias([{ dataInicio: '', dataFim: '', dias: 0 }]);
+
+//     // Atualiza a lista de servidores
+//     fetchData();
+//   };
+
+//   // Função para lidar com a exclusão de um servidor
+//   const handleDelete = async (id) => {
+//     if (window.confirm('Tem certeza de que deseja excluir este servidor?')) {
+//       try {
+//         await deleteServidor(id);
+
+//         // Atualize o estado filtrando o servidor excluído
+//         setServidores((prevServidores) =>
+//           prevServidores.filter((servidor) => servidor.id !== id)
+//         );
+//         await fetchData(); // Chamamos a fetchData para garantir que os dados estejam sincronizados corretamente com o banco de dados
+//         alert('Servidor excluído com sucesso!');
+//       } catch (error) {
+//         console.log('Erro ao excluir servidor: ', error);
+//       }
+//     }
+//   };
+
+//   // Função para lidar com a atualização de um servidor
+//   const [servidorSelecionado, setServidorSelecionado] = useState(null);
+
+//   const handleEdit = (servidor) => {
+//     // Verifica se o servidor possui período de férias
+//     if (servidor.ferias && servidor.ferias.length > 0) {
+//       setServidorSelecionado(servidor); // Armazena o servidor selecionado em um estado
+//       // Atualiza o currentPeriods com os períodos de férias do servidor selecionado
+//       setCurrentPeriods(servidor.ferias);
+//     } else {
+//       console.log('Nenhum período de férias encontrado para o servidor.');
+//       setCurrentPeriods([]); // Limpa se não houver períodos
+//     }
+
+//     setShowModal(true);
+//   };
+
+//   useEffect(() => {}, [currentPeriods]);
+
+//   // Formulário para editar período de férias
+//   if (loading) return <p>Carregando...</p>;
+//   if (error) return <p>Erro ao carregar dados: {error}</p>;
+
+//   const handleInputChange = (index, field, value) => {
+//     setCurrentPeriods((prevPeriods) => {
+//       const updatePeriods = [...prevPeriods];
+//       // Convertendo para Date e formatando como 'YYYY-MM-DD'
+//       const formattedDate =
+//         typeof value === 'string' && value.includes('-')
+//           ? value
+//           : new Date(value).toISOString().split('T')[0]; // / Formata para 'YYYY-MM-DD'
+
+//       updatePeriods[index] = { ...prevPeriods[index], [field]: formattedDate };
+//       return updatePeriods;
+//     });
+//   };
+
+//   // Função para atualizar o período de férias após alterações no modal
+
+//   // Função para fechar o modal
+//   const handleClose = () => {
+//     setShowModal(false); // Fecha o modal
+//   };
+//   return (
+//     <div>
+//       <div>
+//         <EditPeriodos
+//           showModal={showModal}
+//           handleClose={handleClose}
+//           servidoresComFerias={servidoresComFerias}
+//           servidorSelecionado={servidorSelecionado}
+//           currentPeriods={currentPeriods}
+//           handleInputChange={handleInputChange}
+//           handleAddPeriodo={handleAddPeriodo}
+//           setCurrentPeriods={setCurrentPeriods}
+//           validarPeriodosFerias={validarPeriodosFerias}
+//         />
+//       </div>
+//       <h1>Abonos</h1>
+//       <div>
+//         <h2>Servidores</h2>
+
+//         <table>
+//           <thead>
+//             <tr>
+//               <th>Nome</th>
+//               <th>Cargo</th>
+//               <th>Lotação</th>
+//               <th>Matrícula</th>
+//               <th>Períodos de Férias</th>
+//               <th>Ações</th>
+//             </tr>
+//           </thead>
+
+//           <tbody>
+//             {servidoresComFerias.map((servidor) => (
+//               <tr key={servidor.id}>
+//                 <td>{servidor.nome}</td>
+//                 <td>{servidor.cargo}</td>
+//                 <td>{servidor.lotacao}</td>
+//                 <td>{servidor.matricula}</td>
+//                 <td>
+//                   {/* servidor.periodos deve ser um valor "truthy", o que significa que não deve ser null, undefined, ou qualquer outro valor que seja considerado "falsy" em JavaScript. */}
+//                   {/* servidor.periodos.length > 0 deve ser verdadeiro, ou seja, a lista deve conter pelo menos um item. */}
+
+//                   {servidor.ferias && servidor.ferias.length > 0 ? (
+//                     servidor.ferias.map((periodo, index) => {
+//                       const dataInicio = periodo.dataInicio
+//                         ? typeof periodo.dataInicio === 'string'
+//                           ? new Date(periodo.dataInicio)
+//                           : new Date(periodo.dataInicio.seconds * 1000)
+//                         : null;
+//                       const dataFim = periodo.dataFim
+//                         ? typeof periodo.dataFim === 'string'
+//                           ? new Date(periodo.dataFim)
+//                           : new Date(periodo.dataFim.seconds * 1000)
+//                         : null;
+
+//                       // Se as duas datas são válidas, calcula a diferença entre elas
+//                       const diffTime =
+//                         dataInicio - dataFim
+//                           ? Math.abs(dataInicio - dataFim)
+//                           : null;
+//                       // Converte a diferença de tempo para dias
+//                       const diffDays = Math.ceil(
+//                         diffTime / (1000 * 60 * 60 * 24)
+//                       );
+
+//                       return (
+//                         <div key={index}>
+//                           <p>
+//                             {dataInicio
+//                               ? dataInicio.toLocaleDateString()
+//                               : 'Data de Início inválida'}
+//                             {/* Se uma das datas forem inválidas */} a{' '}
+//                             {dataFim
+//                               ? dataFim.toLocaleDateString()
+//                               : 'Data de Fim inválida'}
+//                             {/* Se o cálculo da diferença de dias não puder ser feito */}
+//                             {diffDays !== null
+//                               ? `(${diffDays} dias)`
+//                               : '(Dias não calculados)'}
+//                           </p>
+//                         </div>
+//                       );
+//                     })
+//                   ) : (
+//                     <p>Nenhum período de férias registrado</p>
+//                   )}
+//                 </td>
+//                 <td>
+//                   <button onClick={() => handleDelete(servidor.id)}>
+//                     Excluir Servidor
+//                   </button>
+//                 </td>
+
+//                 <td>
+//                   <button
+//                     onClick={() => {
+//                       setCurrentPeriods(servidor.ferias); // Armazena todos os períodos de férias do servidor
+//                       handleEdit(servidor); // Chama a função de edição com o ID do servidor
+//                     }}
+//                   >
+//                     Editar Períodos
+//                   </button>
+//                 </td>
+//               </tr>
+//             ))}
+//           </tbody>
+//         </table>
+//         <div></div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Abonos;
+
+
+"@eslint/js": "^9.8.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+
+    angel.alves16@yahoo.com.br
+    RAQUERAQUE@GMAIL.COM
+
+
+
+    {editingId ? (
+      <EditForm /> // Exibe o formulário de edição
+    ) : (
+      <div className={styles.form_container}>
+        <h1>Cadastre o servidor abaixo:</h1>
+        {/* <form onSubmit={handleEditSubmit}>
+          <div className={styles.form}>
+            <div className={styles.input}>
+              <input
+                type="text"
+                name="nome"
+                value={newServidor.nome}
+                onChange={handleServidorInputChange}
+                placeholder="Nome do servidor"
+                autoComplete="off"
+              />
+              <input
+                type="text"
+                name="matricula"
+                value={newServidor.matricula}
+                onChange={handleServidorInputChange}
+                placeholder="Matrícula"
+              />
+            </div>
+            <div className={styles.input}>
+              <input
+                type="text"
+                name="cargo"
+                value={newServidor.cargo}
+                onChange={handleServidorInputChange}
+                placeholder="Cargo"
+              />
+              <input
+                type="text"
+                name="lotacao"
+                value={newServidor.lotacao}
+                onChange={handleServidorInputChange}
+                placeholder="Lotação"
+              />
+            </div>
+          </div>
+          <h2>Informe o período de férias</h2>
+          
+
+          {ferias.map((periodo, index) => (
+            <div className={styles.date} key={index}>
+              <DatePicker
+                selected={
+                  periodo.dataInicio ? new Date(periodo.dataInicio) : null
+                }
+                onChange={(date) =>
+                  handleDateChange(index, date, 'dataInicio')
+                }
+                dateFormat="dd/MM/yyyy"
+                placeholderText="Data de Início"
+              />
+              <DatePicker
+                selected={
+                  periodo.dataFim ? new Date(periodo.dataFim) : null
+                }
+                onChange={(date) =>
+                  handleDateChange(index, date, 'dataFim')
+                }
+                dateFormat="dd/MM/yyyy"
+                placeholderText="Data de Fim"
+              />
+              {ferias.length > 1 && (
+                <button
+                  className={styles.buttonDate}
+                  type="button"
+                  onClick={() => removePeriodo(index)}
+                >
+                  Remover Período
+                </button>
+              )}
+            </div>
+          ))}
+          <div className={styles.periodButton}>
+            {ferias.length < 3 && (
+              <div className={styles.addPeriodo}>
+                <button type="button" onClick={handleAddPeriodo}>
+                  Adicionar Período
+                </button>
+              </div>
+            )}
+          </div>
+          <div className={styles.saveServidor}>
+            <button>Salvar Servidor</button>
+          </div>
+        </form> */}
+      </div>
+    )}
