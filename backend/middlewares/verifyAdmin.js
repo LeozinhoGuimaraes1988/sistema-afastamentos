@@ -5,6 +5,7 @@ export async function verifyAdmin(req, res, next) {
   const authHeader = req.headers.authorization;
 
   if (!authHeader?.startsWith('Bearer ')) {
+    console.log('[verifyAdmin] Token ausente');
     return res.status(401).json({ message: 'Token não fornecido' });
   }
 
@@ -12,6 +13,8 @@ export async function verifyAdmin(req, res, next) {
 
   try {
     const decoded = await admin.auth().verifyIdToken(token);
+
+    console.log('[verifyAdmin] Token decodificado:', decoded);
 
     if (!decoded.admin) {
       return res
