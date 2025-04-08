@@ -12,6 +12,7 @@ import { initializeFirebase } from './services/firebaseService.js';
 dotenv.config();
 
 const app = express();
+console.log('[server.js] Backend carregado com sucesso ✅');
 
 // ✅ CORS - deve vir ANTES do helmet
 app.use(
@@ -34,6 +35,11 @@ app.use(express.json());
 
 // 🔥 Firebase Admin
 initializeFirebase();
+
+// 🧪 Rota de teste
+app.get('/status', (req, res) => {
+  res.status(200).send('API funcionando! 🚀');
+});
 
 // 🛣️ Rotas principais
 app.use('/api/afastamentos', afastamentosRoutes);
