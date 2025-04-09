@@ -1,4 +1,5 @@
-// server.js
+// backend/server.js
+
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -12,9 +13,14 @@ import { initializeFirebase } from './services/firebaseService.js';
 dotenv.config();
 
 const app = express();
-console.log('[server.js] Backend carregado com sucesso ✅');
 
-// ✅ CORS - deve vir ANTES do helmet
+// 🟢 Início do backend
+console.log('\n🔄 Inicializando backend...');
+
+// ✅ Inicializa Firebase Admin
+initializeFirebase();
+
+// 🌐 Configura CORS (antes do Helmet)
 app.use(
   cors({
     origin: ['http://localhost:5173', 'https://gestaoafastamentos.web.app'],
@@ -23,33 +29,28 @@ app.use(
     credentials: true,
   })
 );
-
-// ✅ Responde a preflight OPTIONS
 app.options('*', cors());
 
-// 🔐 Helmet - depois do CORS
+// 🔐 Proteções básicas
 app.use(helmet());
 
-// 🧠 JSON parser
+// 🧠 Middleware de JSON
 app.use(express.json());
 
-// 🔥 Firebase Admin
-initializeFirebase();
-
-// 🧪 Rota de teste
+// 🧪 Rota de verificação de status (health check)
 app.get('/status', (req, res) => {
-  res.status(200).send('API funcionando! 🚀');
+  res.status(200).json({ status: 'ok', message: 'API funcionando! 🚀' });
 });
 
-// 🛣️ Rotas principais
+// 🛣️ Rotas da aplicação
 app.use('/api/afastamentos', afastamentosRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/clientes', clientesRoutes);
 
+// 🚀 Inicializa servidor
 const PORT = process.env.PORT || 5000;
-
 app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+  console.log(`✅ Backend iniciado com sucesso em http://localhost:${PORT}\n`);
 });
 
 export default app;
