@@ -39,6 +39,7 @@ app.use(express.json());
 
 // 🧪 Rota de verificação de status (health check)
 app.get('/status', (req, res) => {
+  console.log('🔍 Rota /status acessada!');
   res.status(200).json({ status: 'ok', message: 'API funcionando! 🚀' });
 });
 
