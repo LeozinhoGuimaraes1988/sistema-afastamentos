@@ -48,7 +48,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/clientes', clientesRoutes);
 
 // 🚀 Inicializa servidor
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`✅ Backend iniciado com sucesso em http://localhost:${PORT}\n`);
 });
