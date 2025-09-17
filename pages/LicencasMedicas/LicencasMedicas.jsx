@@ -469,6 +469,8 @@ const LicencasMedicas = () => {
         'Atestado Médico',
         'Atest. Comparec. (c/ comp)',
         'Atest. Comparec. (Dec. 34023)',
+        'Atest. Comparec. (c/ comp) - manhã',
+        'Atest. Comparec. (c/ comp) - tarde',
         'Licença Médica / Odontológica',
         'Licença Tratamento Saúde Fora',
         'Licença Doença Pessoa Familia',
@@ -548,6 +550,41 @@ const LicencasMedicas = () => {
       scrollContent.style.width = `${table.scrollWidth}px`;
     }
   }, [activeTab]); // Atualiza quando mudar de tab
+
+  const formatarData = (data) => {
+    if (!data) return 'Sem data';
+
+    try {
+      let dataConvertida;
+
+      if (data.seconds) {
+        // 🔹 Firestore Timestamp
+        dataConvertida = new Date(data.seconds * 1000);
+      } else if (typeof data === 'string') {
+        // 🔹 String simples YYYY-MM-DD ou ISO
+        if (/^\d{4}-\d{2}-\d{2}$/.test(data)) {
+          // Ex: "2025-01-22"
+          dataConvertida = new Date(data + 'T00:00:00');
+        } else {
+          // Ex: "2025-01-22T00:00:00.000Z"
+          dataConvertida = new Date(data);
+        }
+      } else if (data instanceof Date) {
+        // 🔹 Já é Date
+        dataConvertida = data;
+      } else {
+        return 'Data inválida';
+      }
+
+      // Retorna formatado para pt-BR
+      return dataConvertida.toLocaleDateString('pt-BR', {
+        timeZone: 'UTC', // garante que não vai mudar o dia
+      });
+    } catch (err) {
+      console.error('Erro ao formatar data:', data, err);
+      return 'Data inválida';
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -988,17 +1025,16 @@ const LicencasMedicas = () => {
                                 <td>{licenca.tipoAtestado}</td>
                                 <td>
                                   {licenca.dataInicio
-                                    ? `${new Date(
-                                        licenca.dataInicio
-                                      ).toLocaleDateString()}${
+                                    ? `${formatarData(licenca.dataInicio)}${
                                         licenca.dataFim
-                                          ? ` a ${new Date(
+                                          ? ` a ${formatarData(
                                               licenca.dataFim
-                                            ).toLocaleDateString()}`
+                                            )}`
                                           : ''
                                       }`
                                     : 'Data inválida'}
                                 </td>
+
                                 <td>{calcularDiasLicenca(licenca)}</td>
                               </tr>
                             ))}

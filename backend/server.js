@@ -48,12 +48,23 @@ garantirSuperAdmin();
 // 🌐 Configura CORS (antes do Helmet)
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'https://gestaoafastamentos.web.app'],
+    origin: (origin, callback) => {
+      if (
+        !origin ||
+        origin.includes('localhost') ||
+        origin.includes('web.app')
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error('CORS não permitido'));
+      }
+    },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   })
 );
+
 app.options('*', cors());
 
 // 🔐 Proteções básicas
