@@ -18,8 +18,14 @@
       "public": "frontend/dist",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": [
-        { "source": "/api/**", "function": "api" },
-        { "source": "**", "destination": "/index.html" }
+        {
+          "source": "/api/**",
+          "destination": "https://gestaoafastamentos-api.onrender.com/:**"
+        },
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
       ],
       "predeploy": ["cd frontend && npm run build"]
     },
@@ -28,22 +34,22 @@
       "public": "frontend/dist",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": [
-        { "source": "/api/**", "function": "api" },
-        { "source": "**", "destination": "/index.html" }
+        {
+          "source": "/api/**",
+          "destination": "https://gestaoafastamentos-api.onrender.com/:**"
+        },
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
       ],
       "predeploy": ["cd frontend && npm run build"]
     }
   ],
   "emulators": {
-    "functions": {
-      "port": 5006
-    },
-    "hosting": {
-      "port": 5001
-    },
-    "ui": {
-      "enabled": true
-    },
+    "functions": { "port": 5006 },
+    "hosting": { "host": "127.0.0.1", "port": 5014 },
+    "ui": { "enabled": true },
     "singleProjectMode": true
   }
 }

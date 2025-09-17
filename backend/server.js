@@ -4,6 +4,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
+import admin from 'firebase-admin';
 
 import afastamentosRoutes from './routes/afastamentosRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
@@ -19,6 +20,30 @@ console.log('\n🔄 Inicializando backend...');
 
 // ✅ Inicializa Firebase Admin
 initializeFirebase();
+
+const SUPER_ADMIN_EMAIL = 'leosinho.jw@gmail.com'; // 🔒 substitua pelo seu e-mail
+
+async function garantirSuperAdmin() {
+  try {
+    const user = await admin.auth().getUserByEmail(SUPER_ADMIN_EMAIL);
+
+    // Se ainda não tiver claim admin, aplica
+    if (!user.customClaims?.admin) {
+      await admin.auth().setCustomUserClaims(user.uid, {
+        ...(user.customClaims || {}),
+        admin: true,
+      });
+      console.log(`✅ Super admin garantido para ${SUPER_ADMIN_EMAIL}`);
+    } else {
+      console.log(`🛡️ Super admin já configurado: ${SUPER_ADMIN_EMAIL}`);
+    }
+  } catch (err) {
+    console.error('❌ Erro ao garantir super admin:', err);
+  }
+}
+
+// Executa no startup
+garantirSuperAdmin();
 
 // 🌐 Configura CORS (antes do Helmet)
 app.use(

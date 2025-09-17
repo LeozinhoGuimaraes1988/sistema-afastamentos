@@ -5,11 +5,11 @@
   "targets": {
     "gestaoafastamentos": {
       "hosting": {
-        "prod": [
-          "gestaoafastamentos"
-        ],
         "staging": [
           "gestaoafastamentos-staging-v2-cb367"
+        ],
+        "production": [
+          "gestaoafastamentos"
         ]
       }
     }

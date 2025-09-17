@@ -1,12 +1,17 @@
 {
-  "hosting": {
-    "public": "dist",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
-    ]
-  }
+  "hosting": [
+    {
+      "target": "production",
+      "public": "frontend/dist",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [
+        {
+          "source": "/api/**",
+          "destination": "https://gestaoafastamentos-api.onrender.com/api/:**"
+        },
+        { "source": "**", "destination": "/index.html" }
+      ],
+      "predeploy": ["cd frontend && npm run build"]
+    }
+  ]
 }
