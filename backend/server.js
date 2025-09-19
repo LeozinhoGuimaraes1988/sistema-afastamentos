@@ -46,6 +46,7 @@ async function garantirSuperAdmin() {
 garantirSuperAdmin();
 
 // 🌐 Configura CORS (antes do Helmet)
+// 🌐 Configura CORS (antes do Helmet)
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -64,11 +65,15 @@ app.use(
     credentials: true,
   })
 );
-
 app.options('*', cors());
 
-// 🔐 Proteções básicas
-app.use(helmet());
+// 🔐 Proteções básicas (ajustado)
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+    crossOriginEmbedderPolicy: false,
+  })
+);
 
 // 🧠 Middleware de JSON
 app.use(express.json());
