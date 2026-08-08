@@ -1,0 +1,366 @@
+.modal {
+  z-index: 1050;
+}
+
+.modalOverlay {
+  z-index: 1040;
+}
+
+/* Título do modal */
+h1 {
+  color: #1f2937;
+  text-align: center;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 32px;
+  letter-spacing: -0.025em;
+}
+
+h2 {
+  color: #374151;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 24px 0 16px 0;
+  letter-spacing: -0.025em;
+}
+
+p {
+  color: #4b5563;
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0 0 16px 0;
+}
+
+/* Container do conteúdo */
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Card com informações pessoais */
+.titles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  padding: 24px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.titles p {
+  margin: 0;
+  font-size: 15px;
+  color: #475569;
+  font-weight: 500;
+}
+
+.titles strong {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+/* Seção de períodos de férias */
+.periodVacation {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #f59e0b;
+  box-shadow: 0 2px 4px -1px rgba(245, 158, 11, 0.1);
+  margin-bottom: 24px;
+}
+
+.periodVacation p {
+  margin: 0;
+  color: #92400e;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+/* Título da licença-prêmio */
+.lpTitle {
+  color: #1e293b;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 24px 0 16px 0;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 8px;
+}
+
+/* Container dos inputs de data */
+.datesInput {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 24px;
+  justify-content: space-evenly;
+  /* background-color: #047857; */
+}
+
+.label {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+}
+
+.label label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #374151;
+  letter-spacing: 0.025em;
+}
+
+.dataFim {
+  margin-top: 6px;
+  margin-right: 10px;
+  padding-right: 60px;
+}
+
+/* Inputs modernos */
+input {
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 14px;
+  transition: all 0.2s ease-in-out;
+  background: #ffffff;
+  color: #1f2937;
+  width: 100%;
+}
+
+input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+input:hover {
+  border-color: #9ca3af;
+}
+
+/* Container do botão adicionar LP */
+.addLP {
+  display: flex;
+  justify-content: center;
+  margin: 24px 0;
+}
+
+/* Botão adicionar licença-prêmio */
+.buttonaddLP {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  padding: 16px 32px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+  min-width: 200px;
+}
+
+.buttonaddLP:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  box-shadow: 0 6px 12px -2px rgba(59, 130, 246, 0.4);
+  transform: translateY(-1px);
+}
+
+.buttonaddLP:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px -1px rgba(59, 130, 246, 0.3);
+}
+
+/* Item de licença-prêmio */
+.lp {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
+}
+
+.lp:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border-color: #cbd5e1;
+}
+
+.lp p {
+  margin: 0;
+  color: #1e293b;
+  font-weight: 600;
+  font-size: 15px;
+  flex-grow: 1;
+}
+
+/* Botão excluir */
+.eraseButton {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 4px -1px rgba(239, 68, 68, 0.3);
+  margin-left: 16px;
+}
+
+.eraseButton:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Botão salvar alterações */
+.saveChanges {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  margin: 24px 0 16px 0;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
+}
+
+.saveChanges:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  box-shadow: 0 6px 12px -2px rgba(16, 185, 129, 0.4);
+  transform: translateY(-1px);
+}
+
+.saveChanges:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px -1px rgba(16, 185, 129, 0.3);
+}
+
+/* Botão fechar */
+.button {
+  background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+  color: white;
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 6px -1px rgba(107, 114, 128, 0.3);
+}
+
+.button:hover {
+  background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+  box-shadow: 0 6px 12px -2px rgba(107, 114, 128, 0.4);
+  transform: translateY(-1px);
+}
+
+.button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px -1px rgba(107, 114, 128, 0.3);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+
+  h2 {
+    font-size: 18px;
+    margin: 20px 0 12px 0;
+  }
+
+  .content {
+    gap: 20px;
+  }
+
+  .titles {
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+  }
+
+  .periodVacation {
+    padding: 16px;
+  }
+
+  .datesInput {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .label {
+    min-width: unset;
+  }
+
+  .lp {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .lp p {
+    text-align: center;
+  }
+
+  .eraseButton {
+    width: 100%;
+    margin-left: 0;
+    padding: 12px;
+  }
+
+  .buttonaddLP {
+    width: 100%;
+    min-width: unset;
+  }
+}
+
+@media (max-width: 480px) {
+  .titles {
+    padding: 16px;
+  }
+
+  .periodVacation {
+    padding: 12px;
+  }
+
+  .lp {
+    padding: 12px;
+  }
+
+  input {
+    padding: 10px 12px;
+  }
+
+  .buttonaddLP,
+  .saveChanges,
+  .button {
+    padding: 14px;
+    font-size: 15px;
+  }
+
+  .eraseButton {
+    padding: 10px;
+    font-size: 13px;
+  }
+}

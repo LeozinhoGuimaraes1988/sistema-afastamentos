@@ -1,0 +1,310 @@
+.modal {
+  z-index: 1050;
+}
+
+.modalOverlay {
+  z-index: 1040;
+}
+
+/* Título do modal */
+h1 {
+  color: #1f2937;
+  text-align: center;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 32px;
+  letter-spacing: -0.025em;
+}
+
+/* Card com informações pessoais */
+.personalDate {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  padding: 24px;
+  border-radius: 16px;
+  margin-bottom: 32px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.personalDate p {
+  margin: 0;
+  font-size: 15px;
+  color: #475569;
+  font-weight: 500;
+}
+
+.personalDate strong {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+/* Formulário de período */
+.periodForm {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 24px;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
+}
+
+.periodForm:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border-color: #cbd5e1;
+}
+
+/* Container dos inputs */
+.inputFerias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.inputFieldFerias {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+}
+
+.inputFieldFerias label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #374151;
+  letter-spacing: 0.025em;
+}
+
+/* Inputs modernos */
+input {
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 14px;
+  transition: all 0.2s ease-in-out;
+  background: #ffffff;
+  color: #1f2937;
+}
+
+input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+input:hover {
+  border-color: #9ca3af;
+}
+
+/* Container de duração e botão remover */
+.days {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* margin-top: 16px; */
+  flex-wrap: wrap;
+  gap: 16px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.days p {
+  color: #1e293b;
+  font-weight: 600;
+  margin: 0;
+  font-size: 15px;
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #93c5fd;
+}
+
+/* Botão remover período */
+.remove {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 4px -1px rgba(239, 68, 68, 0.3);
+}
+
+.remove:hover:not(:disabled) {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.4);
+  transform: translateY(-1px);
+}
+
+.remove:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Botão adicionar período */
+.button {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 32px;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+}
+
+.button:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  box-shadow: 0 6px 12px -2px rgba(59, 130, 246, 0.4);
+  transform: translateY(-1px);
+}
+
+.button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px -1px rgba(59, 130, 246, 0.3);
+}
+
+/* Container dos botões finais */
+.endButtons {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 32px;
+  flex-wrap: wrap;
+}
+
+/* Botões de ação */
+.close,
+.changes {
+  padding: 16px 24px;
+  width: 48%;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.2s ease-in-out;
+  min-height: 52px;
+}
+
+.changes {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
+}
+
+.changes:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  box-shadow: 0 6px 12px -2px rgba(16, 185, 129, 0.4);
+  transform: translateY(-1px);
+}
+
+.close {
+  background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(107, 114, 128, 0.3);
+}
+
+.close:hover {
+  background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+  box-shadow: 0 6px 12px -2px rgba(107, 114, 128, 0.4);
+  transform: translateY(-1px);
+}
+
+.close:active,
+.changes:active {
+  transform: translateY(0);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+
+  .personalDate {
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+  }
+
+  .periodForm {
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .inputFerias {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .inputFieldFerias {
+    min-width: unset;
+  }
+
+  .days {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .days p {
+    text-align: center;
+  }
+
+  .remove {
+    width: 100%;
+    padding: 12px;
+  }
+
+  .endButtons {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .close,
+  .changes {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .personalDate {
+    padding: 16px;
+  }
+
+  .periodForm {
+    padding: 16px;
+  }
+
+  input {
+    padding: 10px 12px;
+  }
+
+  .button {
+    padding: 14px;
+    font-size: 15px;
+  }
+
+  .close,
+  .changes {
+    padding: 14px 20px;
+    font-size: 15px;
+  }
+}

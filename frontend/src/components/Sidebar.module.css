@@ -1,0 +1,77 @@
+.sidebar {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  height: 100%;
+  background-color: #0f172a;
+  color: white;
+  transition: width 0.3s ease;
+  overflow: hidden;
+  z-index: 999;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Estágio 1: Chevron apenas */
+.collapsed {
+  width: 20px;
+}
+
+/* Estágio 2: Ícones apenas */
+.hovered {
+  width: 70px;
+}
+
+/* Estágio 3: Expandida (ícones + labels) */
+.expanded {
+  width: 200px;
+}
+
+.chevronTrigger {
+  padding: 12px 5px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
+}
+
+.toggleButton {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  margin: 10px;
+  cursor: pointer;
+}
+
+.menu {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.menuItem:hover {
+  background-color: #1e293b;
+}
+
+.icon {
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+}
+
+.label {
+  font-size: 0.95rem;
+  white-space: nowrap;
+}

@@ -1,0 +1,24 @@
+/* src/components/Layout/Layout.module.css */
+.layout {
+  display: flex;
+}
+
+.content {
+  margin-top: 60px; /* Altura da navbar */
+  /* margin-left: 200px; Deixa isso para considerar a sidebar */
+  padding: 20px;
+  width: 150%;
+  max-width: 100%;
+  min-height: calc(100vh - 60px);
+  background-color: #f1f5f9;
+  transition: margin-left 0.3s ease;
+  box-sizing: border-box;
+}
+
+/* RESPONSIVO: Sidebar colapsada ou mobile */
+@media (max-width: 768px) {
+  .content {
+    margin-left: 0;
+    width: 100%;
+  }
+}

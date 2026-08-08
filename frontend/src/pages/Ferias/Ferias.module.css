@@ -1,0 +1,290 @@
+/* Reset e Configurações Globais */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+  width: 100%;
+  min-height: 100vh;
+  font-family: 'Muli', sans-serif;
+  margin: 0;
+  padding: 0; /* Removido padding do body */
+  display: flex;
+  justify-content: center;
+}
+
+/* Título principal */
+.titulo {
+  font-size: 2.5rem;
+  font-weight: bold;
+  background-color: #ddd;
+  padding: 5px 0;
+  text-align: center;
+  margin: 0;
+}
+
+/* Conteúdo principal */
+.mainContent {
+  margin-top: 0; /* Sem margem agora */
+  padding-top: 5px; /* Se tiver navbar fixa, ajusta conforme altura dela */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}
+
+/* Legenda */
+.legendaContainer {
+  margin: 20px auto;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: fit-content;
+  background-color: #f9f9f9;
+  color: #000;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.legendaTitulo {
+  font-size: 16px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.legendaItens {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.legendaItem {
+  display: flex;
+  align-items: center;
+}
+
+.legendaCor {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #000;
+  margin-right: 5px;
+  border-radius: 3px;
+}
+
+.legendaAndamento {
+  background-color: lightblue;
+}
+
+.legendaProximo {
+  background-color: yellow;
+}
+
+.legendaFuturo {
+  background-color: lightgreen;
+}
+
+.legendaPassado {
+  background-color: lightgray;
+}
+
+/* Filtro */
+.filtroContainer {
+  margin: 1.5rem 0;
+  display: flex;
+  justify-content: center;
+}
+
+.filtroInput {
+  width: 100%;
+  max-width: 500px;
+  padding: 10px 16px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* Tabela */
+.tableContainer {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table {
+  width: 100%;
+  min-width: 1200px;
+  border-collapse: collapse;
+  background-color: #ffffff;
+}
+
+.table th,
+.table td {
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+  color: #333;
+}
+
+.table tbody tr td {
+  color: #000;
+}
+
+.table th {
+  background-color: #f3f3f3;
+  font-weight: bold;
+  color: #333;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.table td:first-child {
+  text-align: left;
+}
+
+.table tbody tr:hover {
+  background-color: #e6f7ff;
+}
+
+/* Botões */
+.tdButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tdButtons button {
+  font-size: 13px;
+  padding: 6px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.tdButtons button:hover {
+  background-color: #0056b3;
+}
+
+/* Scroll customizado */
+.tableContainer::-webkit-scrollbar {
+  height: 8px;
+}
+.tableContainer::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.tableContainer::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+/* Períodos */
+.periodo-ferias,
+.periodo-abono,
+.periodo-licenca {
+  display: block;
+  margin-bottom: 2px;
+  border-radius: 4px;
+  padding: 4px;
+  border: 1px solid #ccc;
+}
+
+/* Carregar Mais */
+.loadMoreButton {
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.loadMoreButton button {
+  padding: 8px 16px;
+  font-size: 14px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  max-width: 200px;
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+  .table td,
+  .table th {
+    padding: 8px 5px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .mainContent {
+    padding-top: 120px;
+  }
+
+  .table {
+    min-width: unset;
+  }
+
+  .table th,
+  .table td {
+    font-size: 12px;
+    padding: 6px;
+  }
+
+  .tdButtons {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .tdButtons button {
+    flex: 1 1 48%;
+  }
+
+  .legendaContainer {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .legendaItens {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .legendaItem {
+    width: 100%;
+  }
+
+  .filtroInput {
+    width: 90%;
+  }
+}
+
+@media (max-width: 480px) {
+  .feriasTitulo {
+    font-size: 1.8rem;
+    padding: 0.8rem;
+  }
+
+  .table th,
+  .table td {
+    font-size: 11px;
+    padding: 4px;
+  }
+
+  .legendaCor {
+    width: 16px;
+    height: 16px;
+  }
+
+  .legendaTitulo {
+    font-size: 14px;
+  }
+}

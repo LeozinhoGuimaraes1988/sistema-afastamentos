@@ -1,0 +1,112 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.modal {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 10px;
+  max-width: 600px;
+  width: 90%;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+.modal h2 {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.field label {
+  font-weight: 500;
+  margin-bottom: 5px;
+  color: #1e293b;
+}
+
+.field input {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.invalid {
+  border-color: #ef4444 !important;
+  background-color: #fff1f2;
+}
+
+.dateRow {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.dateRow .react-datepicker-wrapper {
+  flex: 1;
+}
+
+.addBtn,
+.removeBtn,
+.saveBtn,
+.cancelBtn {
+  margin-top: 1rem;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.addBtn {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.removeBtn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.cancelBtn {
+  background-color: #e5e7eb;
+  color: #1f2937;
+}
+
+.cancelBtn:hover {
+  background-color: #d1d5db;
+}
+
+.saveBtn {
+  background-color: #10b981;
+  color: white;
+}
+
+.saveBtn:hover {
+  background-color: #059669;
+}
